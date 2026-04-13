@@ -39,6 +39,7 @@ def seed_data():
     # Create a team
     team = Team(
         name = "Team ABC",
+        event_id = event.id,
         team_code = "ABC123",
         max_members = 5
     )
