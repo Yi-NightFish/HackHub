@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel = "stylesheet" href = "{{url_for('static', filename = 'css/profile.css')}}">
+{% endblock %}
+
+{% block content %}
+<div>
+    <h1>Profile</h1>
+
+    <form action = "" action = "POST">
+        {{form.hidden_tag()}}
+        <div id = "username">
+            <!-- <p class = "profileInput">Username</p>
+            <input type = "text" /> -->
+            <p>{{form.username.label}}</p>
+            {{form.username(size = 32, class = "profileInput")}}
+        </div>
+
+        <div id = "password">
+            <!-- <p class = "profileInput">Password</p>
+            <input type = "password" /> -->
+            <p>{{form.password.label}}</p>
+            {{form.password(size = 32, class = "profileInput")}}
+        </div>
+
+        <div id = email>
+            <!-- <p class = "profileInput">Email</p>
+            <input type = "email" /> -->
+            <p>{{form.email.label}}</p>
+            {{form.email(size = 32, class = "profileInput")}}
+        </div>
+        <!-- <input type = "submit" value = "Update" /> -->
+        {{form.submit(id = 'submitButton')}}
+    </form>
+</div>
+{% endblock %}

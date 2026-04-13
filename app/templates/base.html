@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>HackHub</title>
+        <meta charset = "utf-8">
+        {% block css %}
+        {% endblock %}
+
+        <style>
+            body{
+                margin: 0px;
+                padding: 0px;
+            }
+
+            #navigation{
+                background-color: #e1e1e1;
+                height: auto;
+            }
+
+            #navigation a{
+                padding: 20px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id = "navigation">
+            <a href = '{{url_for("home")}}'>Home</a>
+            <a href = '{{url_for("profile")}}'>Profile</a>
+        </div>
+
+        <div>
+            {% block content %}
+            {%  endblock %}
+        </div>
+    </body>
+</html>

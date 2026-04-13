@@ -1,0 +1,34 @@
+.profileInput{
+    border: 2px solid grey;
+}
+
+form{
+    border: 3px solid grey;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+    margin: 10px auto;
+}
+
+form div{
+    width: 50%;
+}
+
+#submitButton{
+    margin: 10px;
+    border: 2px solid grey;
+    border-radius: 10px;
+    width: 20%;
+    padding: 10px;
+}
+
+form div input{
+    width: 100%;
+    box-sizing: border-box;
+}
+
+h1{
+    text-align: center;
+}
