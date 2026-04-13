@@ -10,28 +10,18 @@
 
     <form action = "" action = "POST">
         {{form.hidden_tag()}}
+        {% set hide = (user.id != current_user.id) %}
         <div id = "username">
-            <!-- <p class = "profileInput">Username</p>
-            <input type = "text" /> -->
             <p>{{form.username.label}}</p>
-            {{form.username(size = 32, class = "profileInput", readOnly = True, value = user.username)}}
-        </div>
-
-        <div id = "password" hidden = {{user.id == current_user.id}}>
-            <!-- <p class = "profileInput">Password</p>
-            <input type = "password" /> -->
-            <p>{{form.password.label}}</p>
-            {{form.password(size = 32, class = "profileInput", readOnly = True)}}
+            {{form.username(size = 32, class = "profileInput", readOnly = hide, value = user.username)}}
         </div>
 
         <div id = email>
-            <!-- <p class = "profileInput">Email</p>
-            <input type = "email" /> -->
             <p>{{form.email.label}}</p>
-            {{form.email(size = 32, class = "profileInput", readOnly = True, value = user.email)}}
+            {{form.email(size = 32, class = "profileInput", readOnly = hide, value = user.email)}}
         </div>
-        <!-- <input type = "submit" value = "Update" /> -->
-        {{form.submit(id = 'submitButton')}}
+        {{form.submit(id = 'submitButton', hidden = hide)}}
+        <a href = '{{url_for("reset_pwd")}}' {{'hidden' if hide else ''}}>Reset Password</a>
     </form>
 </div>
 {% endblock %}

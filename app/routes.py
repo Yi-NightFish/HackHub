@@ -14,4 +14,13 @@ def profile(user_id):
     user = db.session.get(User, user_id)
 
     # Mock that user has signed in. Remove current_user argument when using flask_login extension because current_user argument is automatically set
-    return render_template("profile.html", form = profile_page, user = user, current_user = user)
+    # Right now, we are using user with id = 2 for testing
+    return render_template("profile.html", form = profile_page, user = user, current_user = db.session.get(User, 2))
+
+@app.route("/reset_pwd")
+def reset_pwd():
+    pass
+
+@app.route("/login")
+def login():
+    return render_template("login.html")
