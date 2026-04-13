@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-import datetime import datatime
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hackhub.db'
@@ -15,7 +15,10 @@ class User(db.Model):
     university = db.Column(db.String(120), nullable=True)
     skills = db.Column(db.String(200), nullable=True)
     github_link = db.Column(db.String(200), nullable=True)
-    
+    messages_sent = db.relationship('Messages', foreign_keys='Messages.sender_id', backref='sender', lazy=True)
+    messages_received = db.relationship('Messages', foreign_keys='Messages.receiver_id', backref='receiver', lazy=True)
+    organized_events = db.relationship('Event', backref='organizer', lazy=True)
+
     def __repr__(self):
         return f'<User {self.name}>'
     
@@ -26,6 +29,8 @@ class Event(db.Model):
     description = db.Column(db.Text, nullable=False)
     organizer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     status = db.Column(db.String(20), nullable=False)
+    teams = db.relationship('Team', backref='event', lazy=True)
+    announcements = db.relationship('Announcement', backref='event', lazy=True)
 
     def __repr__(self):
         return f'<Event {self.title}>'
@@ -36,6 +41,8 @@ class Team(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
     team_code = db.Column(db.String(20), unique=True, nullable=False)
     max_members = db.Column(db.Integer, nullable=False)
+    tasks = db.relationship('Task', backref='team', lazy=True)
+    members = db.relationship('TeamMember', backref='team', lazy=True)
 
     def __repr__(self):
         return f'<Team {self.name}>'
