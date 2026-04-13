@@ -89,3 +89,10 @@ class Messages(db.Model):
 
     def __repr__(self):
         return f'<Messages {self.sender_id} - {self.receiver_id}>'
+
+@app.route("/")
+def home():
+    return "HackHub is running!"
+
+if __name__ == "__main__":
+    app.run(debug=True)
