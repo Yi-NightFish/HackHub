@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, session
+import random
 from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import URLSafeTimedSerializer
-
+# session - to store user data across requests (can rmb user after refresh page)
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "hachhub-key"
 #db setup
@@ -27,10 +28,11 @@ class User(db.Model):  #ni my db table
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     is_verified = db.Column(db.Boolean, default=False)
-    
+    reset_otp = db.Column(db.String(6), nullable=True)
+    otp_verified = db.Column(db.Boolean, default=False)
 @app.route("/")
 def home():
-    return "WElcome!"
+    return "Welcome!"
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -70,6 +72,7 @@ def login():
         password = request.form.get("password")
         user = User.query.filter_by(email = email, password = password).first()
         if user and user.is_verified:
+            session["user_email"] = user.email
             return f"Login success -> {email}"
         if user and not user.is_verified:
             return "Please verify your email before logging in"
@@ -80,6 +83,7 @@ def login():
 
 @app.route("/logout")
 def logout():
+    session.clear()
     return "Logged out successfully"
 
 if __name__ == "__main__":
