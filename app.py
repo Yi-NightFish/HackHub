@@ -86,6 +86,19 @@ def logout():
     session.clear()
     return "Logged out successfully"
 
+@app.route("/forget-password", methods=["GET", "POST"])
+def forget_password():
+    if request.method == "POST":
+        email = request.form.get("email")
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return "Email not found"
+        otp = str(random.randint(100000, 999999))
+        user.reset_otp = otp
+        user.otp_verified = False
+        db.session.commit()
+        return f"Your OTP is: {otp}"
+    return render_template("forget_password.html")
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
