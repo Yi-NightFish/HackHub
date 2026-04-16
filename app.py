@@ -15,6 +15,7 @@ class User(db.Model):
     name = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
+    is_verified = db.Column(db.Boolean, default=False)
     university = db.Column(db.String(120), nullable=True)
     skills = db.Column(db.String(200), nullable=True)
     github_link = db.Column(db.String(200), nullable=True)

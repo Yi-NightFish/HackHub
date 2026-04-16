@@ -1,5 +1,4 @@
 from app import app, db, User, Event, Team, Task, Announcement, Messages, TeamMember
-from datetime import datetime
 
 def seed_data():
     # Create users
