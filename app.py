@@ -2,34 +2,51 @@ from flask import Flask, render_template, request, url_for, redirect, session
 import random
 from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import URLSafeTimedSerializer
+from flask_mail import Mail, Message
+from werkzeug.security import generate_password_hash, check_password_hash
+import random
+from datetime import datetime, timedelta
 # session - to store user data across requests (can rmb user after refresh page)
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "hachhub-key"
-#db setup
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
-db = SQLAlchemy(app)
 
-def generate_verification_token(email):
-    serializer = URLSafeTimedSerializer(app.config["SECRET_KEY"])
+app.config["SECRET_KEY"] = "hackhub-key"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
+app.config["MAIL_SERVER"] = "smtp.gmail.com"
+app.config["MAIL_PORT"] = 587
+app.config["MAIL_USE_TLS"] = True
+app.config["MAIL_USERNAME"] = "x7186460@gmail.com"
+app.config["MAIL_PASSWORD"] = "chon petb yizr wcrt"
+
+db = SQLAlchemy(app)
+mail = Mail(app)
+serializer = URLSafeTimedSerializer(app.config["SECRET_KEY"])
+def generate_token(email):
     return serializer.dumps(email, salt="email-confirm")
-def confirm_verification_token(token, expiration=3600):
-    serializer = URLSafeTimedSerializer(app.config["SECRET_KEY"])
+def confirm_token(token, expiration=3600):
     try:
-        email = serializer.loads(
-            token,
-            salt="email-confirm",
-            max_age=expiration
-        )
-        return email
-    except Exception:
+        return serializer.loads(token, salt="email-confirm", max_age=expiration)
+    except:
         return None
+def send_otp(email, otp):
+    msg = Message(
+        "HackHub OTP",
+        sender=app.config["MAIL_USERNAME"],
+        recipients=[email]
+    )
+    msg.body = f"Your OTP is: {otp}"
+    mail.send(msg)
 class User(db.Model):  #ni my db table
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), unique=True)
+    password = db.Column(db.String(200))
     is_verified = db.Column(db.Boolean, default=False)
-    reset_otp = db.Column(db.String(6), nullable=True)
-    otp_verified = db.Column(db.Boolean, default=False)
+    
+class OTP(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120))
+    code = db.Column(db.String(6))
+    purpose = db.Column(db.String(20))  # 'register' or 'reset'
+    expiry = db.Column(db.DateTime)
 @app.route("/")
 def home():
     return "Welcome!"
@@ -43,42 +60,50 @@ def register():
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             return "Email already registered"
+        otp = str(random.randint(100000, 999999))
+        hashed_password = generate_password_hash(password)
+        session["temp_email"] = email
+        session["temp_password"] = hashed_password
 
-        user = User(email=email, password=password, is_verified=False)
-        db.session.add(user)
+        db.session.add(OTP(email=email, code=otp, purpose="register", expiry=datetime.now() + timedelta(minutes=5)))
         db.session.commit()
-        # simple verification
-        token = generate_verification_token(user.email)
-        verify_link = url_for("verify_email", token=token, _external=True)
-        return f"Registered successfully. Verify your email here: {verify_link}"
+        send_otp(email, otp)
+        return redirect("/verify-register")
     return render_template("register.html")
 
-@app.route("/verify-email/<token>")
-def verify_email(token):
-    email = confirm_verification_token(token)
-    if not email:
-        return "Invalid or expired verification link"
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        return "User not found"
-    user.is_verified = True
-    db.session.commit()
-    return "Email verified successfully. You can now log in."
+@app.route("/verify-register", methods=["GET", "POST"])
+def verify_register():
+    if request.method == "POST":
+        email = session.get("temp_email")
+        otp = request.form["otp"]
+        record = OTP.query.filter_by(
+            email=email,
+            code=otp,
+            purpose="register"
+        ).first()
+        if record and record.expiry > datetime.now():
+            user = User(
+                email=email,
+                password=session.get("temp_password"),
+                is_verified=True
+            )
+            db.session.add(user)
+            db.session.delete(record)
+            db.session.commit()
+            return redirect("/login")
+        return "Invalid OTP"
+    return render_template("otp_veri.html")
 
-@app.route("/login", methods = ["GET","POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("password")
-        user = User.query.filter_by(email = email, password = password).first()
-        if user and user.is_verified:
-            session["user_email"] = user.email
-            return f"Login success -> {email}"
-        if user and not user.is_verified:
-            return "Please verify your email before logging in"
-        else:
-            return "Invalid email or password"
-        
+        email = request.form["email"]
+        password = request.form["password"]
+        user = User.query.filter_by(email=email).first()
+        if user and check_password_hash(user.password, password):
+            session["user"] = email
+            return redirect("/dashboard")
+        return "Invalid credentials"
     return render_template("login.html")
 
 @app.route("/logout")
@@ -86,19 +111,69 @@ def logout():
     session.clear()
     return "Logged out successfully"
 
-@app.route("/forget-password", methods=["GET", "POST"])
-def forget_password():
+@app.route("/dashboard")
+def dashboard():
+    if "user" not in session:
+        return redirect("/login")
+    return f"Welcome {session['user']} "
+
+@app.route("/forgot", methods=["GET", "POST"])
+def forgot():
     if request.method == "POST":
-        email = request.form.get("email")
+        email = request.form["email"]
         user = User.query.filter_by(email=email).first()
         if not user:
-            return "Email not found"
+            return "User not found"
         otp = str(random.randint(100000, 999999))
-        user.reset_otp = otp
-        user.otp_verified = False
+        db.session.add(OTP(
+            email=email,
+            code=otp,
+            purpose="reset",
+            expiry=datetime.now() + timedelta(minutes=5)
+        ))
         db.session.commit()
-        return f"Your OTP is: {otp}"
-    return render_template("forget_password.html")
+        session["reset_email"] = email
+        send_otp(email, otp)
+        return redirect("/verify-reset")
+    return render_template("forgot_password.html")
+
+@app.route("/verify-reset", methods=["GET", "POST"])
+def verify_reset():
+    if request.method == "POST":
+        email = session.get("reset_email")
+        otp = request.form["otp"]
+
+        record = OTP.query.filter_by(
+            email=email,
+            code=otp,
+            purpose="reset"
+        ).first()
+
+        if record and record.expiry > datetime.now():
+            session["reset_verified"] = True
+            return redirect("/reset-password")
+
+        return "Invalid OTP"
+    return render_template("otp_veri.html")
+
+@app.route("/reset-password", methods=["GET", "POST"])
+def reset_password():
+    if request.method == "POST":
+        if not session.get("reset_verified"):
+            return "Not allowed"
+
+        new_password = generate_password_hash(request.form["password"])
+        email = session.get("reset_email")
+
+        user = User.query.filter_by(email=email).first()
+        user.password = new_password
+
+        db.session.commit()
+
+        return redirect("/login")
+
+    return render_template("reset.html")
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
