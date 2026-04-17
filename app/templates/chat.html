@@ -4,6 +4,15 @@
     <title> Chat </title>
 </head>
 <body>
-    
+    <h2> SIMPLE CHAT </h2>
+    {% for msg in message %}
+        <p> {{ msg }} </p>
+    {% end for %}
+
+    <form method = "POST ">
+        <input type = "text" name = "messages" placeholder = "Type message">
+        <button type = "submit"> Send </button>
+    </form>
+
 </body>
 </html>
