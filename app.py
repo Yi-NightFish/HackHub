@@ -94,6 +94,15 @@ class Messages(db.Model):
     def __repr__(self):
         return f'<Messages {self.sender_id} - {self.receiver_id}>'
 
+class Dashboard(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    tasks = db.relationship('Task', backref='dashboard', lazy=True)
+
+    def __repr__(self):
+        return f'<Dashboard {self.user_id} - {self.event_id}>'
+
 @app.route("/")
 def home():
     return "HackHub is running!"
