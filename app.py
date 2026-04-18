@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, url_for, redirect, session
 import random
 from flask_sqlalchemy import SQLAlchemy
-from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
@@ -18,14 +17,7 @@ app.config["MAIL_PASSWORD"] = "chon petb yizr wcrt"
 
 db = SQLAlchemy(app)
 mail = Mail(app)
-serializer = URLSafeTimedSerializer(app.config["SECRET_KEY"])
-# def generate_token(email):
-#     return serializer.dumps(email, salt="email-confirm")
-# def confirm_token(token, expiration=3600):
-#     try:
-#         return serializer.loads(token, salt="email-confirm", max_age=expiration)
-#     except:
-#         return None
+
 def send_otp(email, otp):
     msg = Message(
         "HackHub OTP",
@@ -102,7 +94,7 @@ def login():
         email = request.form["email"]
         password = request.form["password"]
         user = User.query.filter_by(email=email).first()
-        if user and check_password_hash(user.password, password):
+        if user and check_password_hash(user.paissword, password):
             session["user_id"] = user.id
             return redirect("/dashboard")
         return "Invalid credentials"
