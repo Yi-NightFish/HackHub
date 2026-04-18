@@ -3,6 +3,7 @@ import random
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from flask_mail import Message
+import functools
 
 from app import app, db, mail
 from app.models import User, OTP
@@ -15,6 +16,17 @@ def send_otp(email, otp):
     )
     msg.body = f"Your OTP is: {otp}"
     mail.send(msg)
+    
+def login_required(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        # Check if the user is logged in
+        if "user_id" not in session:
+            # If not logged in, redirect them to the login page
+            return redirect(url_for("login"))
+        # If logged in, proceed to the requested page
+        return view(**kwargs)
+    return wrapped_view
 
 @app.route("/")
 def home():
@@ -84,6 +96,7 @@ def logout():
     return "Logged out successfully"
 
 @app.route("/dashboard")
+@login_required
 def dashboard():
     if "user_id" not in session:
         return redirect("/login")
