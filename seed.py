@@ -1,4 +1,5 @@
-from app import app, db, User
+from app import app, db
+from app.models import User
 from werkzeug.security import generate_password_hash
 with app.app_context():
     db.drop_all()  # Drop all tables to start fresh
