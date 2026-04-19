@@ -27,7 +27,4 @@ class Messages(db.Model):
     __table__ = db.metadata.tables['messages']
 
 class OTP(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120))
-    code = db.Column(db.String(6))
-    purpose = db.Column(db.String(20))
+    __table__ = db.metadata.tables['otp']

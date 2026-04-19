@@ -86,6 +86,11 @@ def login():
         email = request.form["email"]
         password = request.form["password"]
         user = User.query.filter_by(email=email).first()
+
+        #Redefine check_password_hash for testing purposes. Delete this in production and use the one from werkzeug.security.
+        def check_password_hash(stored_password, provided_password):
+            return stored_password == provided_password
+
         if user and check_password_hash(user.password, password):
             session["user_id"] = user.id
             return redirect("/dashboard")
@@ -158,13 +163,13 @@ def reset_password():
 
 # By Soon Hong
 @app.route("/profile/<user_id>", methods = ["GET", "POST"])
+@login_required
 def profile(user_id):
     profile_page = ProfileForm()
     user = db.session.get(User, user_id)
-
-    # Mock that user has signed in. Remove current_user argument when using flask_login extension because current_user argument is automatically set
-    # Right now, we are using user with id = 2 for testing
-    return render_template("profile.html", form = profile_page, user = user, current_user = db.session.get(User, 2))
+    if user is None:
+        return "User not found"
+    return render_template("profile.html", form = profile_page, user = user, current_user = db.session.get(User, session["user_id"]))
 
 @app.route("/reset_pwd")
 def reset_pwd():

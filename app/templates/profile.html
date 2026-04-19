@@ -13,13 +13,29 @@
         {% set hide = (user.id != current_user.id) %}
         <div id = "username">
             <p>{{form.username.label}}</p>
-            {{form.username(size = 32, class = "profileInput", readOnly = hide, value = user.username)}}
+            {{form.username(size = 32, class = "profileInput", readOnly = hide, value = user.name)}}
         </div>
 
         <div id = email>
             <p>{{form.email.label}}</p>
-            {{form.email(size = 32, class = "profileInput", readOnly = hide, value = user.email)}}
+            {{form.email(size = 32, class = "profileInput", readOnly = hide, value = user.email, type = "email")}}
         </div>
+
+        <div id = university>
+            <p>{{form.university.label}}</p>
+            {{form.university(size = 32, class = "profileInput", readOnly = hide, value = user.university)}}
+        </div>
+
+        <div id = skills>
+            <p>{{form.skills.label}}</p>
+            {{form.skills(size = 32, class = "profileInput", readOnly = hide, value = user.skills)}}
+        </div>
+
+        <div id = github_link>
+            <p>{{form.github_link.label}}</p>
+            {{form.github_link(size = 32, class = "profileInput", readOnly = hide, value = user.github_link)}}
+        </div>
+
         {{form.submit(id = 'submitButton', hidden = hide)}}
         <a href = '{{url_for("reset_pwd")}}' {{'hidden' if hide else ''}}>Reset Password</a>
     </form>
