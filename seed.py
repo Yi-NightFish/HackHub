@@ -1,76 +1,13 @@
 from app import app, db
-from app.models import User, Event, Team, Task, Announcement, Messages, TeamMember
-
-def seed_data():
-    # Create users
-    db.create_all()  # Ensure tables are created before seeding data
-    Ali = User(
-        name = "Ali",
-        email = "ali@gmail.com",
-        password = "123456",
-        university = "University",
-        skills = "Python",
-        github_link = "https://github.com/ali"
-    )
-    Tan = User(
-        name = "Tan",
-        email = "tan@gmail.com",
-        password = "789456",
-        university = "Uni",
-        skills = "C++",
-        github_link = "https://github.com/tan"
-    )
-
-    # Add users to the database
-    db.session.add(Ali)
-    db.session.add(Tan)
+from app.models import User
+from werkzeug.security import generate_password_hash
+with app.app_context():
+    db.drop_all()  # Drop all tables to start fresh
+    db.create_all()  # Create tables if they don't exist
+    # db.session.query(User).delete() 
+    user1 = (User(email="hi@gmail.com", password=generate_password_hash("123"), is_verified=True))
+    user2 = (User(email="bye@gmail.com", password=generate_password_hash("456"), is_verified=False))
+    me = (User(email="tanwanyi007@gmail.com", password=generate_password_hash("789"), is_verified=True))
+    db.session.add_all([user1, user2, me])
     db.session.commit()
-
-    # Create an event
-    event = Event(
-        title = "Hackathon",
-        description = "A coding competition",
-        organizer_id = Ali.id,
-        status = "Upcoming"
-    )
-
-    db.session.add(event)
-    db.session.commit()
-
-    # Create a team
-    team = Team(
-        name = "Team ABC",
-        event_id = event.id,
-        team_code = "ABC123",
-        max_members = 5
-    )
-
-    db.session.add(team)
-    db.session.commit()
-
-    # Create a task
-    task = Task(
-        title ="Build a website",
-        team_id = team.id,
-        assigned_to = Tan.id,
-        priority = "High",
-        description = "Create a website for the hackathon project",
-        deadline = "2026-10-15",
-        status = "In Progress"
-    )
-    db.session.add(task)
-    db.session.commit()
-
-    # Create an announcement
-    announcement = Announcement(
-        title = "Welcome to the Hackathon!",
-        content = "Let the coding begin!",
-        event_id = event.id,
-        created_by = Ali.id
-    )
-    db.session.add(announcement)
-    db.session.commit()
-
-if __name__ == '__main__':
-    with app.app_context():
-        seed_data()
+    print("Seeded successfully")
