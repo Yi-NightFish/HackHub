@@ -1,5 +1,6 @@
-from flask import render_template, request, redirect, url_for
-from app import app, db, Messages, User
+from flask import render_template, request, redirect, url_for, session
+from app import db
+from models import Messages, User
 
 def chat_routes(app):
     @app.route("/")

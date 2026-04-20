@@ -106,9 +106,6 @@ class Dashboard(db.Model):
     def __repr__(self):
         return f'<Dashboard {self.user_id} - {self.event_id}>'
 
-@app.route("/")
-def home():
-    return "HackHub is running!"
 
 if __name__ == "__main__":
     app.run(debug=True)
