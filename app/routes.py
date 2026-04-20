@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for
 from app import db
-from models import Messages
+from app.models import Messages
 
 def chat_routes(app):
     @app.route("/")
