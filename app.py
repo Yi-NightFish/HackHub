@@ -2,7 +2,7 @@
 # from flask_sqlalchemy import SQLAlchemy
 # from flask_migrate import Migrate
 # from datetime import datetime
-from app import create_app
+from app import create_app, db
 
 # app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hackhub.db'
@@ -12,6 +12,8 @@ from app import create_app
 # db = SQLAlchemy(app)
 # migrate = Migrate(app, db)
 app = create_app()
+with app.app_context():
+    db.create_all()
 
 # class User(db.Model):
 #     id = db.Column(db.Integer, primary_key=True)
