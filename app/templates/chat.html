@@ -6,20 +6,35 @@
 </head>
 <body>
     <h2> SIMPLE CHAT </h2>
+    <div style="margin-bottom: 20px; padding: 10px; background-color: #f0f0f0; border-radius: 5px;">
+        <strong>User {{ current_user_id }}</strong> 
+        <span style="margin-left: 20px;">
+            <a href="/?user_id=1">User 1</a> | 
+            <a href="/?user_id=2">User 2</a>
+        </span>
+    </div>
+    
 <div style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;">
     {% for msg in messages %}
-    <div style="margin-bottom: 8px; border-bottom: 1px dashed #eee;">
+    <div style="margin-bottom: 8px; border-bottom: 1px dashed #eee; {% if msg.sender_id == current_user_id %} text-align: right; background-color: #e3f2fd; {% endif %}">
         <span style="color: #888; font-size: 0.8em;">
             {{ msg.timestamp.strftime('%m-%d %H:%M') }}
         </span>
         <br>
-        <span style="font-weight: bold;">User {{ msg.sender_id }}:</span> {{ msg.message }}
+        <span style="font-weight: bold;">
+            {% if msg.sender_id == current_user_id %}
+                You
+            {% else %}
+                User {{ msg.sender_id }}
+            {% endif %}
+        </span> {{ msg.message }}
     </div>
     {% endfor %}
 </div>
 
     <form method ="POST" action="/send_message">
-        <input type = "text" name = "message" placeholder = "Type message">
+        <input type = "text" name = "message" placeholder = "Type message" required>
+        <input type = "hidden" name = "user_id" value = "{{ current_user_id }}">
         <button type = "submit"> Send </button>
     </form>
 

@@ -6,16 +6,19 @@ from app.models import Messages
 def chat_routes(app):
     @app.route("/")
     def chat():
+        current_user_id = request.args.get("user_id", 1, type=int)  #临时用户1
         messages = Messages.query.order_by(Messages.timestamp.asc()).all()  #取数据from旧到新
-        return render_template("chat.html", messages=messages)
+        return render_template("chat.html", messages=messages, current_user_id=current_user_id)
     
     @app.route("/send_message", methods=["POST"])
     def send_message():
         message = request.form["message"]
-        new_message = Messages(message=message, sender_id=1, receiver_id=2) #1/2是临时用户
+        sender_id = request.form.get("user_id", type=int)
+        receiver_id = 2 if sender_id == 1 else 1  #临时用户2
+        new_message = Messages(message=message, sender_id=sender_id, receiver_id=receiver_id)
         db.session.add(new_message)
         db.session.commit()
-        return redirect(url_for("chat"))
+        return redirect(url_for("chat", user_id=sender_id))
     
     @app.route("/clear")
     def clear_messages():
