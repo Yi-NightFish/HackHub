@@ -11,9 +11,9 @@ from app import create_app, db
 
 # db = SQLAlchemy(app)
 # migrate = Migrate(app, db)
-app = create_app()
+app = create_app()  # create flask app in init.py(factory pattern)
 with app.app_context():
-    db.create_all()
+    db.create_all() #create tables based on models.py
 
 # class User(db.Model):
 #     id = db.Column(db.Integer, primary_key=True)

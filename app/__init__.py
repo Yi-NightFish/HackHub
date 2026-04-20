@@ -9,7 +9,7 @@ def create_app():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hackhub.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.secret_key = "secret-key"
+    # app.secret_key = "secret-key" #不需要session了，先comment掉
 
     db.init_app(app)
     migrate.init_app(app, db)
