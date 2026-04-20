@@ -6,14 +6,19 @@
 </head>
 <body>
     <h2> SIMPLE CHAT </h2>
+    <div>
     {% for msg in message %} #loop through msg #{% for %}display all msg
         <p> {{ msg.message }} </p> #show msg #{{ }} is display data
     {% end for %} #end loop
+    </div>
 
     <form method ="POST "> #send data to python #form is send data to py
         <input type = "text" name = "message" placeholder = "Type message">
         <button type = "submit"> Send </button>
     </form>
+
+    <br>
+    <a href = "/clear"> Clear Messages </a>
 
 </body>
 </html>
