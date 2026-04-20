@@ -2,13 +2,16 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
+from routes import chat_routes
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hackhub.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = "secret-key"
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+chat_routes(app)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
