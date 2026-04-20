@@ -6,12 +6,11 @@ from flask_mail import Message
 import functools
 
 from app import app, db, mail
-from app.models import User, OTP
+from app.models import *
 from app.forms import ProfileForm
 from sqlalchemy import select
 
 #By Wan Yi
-
 # Helper functions
 def send_otp(email, purpose):
     """
@@ -213,6 +212,7 @@ def profile(user_id):
 
         # handle the case where the user updates their email, which requires them to verify the new email address before it takes effect
         # for testing purpose, need to refactor out email verification logic from register and verify_register
+        # TODO: delete this in the next commit, with appropriate message
         def verify_email():
             otp = random.randint(100000, 999999)
             db.session.add(OTP(email=new_email, code=otp, purpose="update_email", expiry=datetime.now() + timedelta(minutes=5)))
@@ -226,10 +226,17 @@ def profile(user_id):
         if profile_page.email.data != user.email:
             send_otp(profile_page.email.data, purpose = "update_email")
             return redirect(url_for("verify_update_email"))
-
         return redirect(url_for("profile", user_id=user_id))
 
-    return render_template("profile.html", form = profile_page, user = user, current_user = db.session.get(User, session["user_id"]))
+    team_member_subquery = select(TeamMember.team_id).where(TeamMember.user_id == user_id).subquery()
+    is_team_members_of = db.session.query(Team.event_id).join(team_member_subquery, Team.id == team_member_subquery.c.team_id).subquery()
+    events = db.session.execute(db.session.query(Event).join(is_team_members_of, is_team_members_of.c.event_id == Event.id)).scalars().all()
+    return render_template("profile.html", 
+                           form = profile_page, 
+                           user = user, 
+                           current_user = db.session.get(User, session["user_id"]),
+                           events = events
+    )
 
 @app.route("/reset_pwd")
 def reset_pwd():

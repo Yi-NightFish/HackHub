@@ -39,5 +39,20 @@
         {{form.submit(id = 'submitButton', hidden = hide)}}
         <a href = '{{url_for("reset_pwd")}}' {{'hidden' if hide else ''}}>Reset Password</a>
     </form>
+
+    {% if events %}
+        <div id = "history">
+            <h2>History</h2>
+            {% for event in events %}
+                <div class = "event">
+                    <h3>{{event.title}} - ({{event.date}})</h3>
+                    <hr>
+                    <p id = "history-description">{{event.description}}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No Event Joined</p>
+    {% endif %}
 </div>
 {% endblock %}

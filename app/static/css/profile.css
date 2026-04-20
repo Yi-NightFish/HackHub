@@ -32,3 +32,26 @@ form div input{
 h1{
     text-align: center;
 }
+
+#history{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin: 10px;
+    border: 1px solid black;
+}
+
+.event{
+    border: 3px solid grey;
+    border-radius: 10px;
+    margin: 10px;
+    padding: 10px;
+    width: 40%;
+}
+
+#history h2{
+    text-decoration: underline;
+    flex-basis: 100%;
+    margin: 10px;
+    padding: 10px;
+}
