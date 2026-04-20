@@ -6,11 +6,17 @@
 </head>
 <body>
     <h2> SIMPLE CHAT </h2>
-    <div>
-    {% for msg in messages %} 
-        <p> {{ msg.message }} </p>
-    {% endfor %}
+<div style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;">
+    {% for msg in messages %}
+    <div style="margin-bottom: 8px; border-bottom: 1px dashed #eee;">
+        <span style="color: #888; font-size: 0.8em;">
+            {{ msg.timestamp.strftime('%m-%d %H:%M') }}
+        </span>
+        <br>
+        <span style="font-weight: bold;">User {{ msg.sender_id }}:</span> {{ msg.message }}
     </div>
+    {% endfor %}
+</div>
 
     <form method ="POST" action="/send_message">
         <input type = "text" name = "message" placeholder = "Type message">
