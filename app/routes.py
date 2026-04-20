@@ -8,16 +8,31 @@ import functools
 from app import app, db, mail
 from app.models import User, OTP
 from app.forms import ProfileForm
+from sqlalchemy import select
 
 #By Wan Yi
-def send_otp(email, otp):
-    msg = Message(
-        "HackHub OTP",
-        sender=app.config["MAIL_USERNAME"],
-        recipients=[email]
-    )
-    msg.body = f"Your OTP is: {otp}"
-    mail.send(msg)
+
+# Helper functions
+def send_otp(email, purpose):
+    """
+    Send OTP to 'email' for 'purpose'
+
+    Return: None
+    """
+    otp = random.randint(100000, 999999)
+    session["temp_email"] = email
+    db.session.add(OTP(email = email, code = otp, purpose = purpose, expiry = datetime.now() + timedelta(minutes = 5)))
+    db.session.commit()
+
+    # TODO: Comment out for testing purpose without actually sending out email
+    # msg = Message(
+    #     "HackHub OTP",
+    #     sender=app.config["MAIL_USERNAME"],
+    #     recipients=[email]
+    # )
+    # msg.body = f"Your OTP is: {otp}"
+    # mail.send(msg)
+    print(f"Sent OTP: {otp} -> {email}")
     
 def login_required(view):
     @functools.wraps(view)
@@ -30,6 +45,32 @@ def login_required(view):
         return view(**kwargs)
     return wrapped_view
 
+def verify_otp(purpose):
+    """
+    Verify otp sent for 'purpose'
+
+    Returns: 
+        bool: True if OTP successfully verified else False
+    """
+    email = session.get("temp_email", None)
+    if email is None:
+        raise Exception("session['temp_email'] not set")
+
+    otp = request.form["otp"]
+    if email is None:
+        return "Unauthorized access"
+    otp_record = OTP.query.filter_by(
+        email = email,
+        code = otp,
+        purpose = purpose
+    ).first()
+    if otp_record and datetime.now() < otp_record.expiry:
+        db.session.delete(otp_record)
+        db.session.commit()
+        return True
+    return False
+
+# Main routes
 @app.route("/")
 def home():
     return "Welcome!"
@@ -43,42 +84,36 @@ def register():
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             return "Email already registered"
-        otp = random.randint(100000, 999999)
         hashed_password = generate_password_hash(password)
-        session["temp_email"] = email
         session["temp_password"] = hashed_password
-
-        db.session.add(OTP(email=email, code=otp, purpose="register", expiry=datetime.now() + timedelta(minutes=5)))
-        db.session.commit()
-        send_otp(email, otp)
-        return redirect("/verify-register")
+        send_otp(email, purpose = "register")
+        return redirect(url_for("verify_register"))
     return render_template("register.html")
 
 @app.route("/verify-register", methods=["GET", "POST"])
 def verify_register():
+    email = session.get("temp_email", None)
     if request.method == "POST":
-        email = session.get("temp_email")
-        otp = request.form["otp"]
-        record = OTP.query.filter_by(
-            email=email,
-            code=otp,
-            purpose="register"
-        ).first()
-        if record and record.expiry > datetime.now():
-            user = User(
-                email=email,
-                password=session.get("temp_password"),
-                is_verified=True
-            )
+        if verify_otp("register"):
+            password = session.get("temp_password", None)
+
+            # TODO: Fix this by either entering values in register page or by setting default values, since some columns cant be null
+            user = User(email = email, 
+                        password = password, 
+                        is_verified = True, 
+                        university = "uni", 
+                        name = email.split("@")[0], 
+                        skills = "python",
+                        github_link = "link")
             db.session.add(user)
-            db.session.delete(record)
             db.session.commit()
-            session.pop("temp_email", None)
-            session.pop("temp_password", None)
-            session["user_id"] = user.id
-            return redirect("/login")
-        return "Invalid OTP"
-    return render_template("otp_veri.html")
+            session.pop("temp_email")
+            session.pop("temp_password")
+            print("success")
+            return redirect(url_for("login"))
+        else:
+            return "Invalid OTP"
+    return render_template("otp_veri.html",  email = email)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -86,10 +121,6 @@ def login():
         email = request.form["email"]
         password = request.form["password"]
         user = User.query.filter_by(email=email).first()
-
-        #Redefine check_password_hash for testing purposes. Delete this in production and use the one from werkzeug.security.
-        def check_password_hash(stored_password, provided_password):
-            return stored_password == provided_password
 
         if user and check_password_hash(user.password, password):
             session["user_id"] = user.id
@@ -100,7 +131,7 @@ def login():
 @app.route("/logout")
 def logout():
     session.clear()
-    return "Logged out successfully"
+    return redirect(url_for("home"))
 
 @app.route("/dashboard")
 @login_required
@@ -193,9 +224,8 @@ def profile(user_id):
             send_otp(new_email, otp)
 
         if profile_page.email.data != user.email:
-            session["temp_email"] = new_email
-            verify_email()
-            return redirect("/verify-update-email")
+            send_otp(profile_page.email.data, purpose = "update_email")
+            return redirect(url_for("verify_update_email"))
 
         return redirect(url_for("profile", user_id=user_id))
 
@@ -205,23 +235,17 @@ def profile(user_id):
 def reset_pwd():
     pass
 
-# For testing only. Delete after refactoring email verification logic out of register and verify_register.
 @app.route("/verify-update-email", methods=["GET", "POST"])
+@login_required
 def verify_update_email():
+    new_email = session.get("temp_email")
     if request.method == "POST":
-        email = session.get("temp_email")
-        otp = request.form["otp"]
-        record = OTP.query.filter_by(
-            email=email,
-            code=otp,
-            purpose="update_email"
-        ).first()
-        if record and record.expiry > datetime.now():
-            user = db.session.get(User, session["user_id"])
-            user.email = email
-            db.session.delete(record)
+        if verify_otp(purpose = "update_email"):
+            user = User.query.get(session.get("user_id"))
+            user.email = new_email
+            db.session.add(user)
             db.session.commit()
-            session.pop("temp_email", None)
-            return redirect(url_for("profile", user_id=user.id))
+            session.pop("temp_email")
+            return redirect(url_for("profile", user_id = user.id))
         return "Invalid OTP"
-    return render_template("otp_veri.html")
+    return render_template("otp_veri.html", email = new_email)
