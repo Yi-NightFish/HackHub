@@ -1,19 +1,5 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from app import db
 from datetime import datetime
-from app.routes import chat_routes
-from app import create_app
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hackhub.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = "secret-key"
-
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-chat_routes(app)
-app = create_app()
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -107,9 +93,3 @@ class Dashboard(db.Model):
 
     def __repr__(self):
         return f'<Dashboard {self.user_id} - {self.event_id}>'
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
-
-#-------------------------------------------------DB------------------------------------------------------------------------------------------------

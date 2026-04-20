@@ -2,17 +2,17 @@
 <html>
 <head>
     <title> Chat </title>
-    <meta http-equiv="refresh" content="5"> #auto refresh in 5 sec
+    <meta http-equiv="refresh" content="5">
 </head>
 <body>
     <h2> SIMPLE CHAT </h2>
     <div>
-    {% for msg in message %} #loop through msg #{% for %}display all msg
-        <p> {{ msg }} </p> #show msg #{{ }} is display data
-    {% endfor %} #end loop
+    {% for msg in message %} 
+        <p> {{ msg.message }} </p>
+    {% endfor %}
     </div>
 
-    <form method ="POST" action="/send_message"> #send data to python #form is send data to py
+    <form method ="POST" action="/send_message">
         <input type = "text" name = "message" placeholder = "Type message">
         <button type = "submit"> Send </button>
     </form>
