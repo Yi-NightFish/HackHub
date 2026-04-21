@@ -26,6 +26,16 @@ class User(db.Model):
     def __repr__(self):
         return f'<User {self.name}>'
     
+class OTP(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120))
+    code = db.Column(db.String(6))
+    purpose = db.Column(db.String(20))  
+    expiry = db.Column(db.DateTime)
+
+    def __repr__(self):
+        return f'<OTP {self.email}>'
+
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120), nullable=False)
