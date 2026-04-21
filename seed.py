@@ -69,6 +69,14 @@ def seed_data():
     db.session.add(announcement)
     db.session.commit()
 
+    messages = Messages [
+        Messages(message="Hi Tan, ready for the hackathon?", sender_id=Ali.id, receiver_id=Tan.id),
+        Messages(message="Hi Ali, yes! Let's do our best!", sender_id=Tan.id, receiver_id=Ali.id)
+    ]
+    for msg in messages:
+        db.session.add(msg)
+    db.session.commit()
+
 if __name__ == '__main__':
     with app.app_context():
         seed_data()

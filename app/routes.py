@@ -26,15 +26,15 @@ def chat_routes(app):
         db.session.commit()
         return redirect(url_for("chat"))
     
-    from app.models import User
+    # from app.models import User
 
-    @app.route("/init")
-    def init():
-        user1 = User(name="user1", email="u1@test.com", password="123") #create acc,email/ps在models.py里comment掉了,暂放
-        user2 = User(name="user2", email="u2@test.com", password="123")
+    # @app.route("/init")
+    # def init():
+    #     user1 = User(name="user1", email="u1@test.com", password="123") #create acc,email/ps在models.py里comment掉了,暂放
+    #     user2 = User(name="user2", email="u2@test.com", password="123")
 
-        db.session.add(user1)
-        db.session.add(user2)
-        db.session.commit()
+    #     db.session.add(user1)
+    #     db.session.add(user2)
+    #     db.session.commit()
 
-        return "Users created"
+    #     return "Users created"
