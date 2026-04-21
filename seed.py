@@ -28,13 +28,13 @@ with app.app_context():
         github_link="https://github.com/bye"
     )
     me = User(
-        email="tanwanyi007@gmail.com",
+        email="deanSister007@gmail.com",
         password=generate_password_hash("789"),
         is_verified=True,
-        name="tanwanyi007",
+        name="deanSister",
         university="university C",
         skills="Python, SQL",
-        github_link="https://github.com/tanwanyi007"
+        github_link="https://github.com/deanSister"
     )
     db.session.add_all([user1, user2, me])
     db.session.commit()
