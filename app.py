@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
+from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hackhub.db'
@@ -78,6 +79,7 @@ class Task(db.Model):
     description = db.Column(db.Text, nullable=False)
     deadline = db.Column(db.String(20), nullable=False)
     status = db.Column(db.String(20), nullable=False)
+    dashboard_id = db.Column(db.Integer, db.ForeignKey('dashboard.id'))
 
     def __repr__(self):
         return f'<Task {self.team_id} - {self.description}>'

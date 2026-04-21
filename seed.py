@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from app import app, db
-from app.models import User, Event, Team, TeamMember
+from app import User, Event, Team, TeamMember
 from werkzeug.security import generate_password_hash
 
 with app.app_context():
@@ -27,16 +27,8 @@ with app.app_context():
         skills="JavaScript, HTML",
         github_link="https://github.com/bye"
     )
-    me = User(
-        email="tanwanyi007@gmail.com",
-        password=generate_password_hash("789"),
-        is_verified=True,
-        name="tanwanyi007",
-        university="university C",
-        skills="Python, SQL",
-        github_link="https://github.com/tanwanyi007"
-    )
-    db.session.add_all([user1, user2, me])
+
+    db.session.add_all([user1, user2])
     db.session.commit()
 
     # Create events
@@ -44,7 +36,7 @@ with app.app_context():
         title="HackHub Launch Hackathon",
         date=datetime.now(),
         description="A beginner-friendly hackathon to celebrate the HackHub launch.",
-        organizer_id=me.id,
+        organizer_id=user2.id,
         status="open"
     )
     event2 = Event(
@@ -87,15 +79,15 @@ with app.app_context():
     db.session.commit()
 
     # Simulate users joining multiple events via team memberships
-    membership1 = TeamMember(team_id=team1.id, user_id=me.id)
-    membership2 = TeamMember(team_id=team2.id, user_id=me.id)
-    membership3 = TeamMember(team_id=team3.id, user_id=me.id)
+    membership1 = TeamMember(team_id=team1.id, user_id=user2.id)
+    membership2 = TeamMember(team_id=team2.id, user_id=user1.id)
+    membership3 = TeamMember(team_id=team3.id, user_id=user1.id)
     membership4 = TeamMember(team_id=team2.id, user_id=user1.id)
     membership5 = TeamMember(team_id=team1.id, user_id=user2.id)
     db.session.add_all([membership1, membership2, membership3, membership4, membership5])
     db.session.commit()
 
     print("Seeded successfully")
-    print(f"User {me.email} joined events: {event1.title}, {event2.title}, {event3.title}")
+    print(f"User {user2.email} joined events: {event1.title}, {event2.title}, {event3.title}")
     print(f"User {user1.email} joined event: {event2.title}")
     print(f"User {user2.email} joined event: {event1.title}")
