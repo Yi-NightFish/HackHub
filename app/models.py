@@ -1,25 +1,15 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from datetime import datetime
-from werkzeug.security import generate_password_hash
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hackhub.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+from app import db
+import datetime
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
-    is_verified = db.Column(db.Boolean, default=False)
-    university = db.Column(db.String(120), nullable=True)
-    skills = db.Column(db.String(200), nullable=True)
-    github_link = db.Column(db.String(200), nullable=True)
+    is_verified = db.Column(db.Boolean, default=False, nullable=False)
+    university = db.Column(db.String(120), nullable=True, default = lambda : "")
+    skills = db.Column(db.String(200), nullable=True, default = lambda : "")
+    github_link = db.Column(db.String(200), nullable=True, default = lambda : "")
     messages_sent = db.relationship('Messages', foreign_keys='Messages.sender_id', backref='sender', lazy=True)
     messages_received = db.relationship('Messages', foreign_keys='Messages.receiver_id', backref='receiver', lazy=True)
     organized_events = db.relationship('Event', backref='organizer', lazy=True)
@@ -40,7 +30,7 @@ class OTP(db.Model):
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120), nullable=False)
-    date = db.Column(db.DateTime, default=datetime.utcnow)
+    date = db.Column(db.DateTime, default=datetime.datetime.now(datetime.UTC))
     description = db.Column(db.Text, nullable=False)
     organizer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     status = db.Column(db.String(20), nullable=False)
@@ -89,7 +79,7 @@ class Announcement(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
     title = db.Column(db.String(120), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
+    date_posted = db.Column(db.DateTime, default=datetime.datetime.now(datetime.UTC))
     created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
@@ -100,7 +90,7 @@ class Messages(db.Model):
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     message = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.datetime.now(datetime.UTC))
     is_read = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
@@ -114,12 +104,3 @@ class Dashboard(db.Model):
 
     def __repr__(self):
         return f'<Dashboard {self.user_id} - {self.event_id}>'
-
-@app.route("/")
-def home():
-    return "HackHub is running!"
-
-if __name__ == "__main__":
-    app.run(debug=True)
-
-#-------------------------------------------------DB------------------------------------------------------------------------------------------------
