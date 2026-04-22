@@ -1,7 +1,7 @@
 from flask import render_template, request, url_for, redirect, session
 import random
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime, timedelta
+import datetime as dt
 from flask_mail import Message
 import functools
 
@@ -13,16 +13,16 @@ from sqlalchemy import select
 #By Wan Yi
 # Helper functions
 def send_otp(email, purpose):
-    """
-    Send OTP to 'email' for 'purpose'
-
-    Return: None
-    """
-    otp = random.randint(100000, 999999)
-    session["temp_email"] = email
-    db.session.add(OTP(email = email, code = otp, purpose = purpose, expiry = datetime.now() + timedelta(minutes = 5)))
+    otp = str(random.randint(100000, 999999))
+    db.session.add(
+        OTP(
+            email=email,
+            code=otp,
+            purpose=purpose,
+            expiry=dt.datetime.now() + dt.timedelta(minutes=5)
+        )
+    )
     db.session.commit()
-
     msg = Message(
         "HackHub OTP",
         sender=app.config["MAIL_USERNAME"],
@@ -45,26 +45,17 @@ def login_required(view):
         return view(**kwargs)
     return wrapped_view
 
-def verify_otp(purpose):
-    """
-    Verify otp sent for 'purpose'
-
-    Returns: 
-        bool: True if OTP successfully verified else False
-    """
-    email = session.get("temp_email", None)
-    if email is None:
-        raise Exception("session['temp_email'] not set")
-
+def verify_otp(purpose, session_key):
+    email = session.get(session_key)
+    if not email:
+        return False
     otp = request.form["otp"]
-    if email is None:
-        return "Unauthorized access"
     otp_record = OTP.query.filter_by(
-        email = email,
-        code = otp,
-        purpose = purpose
+        email=email,
+        code=otp,
+        purpose=purpose
     ).first()
-    if otp_record and datetime.now() < otp_record.expiry:
+    if otp_record and otp_record.expiry > dt.datetime.now():
         db.session.delete(otp_record)
         db.session.commit()
         return True
@@ -73,7 +64,7 @@ def verify_otp(purpose):
 # Main routes
 @app.route("/")
 def home():
-    return render_template("home.html", current_user = User.query.get(session.get("user_id")) if session.get("user_id", None) else None)
+    return render_template("home.html", current_user = db.session.get(User, session["user_id"]) if session.get("user_id", None) else None)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -85,6 +76,7 @@ def register():
         if existing_user:
             return "Email already registered"
         hashed_password = generate_password_hash(password)
+        session["temp_email"] = email
         session["temp_password"] = hashed_password
         send_otp(email, purpose = "register")
         return redirect(url_for("verify_register"))
@@ -94,7 +86,7 @@ def register():
 def verify_register():
     email = session.get("temp_email", None)
     if request.method == "POST":
-        if verify_otp("register"):
+        if verify_otp("register", "temp_email"):
             password = session.get("temp_password", None)
             user = User(email = email, 
                         password = password, 
@@ -102,12 +94,10 @@ def verify_register():
             )
             db.session.add(user)
             db.session.commit()
-            session.pop("temp_email")
-            session.pop("temp_password")
-            print("success")
-            return redirect(url_for("login"))
-        else:
-            return "Invalid OTP"
+            session.pop("temp_email", None)
+            session.pop("temp_password", None)
+            return redirect(url_for("login"))    
+        return "Invalid OTP"
     return render_template("otp_veri.html",  email = email)
 
 @app.route("/login", methods=["GET", "POST"])
@@ -143,32 +133,15 @@ def forget():
         user = User.query.filter_by(email=email).first()
         if not user:
             return "User not found"
-        otp = str(random.randint(100000, 999999))
-        db.session.add(OTP(
-            email=email,
-            code=otp,
-            purpose="reset",
-            expiry=datetime.now() + timedelta(minutes=5)
-        ))
-        db.session.commit()
         session["reset_email"] = email
-        send_otp(email, otp)
+        send_otp(email, purpose = "reset")
         return redirect("/verify-reset")
     return render_template("forget_ps.html")
 
 @app.route("/verify-reset", methods=["GET", "POST"])
 def verify_reset():
     if request.method == "POST":
-        email = session.get("reset_email")
-        otp = request.form["otp"]
-        record = OTP.query.filter_by(
-            email=email,
-            code=otp,
-            purpose="reset"
-        ).first()
-        if record and record.expiry > datetime.now():
-            db.session.delete(record)
-            db.session.commit()
+        if verify_otp("reset", "reset_email"):
             session["reset_verified"] = True
             return redirect("/reset-password")
         return "Invalid / Expired OTP"
@@ -184,6 +157,8 @@ def reset_password():
         user = User.query.filter_by(email=email).first()
         user.password = new_password
         db.session.commit()
+        session.pop("reset_email", None)
+        session.pop("reset_verified", None)
         return redirect("/login")
     return render_template("reset.html")
 
@@ -211,7 +186,7 @@ def profile(user_id):
         # TODO: delete this in the next commit, with appropriate message
         def verify_email():
             otp = random.randint(100000, 999999)
-            db.session.add(OTP(email=new_email, code=otp, purpose="update_email", expiry=datetime.now() + timedelta(minutes=5)))
+            db.session.add(OTP(email=new_email, code=otp, purpose="update_email", expiry=datetime.now() + dt.timedelta(minutes=5)))
             db.session.commit()
 
             def send_otp(email, otp):
