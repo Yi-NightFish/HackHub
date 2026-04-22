@@ -1,5 +1,5 @@
 class Config:
-    SECRET_KEY = "hackhub-key"
+    # SECRET_KEY = "hackhub-key"
     SQLALCHEMY_DATABASE_URI = "sqlite:///users.db"
     MAIL_SERVER = "smtp.gmail.com"
     MAIL_PORT = 587
