@@ -23,16 +23,16 @@ def send_otp(email, purpose):
         )
     )
     db.session.commit()
-    msg = Message(
-        "HackHub OTP",
-        sender=app.config["MAIL_USERNAME"],
-        recipients=[email]
-    )
-    msg.body = f"Your OTP is: {otp}"
-    mail.send(msg)
+    # msg = Message(
+    #     "HackHub OTP",
+    #     sender=app.config["MAIL_USERNAME"],
+    #     recipients=[email]
+    # )
+    # msg.body = f"Your OTP is: {otp}"
+    # mail.send(msg)
 
     # Use this to get otp without actually sending to email during development
-    # print(f"Sent OTP: {otp} -> {email}")
+    print(f"Sent OTP: {otp} -> {email}")
     
 def login_required(view):
     @functools.wraps(view)
@@ -149,18 +149,35 @@ def verify_reset():
 
 @app.route("/reset-password", methods=["GET", "POST"])
 def reset_password():
-    if request.method == "POST":
+    user_id = session.get("user_id")
+    if user_id:
+        # Logged-in user
+        user = db.session.get(User, user_id)
+        if request.method == "POST":
+            current_password = request.form.get("current_password")
+            new_password = request.form.get("new_password")
+            if not check_password_hash(user.password, current_password):
+                return "Incorrect current password"
+            user.password = generate_password_hash(new_password)
+            db.session.commit()
+            return redirect(url_for("profile", user_id=user_id))
+        # Show form with current password field
+        return render_template("reset.html", logged_in=True)
+    else:
+        # Email reset
         if not session.get("reset_verified"):
             return "Not allowed"
-        new_password = generate_password_hash(request.form["password"])
-        email = session.get("reset_email")
-        user = User.query.filter_by(email=email).first()
-        user.password = new_password
-        db.session.commit()
-        session.pop("reset_email", None)
-        session.pop("reset_verified", None)
-        return redirect("/login")
-    return render_template("reset.html")
+        if request.method == "POST":
+            new_password = request.form.get("new_password")
+            email = session.get("reset_email")
+            user = User.query.filter_by(email=email).first()
+            user.password = generate_password_hash(new_password)
+            db.session.commit()
+            session.pop("reset_email", None)
+            session.pop("reset_verified", None)
+            return redirect(url_for("login"))
+        # Show form without current password
+        return render_template("reset.html", logged_in=False)
 
 # By Soon Hong
 @app.route("/profile/<user_id>", methods = ["GET", "POST"])
@@ -181,21 +198,9 @@ def profile(user_id):
         db.session.commit()
         new_email = profile_page.email.data
 
-        # handle the case where the user updates their email, which requires them to verify the new email address before it takes effect
-        # for testing purpose, need to refactor out email verification logic from register and verify_register
-        # TODO: delete this in the next commit, with appropriate message
-        def verify_email():
-            otp = random.randint(100000, 999999)
-            db.session.add(OTP(email=new_email, code=otp, purpose="update_email", expiry=datetime.now() + dt.timedelta(minutes=5)))
-            db.session.commit()
-
-            def send_otp(email, otp):
-                print(f"Sending OTP {otp} to {email} for email update verification")
-
-            send_otp(new_email, otp)
-
-        if profile_page.email.data != user.email:
-            send_otp(profile_page.email.data, purpose = "update_email")
+        if new_email != user.email:
+            send_otp(new_email, purpose = "update_email")
+            session["new_email"] = new_email
             return redirect(url_for("verify_update_email"))
         return redirect(url_for("profile", user_id=user_id))
 
@@ -210,20 +215,22 @@ def profile(user_id):
     )
 
 @app.route("/reset_pwd")
+@login_required
 def reset_pwd():
-    pass
+    # For logged-in users, allow direct reset without OTP
+    return redirect(url_for("reset_password"))
 
 @app.route("/verify-update-email", methods=["GET", "POST"])
 @login_required
 def verify_update_email():
-    new_email = session.get("temp_email")
+    new_email = session.get("new_email")
     if request.method == "POST":
-        if verify_otp(purpose = "update_email"):
+        if verify_otp(purpose = "update_email", session_key = "new_email"):
             user = User.query.get(session.get("user_id"))
             user.email = new_email
             db.session.add(user)
             db.session.commit()
-            session.pop("temp_email")
+            session.pop("new_email")
             return redirect(url_for("profile", user_id = user.id))
         return "Invalid OTP"
     return render_template("otp_veri.html", email = new_email)
