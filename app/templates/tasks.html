@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tasks</title>
+</head>
+<body>
+<h1>Tasks List</h1>
+<form method="POST">
+    {{form.hidden_tag()}}
+    {{form.title.label()}}
+    {{form.title()}}
+    {{form.priority.label()}}
+    {{form.priority()}}
+    {{form.submit()}}
+</form>
+</hr>
+<table border="1" cellpadding="10">
+    <tr>
+        <th>Title</th>
+        <th>Priority</th>
+    </tr>
+    {% for task in tasks %}
+        <tr>
+            <td>{{ task.title }}</td>
+            <td>{{ task.priority }}</td>
+        </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

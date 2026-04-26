@@ -7,7 +7,7 @@ import functools
 
 from app import app, db, mail
 from app.models import *
-from app.forms import ProfileForm
+from app.forms import ProfileForm, TaskForm
 from sqlalchemy import select
 
 #By Wan Yi
@@ -234,3 +234,13 @@ def verify_update_email():
             return redirect(url_for("profile", user_id = user.id))
         return "Invalid OTP"
     return render_template("otp_veri.html", email = new_email)
+
+@app.route ("/tasks", methods = ["GET", "POST"])
+def tasks():
+    form = TaskForm()
+    if form.validate_on_submit():
+        task = Task(title = form.title.data, priority = form.priority.data)
+        db.session.add(task)
+        db.session.commit()
+    tasks = Task.query.all()
+    return render_template("tasks.html", form=form, tasks=tasks)

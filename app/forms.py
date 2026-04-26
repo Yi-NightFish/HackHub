@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
+from wtforms import StringField, SubmitField, SelectField
 from wtforms.validators import DataRequired
 
 class ProfileForm(FlaskForm):
@@ -9,3 +9,8 @@ class ProfileForm(FlaskForm):
     skills = StringField("skills")
     github_link = StringField("github_link")
     submit = SubmitField("Update")
+    
+class TaskForm(FlaskForm):
+    title = StringField("Task Title", validators = [DataRequired()])
+    priority = SelectField("Priority", choices=[("High", "High"), ("Medium", "Medium"), ("Low", "Low")], validators=[DataRequired()])
+    submit = SubmitField("Create Task")
