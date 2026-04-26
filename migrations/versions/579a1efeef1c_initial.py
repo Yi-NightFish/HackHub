@@ -49,7 +49,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['organizer_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('messages',
+    op.create_table('message',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('sender_id', sa.Integer(), nullable=False),
     sa.Column('receiver_id', sa.Integer(), nullable=False),
@@ -96,9 +96,10 @@ def upgrade():
     sa.Column('assigned_to', sa.Integer(), nullable=False),
     sa.Column('priority', sa.String(length=20), nullable=True),
     sa.Column('description', sa.Text(), nullable=False),
-    sa.Column('deadline', sa.String(length=20), nullable=False),
+    sa.Column('deadline', sa.DateTime(), nullable=False),
     sa.Column('status', sa.String(length=20), nullable=False),
     sa.Column('dashboard_id', sa.Integer(), nullable=True),
+    sa.Column('is_done', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['assigned_to'], ['user.id'], ),
     sa.ForeignKeyConstraint(['dashboard_id'], ['dashboard.id'], ),
     sa.ForeignKeyConstraint(['team_id'], ['team.id'], ),
@@ -110,7 +111,8 @@ def upgrade():
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['team_id'], ['team.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('team_id', 'user_id')
     )
     # ### end Alembic commands ###
 
@@ -122,7 +124,7 @@ def downgrade():
     op.drop_table('team')
     op.drop_table('dashboard')
     op.drop_table('announcement')
-    op.drop_table('messages')
+    op.drop_table('message')
     op.drop_table('event')
     op.drop_table('user')
     op.drop_table('otp')
