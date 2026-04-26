@@ -238,10 +238,15 @@ def verify_update_email():
 @app.route ("/tasks", methods = ["GET", "POST"])
 def tasks():
     form = TaskForm()
+    users = User.query.all()
+    form.assigned_to.choices = [(0, "No user selected")] + [(user.id, user.name) for user in users]
     if form.validate_on_submit():
+        assigned_user_id = form.assigned_to.data
+        if assigned_user_id == 0:
+            assigned_user_id = session["user_id"]  # Default to current user if no selection
         task = Task(title = form.title.data, 
                     team_id = 1,
-                    assigned_to = session.get("user_id"), 
+                    assigned_to = assigned_user_id, 
                     priority = form.priority.data, 
                     description = form.title.data, 
                     deadline = form.deadline.data, 
@@ -249,9 +254,10 @@ def tasks():
                     is_done = False)
         db.session.add(task)
         db.session.commit()
+        print("TASK CREATED:", task.title)  # Debugging line to confirm task creation
         return redirect(url_for("tasks"))
     tasks = Task.query.order_by(Task.deadline.asc()).all()
-    return render_template("tasks.html", form=form, tasks=tasks)
+    return render_template("tasks.html", form=form, tasks=tasks, datetime=dt)
 
 @app.route("/task/<int:id>/toggle", methods=["POST"])
 def toggle_task(id):
@@ -261,5 +267,7 @@ def toggle_task(id):
     task.is_done = not task.is_done
     if task.is_done:
         task.status = "Done"
+    else:
+        task.status = "Pending"
     db.session.commit()
     return redirect(url_for("tasks"))

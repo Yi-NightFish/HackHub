@@ -9,6 +9,8 @@
     {{form.hidden_tag()}}
     {{form.title.label()}}
     {{form.title()}}
+    {{form.assigned_to.label()}}
+    {{form.assigned_to()}}
     {{form.priority.label()}}
     {{form.priority()}}
     {{form.deadline.label()}}
@@ -18,16 +20,15 @@
 </hr>
 <table border="1" cellpadding="10">
     <tr>
+        <th>Done</th>
         <th>Title</th>
+        <th>Assigned Member</th>
         <th>Priority</th>
         <th>Deadline</th>
-        <th>Done</th>
+        <th>Status</th>
     </tr>
     {%for task in tasks%}
         <tr>
-            <td>{{task.title}}</td>
-            <td>{{task.priority}}</td>
-            <td>{{task.deadline}}</td>
             <td>
                 <form method="POST" action="/task/{{task.id}}/toggle">
                     <button type="submit">
@@ -35,14 +36,20 @@
                     </button>
                 </form>
             </td>
+            <td>{{task.title}}</td>
+            <td>{{task.assigned_to}}</td>
+            <td>{{task.priority}}</td>
+            <td>{{task.deadline.strftime('%d %b, %I:%M %p')}}</td>
             <td>
                 {%if task.is_done%}
-                    <s>{{task.title}}</s>
+                Done
+                {%elif task.deadline< datetime.datetime.now()%}
+                Overdue
                 {%else%}
-                    {{task.title}}
+                Pending
                 {%endif%}
             </td>
-        </tr>
+            </tr>
     {%endfor%}
 </table>
 </body>
