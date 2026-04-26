@@ -11,6 +11,8 @@
     {{form.title()}}
     {{form.priority.label()}}
     {{form.priority()}}
+    {{form.deadline.label()}}
+    {{form.deadline()}}
     {{form.submit()}}
 </form>
 </hr>
@@ -18,13 +20,30 @@
     <tr>
         <th>Title</th>
         <th>Priority</th>
+        <th>Deadline</th>
+        <th>Done</th>
     </tr>
-    {% for task in tasks %}
+    {%for task in tasks%}
         <tr>
-            <td>{{ task.title }}</td>
-            <td>{{ task.priority }}</td>
+            <td>{{task.title}}</td>
+            <td>{{task.priority}}</td>
+            <td>{{task.deadline}}</td>
+            <td>
+                <form method="POST" action="/task/{{task.id}}/toggle">
+                    <button type="submit">
+                        {%if task.is_done%}Mark as Undone{%else%}Mark as Done{%endif%}
+                    </button>
+                </form>
+            </td>
+            <td>
+                {%if task.is_done%}
+                    <s>{{task.title}}</s>
+                {%else%}
+                    {{task.title}}
+                {%endif%}
+            </td>
         </tr>
-    {% endfor %}
+    {%endfor%}
 </table>
 </body>
 </html>

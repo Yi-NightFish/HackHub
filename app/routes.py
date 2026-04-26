@@ -239,8 +239,27 @@ def verify_update_email():
 def tasks():
     form = TaskForm()
     if form.validate_on_submit():
-        task = Task(title = form.title.data, priority = form.priority.data)
+        task = Task(title = form.title.data, 
+                    team_id = 1,
+                    assigned_to = session.get("user_id"), 
+                    priority = form.priority.data, 
+                    description = form.title.data, 
+                    deadline = form.deadline.data, 
+                    status = "Pending", 
+                    is_done = False)
         db.session.add(task)
         db.session.commit()
-    tasks = Task.query.all()
+        return redirect(url_for("tasks"))
+    tasks = Task.query.order_by(Task.deadline.asc()).all()
     return render_template("tasks.html", form=form, tasks=tasks)
+
+@app.route("/task/<int:id>/toggle", methods=["POST"])
+def toggle_task(id):
+    task = db.session.get(Task, id)
+    if task is None:
+        return "Task not found"
+    task.is_done = not task.is_done
+    if task.is_done:
+        task.status = "Done"
+    db.session.commit()
+    return redirect(url_for("tasks"))

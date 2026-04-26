@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectField
+from wtforms import StringField, SubmitField, SelectField, DateField
 from wtforms.validators import DataRequired
 
 class ProfileForm(FlaskForm):
@@ -13,4 +13,5 @@ class ProfileForm(FlaskForm):
 class TaskForm(FlaskForm):
     title = StringField("Task Title", validators = [DataRequired()])
     priority = SelectField("Priority", choices=[("High", "High"), ("Medium", "Medium"), ("Low", "Low")], validators=[DataRequired()])
+    deadline = DateField("Deadline", format="%Y-%m-%d", validators=[DataRequired()])
     submit = SubmitField("Create Task")
