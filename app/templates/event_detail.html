@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/event_detail.css') }}">
+{% endblock %}
+
+{% block title %}{{ event.title }} | Event Details{% endblock %}
+
+{% block content %}
+<div class="event-detail">
+  <h1>{{ event.title }}</h1>
+
+  <div class="event-meta">
+    <p><strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d') }}</p>
+    <p><strong>Time:</strong> {{ event.date.strftime('%H:%M') }}</p>
+    {% if event.organizer %}
+    <p><strong>Organizer:</strong> {{ event.organizer.name }}</p>
+    {% endif %}
+    <p><strong>Status:</strong> {{ event.status }}</p>
+  </div>
+
+  <div class="event-description">
+    {{ event.description }}
+  </div>
+</div>
+{% endblock %}

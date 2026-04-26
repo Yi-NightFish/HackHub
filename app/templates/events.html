@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block css %}
+    <link rel = "stylesheet" href = '{{url_for("static", filename = "css/events.css")}}'>
+{% endblock %}
+
+{% block content %}
+    <div id="events">
+        {% if events %}
+            <ul class="event-list">
+                {% for event in events %}
+                    <li>
+                        <div class="event-container">
+                            <h3 class="event-title"><a href = "{{url_for('event_detail', event_id = event.id)}}">{{ event.title }}</a></h3>
+                            <p class="event-date">{{ event.date.strftime('%Y-%m-%d') }}</p>
+                            <hr>
+                            <p class="event-description">{{ event.description }}</p>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No events ongoing</p>
+        {% endif %}
+    </div>
+{% endblock %}
