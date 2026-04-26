@@ -234,3 +234,12 @@ def verify_update_email():
             return redirect(url_for("profile", user_id = user.id))
         return "Invalid OTP"
     return render_template("otp_veri.html", email = new_email)
+
+@app.route("/events")
+def events():
+    events = db.session.scalars(select(Event).where(Event.status == "open")).all()
+    return render_template("events.html", events = events)
+
+@app.route("/event/<event_id>")
+def event_detail(event_id):
+    return render_template("event_detail.html", event = db.session.get(Event, event_id))
