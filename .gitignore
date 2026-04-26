@@ -2,4 +2,3 @@ __pycache__/
 instance/
 venv/
 app/__pycache__/
-.env/
