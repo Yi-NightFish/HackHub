@@ -10,9 +10,12 @@ class User(db.Model):
     university = db.Column(db.String(120), nullable=True, default = lambda : "")
     skills = db.Column(db.String(200), nullable=True, default = lambda : "")
     github_link = db.Column(db.String(200), nullable=True, default = lambda : "")
-    messages_sent = db.relationship('Messages', foreign_keys='Messages.sender_id', backref='sender', lazy=True)
-    messages_received = db.relationship('Messages', foreign_keys='Messages.receiver_id', backref='receiver', lazy=True)
+    messages_sent = db.relationship('Message', foreign_keys='Message.sender_id', backref='sender', lazy=True)
+    messages_received = db.relationship('Message', foreign_keys='Message.receiver_id', backref='receiver', lazy=True)
     organized_events = db.relationship('Event', backref='organizer', lazy=True)
+    assigned_tasks = db.relationship('Task', foreign_keys='Task.assigned_to', backref='assigned_user', lazy=True)
+    team_memberships = db.relationship('TeamMember', backref='user', lazy=True)
+    announcements = db.relationship('Announcement', backref='creator', lazy=True)
 
     def __repr__(self):
         return f'<User {self.name}>'
@@ -30,7 +33,7 @@ class OTP(db.Model):
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120), nullable=False)
-    date = db.Column(db.DateTime, default=datetime.datetime.now(datetime.UTC))
+    date = db.Column(db.DateTime, default=lambda : datetime.datetime.now(datetime.UTC))
     description = db.Column(db.Text, nullable=False)
     organizer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     status = db.Column(db.String(20), nullable=False)
@@ -56,6 +59,7 @@ class TeamMember(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    __table_args__ = (db.UniqueConstraint('team_id', 'user_id'),)
 
     def __repr__(self):
         return f'<TeamMember {self.team_id} - {self.user_id}>'
@@ -67,8 +71,9 @@ class Task(db.Model):
     assigned_to = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     priority = db.Column(db.String(20), nullable=True)
     description = db.Column(db.Text, nullable=False)
-    deadline = db.Column(db.String(20), nullable=False)
+    deadline = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.UTC), nullable=False)
     status = db.Column(db.String(20), nullable=False)
+    is_done = db.Column(db.Boolean, default=False)
     dashboard_id = db.Column(db.Integer, db.ForeignKey('dashboard.id'))
 
     def __repr__(self):
@@ -79,22 +84,22 @@ class Announcement(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
     title = db.Column(db.String(120), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    date_posted = db.Column(db.DateTime, default=datetime.datetime.now(datetime.UTC))
+    date_posted = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
     created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
         return f'<Announcement {self.title}>'
     
-class Messages(db.Model):
+class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     message = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.datetime.now(datetime.UTC))
+    timestamp = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
     is_read = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
-        return f'<Messages {self.sender_id} - {self.receiver_id}>'
+        return f'<Message {self.sender_id} - {self.receiver_id}>'
 
 class Dashboard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
