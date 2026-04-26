@@ -1,19 +1,22 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_mail import Mail
+from config import Config
 
-db = SQLAlchemy()
-migrate = Migrate()
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+mail = Mail(app)
 
 def create_app():
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hackhub.db'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    # app.secret_key = "secret-key" #不需要session了，先comment掉
-
+    app.config.from_object(Config)
     db.init_app(app)
     migrate.init_app(app, db)
-    from app.routes import chat_routes
-    chat_routes(app)
+    mail.init_app(app)
+    with app.app_context():
+        from app import routes, models
+        from app.routes import chat_routes
+        chat_routes(app)
 
     return app

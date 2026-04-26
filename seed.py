@@ -1,82 +1,123 @@
-from app import app, db, User, Event, Team, Task, Announcement, Messages, TeamMember
+from datetime import datetime
 
-def seed_data():
+from app import app, db
+from app.models import User, Event, Team, TeamMember
+from werkzeug.security import generate_password_hash
+
+with app.app_context():
+    # Clear existing data (optional - comment out if you want to preserve data)
+    db.drop_all()
+    db.create_all()
+    db.session.commit()
+
     # Create users
-    Ali = User(
-        name = "Ali",
-        email = "ali@gmail.com",
-        password = "123456",
-        university = "University",
-        skills = "Python",
-        github_link = "https://github.com/ali"
+    user1 = User(
+        email="hi@gmail.com",
+        password=generate_password_hash("123"),
+        is_verified=True,
+        name="hi",
+        university="university A",
+        skills="Python, Flask",
+        github_link="https://github.com/hi"
     )
-    Tan = User(
-        name = "Tan",
-        email = "tan@gmail.com",
-        password = "789456",
-        university = "Uni",
-        skills = "C++",
-        github_link = "https://github.com/tan"
+    user2 = User(
+        email="bye@gmail.com",
+        password=generate_password_hash("456"),
+        is_verified=False,
+        name="bye",
+        university="university B",
+        skills="JavaScript, HTML",
+        github_link="https://github.com/bye"
+    )
+    user3 = User(
+        email="bailan_jer@gmail.com",
+        password=generate_password_hash("789"),
+        is_verified=True,
+        name="bailan_jer",
+        university="university C",
+        skills="Python, SQL",
+        github_link="https://github.com/bailan_jer"
     )
 
-    # Add users to the database
-    db.session.add(Ali)
-    db.session.add(Tan)
+    user4 = User(
+        email="yi07@gmail.com",
+        password=generate_password_hash("789"),
+        is_verified=True,
+        name = "yi"
+    )
+
+    user5 = User(
+        email="xin@gmail.com",
+        password=generate_password_hash("789"),
+        is_verified=True,
+        name="xin"
+    )
+
+    db.session.add_all([user1, user2, user3, user4, user5])
     db.session.commit()
 
-    # Create an event
-    event = Event(
-        title = "Hackathon",
-        description = "A coding competition",
-        organizer_id = Ali.id,
-        status = "Upcoming"
+    # Create events
+    event1 = Event(
+        title="HackHub Launch Hackathon",
+        date=datetime.now(),
+        description="A beginner-friendly hackathon to celebrate the HackHub launch.",
+        organizer_id=user3.id,
+        status="open"
     )
-
-    db.session.add(event)
+    event2 = Event(
+        title="Spring Innovation Challenge",
+        date=datetime.now(),
+        description="A team-based event for solving real-world problems.",
+        organizer_id=user1.id,
+        status="open"
+    )
+    event3 = Event(
+        title="AI Workshop Weekend",
+        date=datetime.now(),
+        description="An educational event with workshops and demos.",
+        organizer_id=user1.id,
+        status="open"
+    )
+    db.session.add_all([event1, event2, event3])
     db.session.commit()
 
-    # Create a team
-    team = Team(
-        name = "Team ABC",
-        event_id = event.id,
-        team_code = "ABC123",
-        max_members = 5
+    # Create teams for events
+    team1 = Team(
+        name="Team Alpha",
+        event_id=event1.id,
+        team_code="ALPHA123",
+        max_members=5
     )
-
-    db.session.add(team)
+    team2 = Team(
+        name="Team Beta",
+        event_id=event2.id,
+        team_code="BETA123",
+        max_members=5
+    )
+    team3 = Team(
+        name="Team Gamma",
+        event_id=event3.id,
+        team_code="GAMMA123",
+        max_members=5
+    )
+    db.session.add_all([team1, team2, team3])
     db.session.commit()
 
-    # Create a task
-    task = Task(
-        title ="Build a website",
-        team_id = team.id,
-        assigned_to = Tan.id,
-        priority = "High",
-        description = "Create a website for the hackathon project",
-        deadline = "2026-10-15",
-        status = "In Progress"
-    )
-    db.session.add(task)
+    # Simulate users joining multiple events via team memberships
+    membership1 = TeamMember(team_id=team1.id, user_id=user3.id)
+    membership2 = TeamMember(team_id=team2.id, user_id=user3.id)
+    membership3 = TeamMember(team_id=team3.id, user_id=user3.id)
+    membership4 = TeamMember(team_id=team2.id, user_id=user1.id)
+    membership5 = TeamMember(team_id=team1.id, user_id=user2.id)
+    db.session.add_all([membership1, membership2, membership3, membership4, membership5])
     db.session.commit()
 
-    # Create an announcement
-    announcement = Announcement(
-        title = "Welcome to the Hackathon!",
-        content = "Let the coding begin!",
-        event_id = event.id,
-        created_by = Ali.id
-    )
-    db.session.add(announcement)
-    db.session.commit()
-
-    messages = Messages [
-        Messages(message="Hi Tan, ready for the hackathon?", sender_id=Ali.id, receiver_id=Tan.id),
-        Messages(message="Hi Ali, yes! Let's do our best!", sender_id=Tan.id, receiver_id=Ali.id)
+    messages = Message [
+        Message(message="Hi user3, ready for the hackathon?", sender_id=user1.id, receiver_id=user3.id),
+        Message(message="Hi user1, yes! Let's do our best!", sender_id=user3.id, receiver_id=user1.id)
     ]
     for msg in messages:
         db.session.add(msg)
     db.session.commit()
 
-if __name__ == '__main__':
-    with app.app_context():
-        seed_data()
+    print("Seeded successfully")
