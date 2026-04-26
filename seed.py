@@ -1,9 +1,10 @@
 from datetime import datetime
 
-from app import app, db
-from app.models import User, Event, Team, TeamMember
+from app import create_app, db
+from app.models import User, Event, Team, TeamMember, Message
 from werkzeug.security import generate_password_hash
 
+app = create_app()
 with app.app_context():
     # Clear existing data (optional - comment out if you want to preserve data)
     db.drop_all()
@@ -112,7 +113,7 @@ with app.app_context():
     db.session.add_all([membership1, membership2, membership3, membership4, membership5])
     db.session.commit()
 
-    messages = Message [
+    messages = [
         Message(message="Hi user3, ready for the hackathon?", sender_id=user1.id, receiver_id=user3.id),
         Message(message="Hi user1, yes! Let's do our best!", sender_id=user3.id, receiver_id=user1.id)
     ]

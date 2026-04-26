@@ -1,11 +1,11 @@
-from flask import render_template, request, url_for, redirect, session
+from flask import render_template, request, url_for, redirect, session, current_app as app
 import random
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime as dt
 from flask_mail import Message
 import functools
 
-from app import app, db, mail
+from app import db, mail
 from app.models import *
 from app.forms import ProfileForm
 from sqlalchemy import select
@@ -235,33 +235,27 @@ def verify_update_email():
         return "Invalid OTP"
     return render_template("otp_veri.html", email = new_email)
 
-from flask import render_template, request, redirect, url_for
-from app import db
-from app.models import Messages
-# from datetime import datetime
-
-def chat_routes(app):
-    @app.route("/")
-    def chat():
-        current_user_id = request.args.get("user_id", 1, type=int)  #user_id=1
-        messages = Messages.query.order_by(Messages.timestamp.asc()).all()  #取数据from旧到新
-        return render_template("chat.html", messages=messages, current_user_id=current_user_id)
+@app.route("/chat")
+def chat():
+    current_user_id = request.args.get("user_id", 1, type=int)  #user_id=1
+    messages = Message.query.order_by(Message.timestamp.asc()).all()  #取数据from旧到新
+    return render_template("chat.html", messages=messages, current_user_id=current_user_id)
     
-    @app.route("/send_message", methods=["POST"])
-    def send_message():
-        message = request.form["message"]
-        sender_id = request.form.get("user_id", type=int)
-        receiver_id = 2 if sender_id == 1 else 1  #user1/2互发消息
-        new_message = Messages(message=message, sender_id=sender_id, receiver_id=receiver_id) #timestamp会自动生成/存数据库
-        db.session.add(new_message)
-        db.session.commit()
-        return redirect(url_for("chat", user_id=sender_id)) #发完消息回聊天界面，user_id不变
+@app.route("/send_message", methods=["POST"])
+def send_message():
+    message = request.form["message"]
+    sender_id = request.form.get("user_id", type=int)
+    receiver_id = 2 if sender_id == 1 else 1  #user1/2互发消息
+    new_message = Message(message=message, sender_id=sender_id, receiver_id=receiver_id) #timestamp会自动生成/存数据库
+    db.session.add(new_message)
+    db.session.commit()
+    return redirect(url_for("chat", user_id=sender_id)) #发完消息回聊天界面，user_id不变
     
-    @app.route("/clear")
-    def clear_messages():
-        Messages.query.delete()
-        db.session.commit()
-        return redirect(url_for("chat"))
+@app.route("/clear")
+def clear_messages():
+    Message.query.delete()
+    db.session.commit()
+    return redirect(url_for("chat"))
     
     # from app.models import User
 

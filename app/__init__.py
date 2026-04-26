@@ -4,9 +4,9 @@ from flask_migrate import Migrate
 from flask_mail import Mail
 from config import Config
 
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-mail = Mail(app)
+db = SQLAlchemy()
+migrate = Migrate()
+mail = Mail()
 
 def create_app():
     app = Flask(__name__)
@@ -16,7 +16,5 @@ def create_app():
     mail.init_app(app)
     with app.app_context():
         from app import routes, models
-        from app.routes import chat_routes
-        chat_routes(app)
 
     return app
