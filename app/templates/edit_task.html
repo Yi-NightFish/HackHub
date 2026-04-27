@@ -1,0 +1,15 @@
+<h2>Edit Task</h2>
+<link rel="stylesheet" href="{{url_for('static', filename='css/edit_task.css')}}">
+
+<form method="POST">
+    {{form.hidden_tag()}}
+
+    <p>{{form.title.label}}<br>{{form.title()}}</p>
+    <p>{{form.assigned_to.label}}<br>{{form.assigned_to()}}</p>
+    <p>{{form.priority.label}}<br>{{form.priority()}}</p>
+    <p>{{form.deadline.label}}<br>{{form.deadline()}}</p>
+
+    <p>{{form.submit(value="Update Task")}}</p>
+</form>
+
+<a href="{{url_for('tasks')}}">Back</a>

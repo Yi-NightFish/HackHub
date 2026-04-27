@@ -236,6 +236,7 @@ def verify_update_email():
     return render_template("otp_veri.html", email = new_email)
 
 @app.route ("/tasks", methods = ["GET", "POST"])
+#@login_required
 def tasks():
     form = TaskForm()
     users = User.query.all()
@@ -270,6 +271,7 @@ def tasks():
     return render_template("tasks.html", form=form, tasks=tasks, datetime=dt, status_filter=status_filter)
 
 @app.route("/task/<int:id>/toggle", methods=["POST"])
+#@login_required
 def toggle_task(id):
     task = db.session.get(Task, id)
     if task is None:
@@ -281,3 +283,30 @@ def toggle_task(id):
         task.status = "Pending"
     db.session.commit()
     return redirect(url_for("tasks"))
+
+@app.route("/task/<int:id>/delete", methods=["POST"])
+# @login_required
+def delete_task(id):
+    task = db.session.get(Task, id)
+    if task is None:
+        return "Task not found"
+    db.session.delete(task)
+    db.session.commit()
+    return redirect(url_for("tasks"))
+
+@app.route("/task/<int:id>/edit", methods=["GET", "POST"])
+def edit_task(id):
+    task = db.session.get(Task, id)
+    if task is None:
+        return "Task not found"
+    form = TaskForm(obj=task)
+    users = User.query.all()
+    form.assigned_to.choices = [(user.id, user.name) for user in users]
+    if form.validate_on_submit():
+        task.title = form.title.data
+        task.assigned_to = form.assigned_to.data
+        task.priority = form.priority.data
+        task.deadline = form.deadline.data
+        db.session.commit()
+        return redirect(url_for("tasks"))
+    return render_template("edit_task.html", form=form, task=task)
