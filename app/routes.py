@@ -259,12 +259,18 @@ def send_message():
 @login_required
 def clear_messages():
     current_user_id = session.get("user_id")
-    Message.query.filter_by(sender_id=current_user_id).delete()
+    # find all my msg
+    messages = Message.query.filter((Message.sender_id == current_user_id) | (Message.receiver_id == current_user_id)).all()
+    for message in messages:
+        if message.sender_id == current_user_id:
+            message.deleted_by_sender = True
+        if message.receiver_id == current_user_id:
+            message.deleted_by_receiver = True
     db.session.commit()
     return redirect(url_for("chat"))
     
 @app.route("/message")
 def get_message():
-    current_user_id = request.args.get("user_id", 1, type=int)
-    messages = Message.query.order_by(Message.timestamp.asc()).all()
+    current_user_id = session.get("user_id")
+    messages = Message.query.filter((Message.sender_id == current_user_id) | (Message.receiver_id == current_user_id)).filter((Message.deleted_by_sender == False) | (Message.deleted_by_receiver == False)).order_by(Message.timestamp.asc()).all()
     return render_template("message.html", messages=messages, current_user_id=current_user_id)
