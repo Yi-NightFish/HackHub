@@ -8,7 +8,7 @@ import functools
 from app import app, db, mail
 from app.models import *
 from app.forms import ProfileForm, TaskForm
-from sqlalchemy import select
+from sqlalchemy import select, case
 
 #By Wan Yi
 # Helper functions
@@ -256,8 +256,18 @@ def tasks():
         db.session.commit()
         print("TASK CREATED:", task.title)  # Debugging line to confirm task creation
         return redirect(url_for("tasks"))
-    tasks = Task.query.order_by(Task.deadline.asc()).all()
-    return render_template("tasks.html", form=form, tasks=tasks, datetime=dt)
+    status_filter = request.args.get("status", "all")
+    now = dt.datetime.now()
+    query = Task.query
+    if status_filter == "completed":
+        query = query.filter(Task.is_done == True)
+    elif status_filter == "incomplete":
+        query = query.filter(Task.is_done == False, Task.deadline >= now)
+    elif status_filter == "overdue":
+        query = query.filter(Task.is_done == False, Task.deadline < now)
+    query = query.order_by(Task.deadline.asc())
+    tasks = query.all()
+    return render_template("tasks.html", form=form, tasks=tasks, datetime=dt, status_filter=status_filter)
 
 @app.route("/task/<int:id>/toggle", methods=["POST"])
 def toggle_task(id):

@@ -1,0 +1,145 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f7fb;
+    margin: 0;
+    padding: 30px;
+    color: #222;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+h1 {
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.task-form {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    align-items: end;
+}
+
+label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+input,
+select,
+button {
+    padding: 9px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+button,
+.filter-link {
+    background: #2563eb;
+    color: white;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.filter-link {
+    display: inline-block;
+    margin: 4px;
+    background: #e5e7eb;
+    color: #222;
+}
+
+.filter-link.active {
+    background: #2563eb;
+    color: white;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+th {
+    background: #1f2937;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+tr.overdue {
+    background: #fee2e2;
+}
+
+tr.completed {
+    background: #ecfdf5;
+    color: #555;
+}
+
+.badge {
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.high {
+    background: #fecaca;
+    color: #991b1b;
+}
+
+.medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.low {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-overdue {
+    background: #dc2626;
+    color: white;
+}
+
+.status-done {
+    background: #16a34a;
+    color: white;
+}
+
+.status-pending {
+    background: #f59e0b;
+    color: white;
+}
+
+.empty {
+    text-align: center;
+    color: #666;
+    padding: 25px;
+}
