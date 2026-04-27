@@ -17,6 +17,7 @@
     <p><strong>Organizer:</strong> {{ event.organizer.name }}</p>
     {% endif %}
     <p><strong>Status:</strong> {{ event.status }}</p>
+    <p><strong>No. Participants:</strong> {{ reduce(count_participants, event.teams, 0)}}</p>
   </div>
 
   <div class="event-description">
