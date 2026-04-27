@@ -239,7 +239,7 @@ def verify_update_email():
 @login_required
 def chat():
     current_user_id = session.get("user_id")
-    messages = Message.query.filter((Message.sender_id == current_user_id) | (Message.receiver_id == current_user_id)).filter((Message.deleted_by_sender == False) | (Message.deleted_by_receiver == False)).order_by(Message.timestamp.asc()).all()
+    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
     return render_template("chat.html", messages=messages, current_user_id=current_user_id)
     
 @app.route("/send_message", methods=["POST"])
@@ -252,7 +252,7 @@ def send_message():
     db.session.add(new_message)
     db.session.commit()
     # return redirect(url_for("chat", user_id=sender_id)) #发完消息回聊天界面，user_id不变
-    messages = Message.query.filter((Message.sender_id == sender_id) | (Message.receiver_id == sender_id)).filter((Message.deleted_by_sender == False) | (Message.deleted_by_receiver == False)).order_by(Message.timestamp.asc()).all()
+    messages = Message.query.filter(((Message.sender_id == sender_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == sender_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
     return render_template("message.html", messages=messages, current_user_id=sender_id) #只返回新消息，前端htmx负责更新页面
     
 @app.route("/clear")
@@ -272,5 +272,5 @@ def clear_messages():
 @app.route("/message")
 def get_message():
     current_user_id = session.get("user_id")
-    messages = Message.query.filter((Message.sender_id == current_user_id) | (Message.receiver_id == current_user_id)).filter((Message.deleted_by_sender == False) | (Message.deleted_by_receiver == False)).order_by(Message.timestamp.asc()).all()
+    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
     return render_template("message.html", messages=messages, current_user_id=current_user_id)
