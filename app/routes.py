@@ -258,7 +258,8 @@ def send_message():
 @app.route("/clear")
 @login_required
 def clear_messages():
-    Message.query.delete()
+    current_user_id = session.get("user_id")
+    Message.query.filter_by(sender_id=current_user_id).delete()
     db.session.commit()
     return redirect(url_for("chat"))
     
