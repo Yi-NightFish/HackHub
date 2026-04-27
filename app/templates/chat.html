@@ -3,7 +3,7 @@
 <head>
     <title> Chat </title>
     <!-- <meta http-equiv="refresh" content="30"> -->
-     <script src="https://unpkg.com/htmx.org@1.9.10"></script>"
+     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
 <body>
     <h2> SIMPLE CHAT </h2>
@@ -32,10 +32,26 @@
     </div>
     {% endfor %} -->
 <!-- </div> -->
-<div id="chatbox" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;" hx-get="/messages" hx-trigger="load, every 3s" hx-target="#chatbox" hx-swap="innerHTML">
+<div id="chatbox" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;" hx-get="/message?user_id={{ current_user_id }}" hx-trigger="load, every 3s" hx-target="#chatbox" hx-swap="innerHTML" hx-on::after-request="scrollToBottom()">
     {% include 'message.html' %}
 </div>
-<form hx-post="/send_message" hx-target="#chatbox" hx-swap="innerHTML">
+<script>
+    // 自动滚动到底部
+    function scrollToBottom() {
+        var chatbox = document.getElementById("chatbox");
+        if (chatbox) {
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+    }
+    window.onload = scrollToBottom; //页面加载时滚动到底部
+    document.addEventListener("htmx:afterSwap", function(evt) {
+        //only chatbox f5 will scroll to bottom
+        if (evt.target.id === "chatbox") {
+            scrollToBottom();
+        }
+    });
+</script>
+<form hx-post="/send_message" hx-target="#chatbox" hx-swap="innerHTML" hx-on:htmx:after-request="this.reset(); scrollToBottom();">
         <input type = "text" name = "message" placeholder = "Type message" required>
         <input type = "hidden" name = "user_id" value = "{{ current_user_id }}">
         <button type = "submit"> Send </button>

@@ -2,7 +2,7 @@ from flask import render_template, request, url_for, redirect, session, current_
 import random
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime as dt
-from flask_mail import Message
+from flask_mail import Message as MailMessage
 import functools
 
 from app import db, mail
@@ -236,30 +236,34 @@ def verify_update_email():
     return render_template("otp_veri.html", email = new_email)
 
 @app.route("/chat")
+@login_required
 def chat():
-    current_user_id = request.args.get("user_id", 1, type=int)  #user_id=1
+    current_user_id = session.get("user_id")
     messages = Message.query.order_by(Message.timestamp.asc()).all()  #取数据from旧到新
     return render_template("chat.html", messages=messages, current_user_id=current_user_id)
     
 @app.route("/send_message", methods=["POST"])
+@login_required
 def send_message():
-    message = request.form["message"]
-    sender_id = request.form.get("user_id", type=int)
+    content = request.form["message"]
+    sender_id = session.get("user_id")
     receiver_id = 2 if sender_id == 1 else 1  #user1/2互发消息
-    new_message = Message(message=message, sender_id=sender_id, receiver_id=receiver_id) #timestamp会自动生成/存数据库
+    new_message = Message(message=content, sender_id=sender_id, receiver_id=receiver_id) #timestamp会自动生成/存数据库
     db.session.add(new_message)
     db.session.commit()
     # return redirect(url_for("chat", user_id=sender_id)) #发完消息回聊天界面，user_id不变
-    return render_template("message.html", messages=[new_message], current_user_id=sender_id) #只返回新消息，前端htmx负责更新页面
+    messages = Message.query.order_by(Message.timestamp.asc()).all()  #取数据from旧到新
+    return render_template("message.html", messages=messages, current_user_id=sender_id) #只返回新消息，前端htmx负责更新页面
     
 @app.route("/clear")
+@login_required
 def clear_messages():
     Message.query.delete()
     db.session.commit()
     return redirect(url_for("chat"))
     
 @app.route("/message")
-def get_messages():
-    current_user_id = request.args.get("user_id", type=int)
+def get_message():
+    current_user_id = request.args.get("user_id", 1, type=int)
     messages = Message.query.order_by(Message.timestamp.asc()).all()
     return render_template("message.html", messages=messages, current_user_id=current_user_id)
