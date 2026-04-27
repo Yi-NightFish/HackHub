@@ -32,7 +32,7 @@
     </div>
     {% endfor %} -->
 <!-- </div> -->
-<div id="chatbox" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;" hx-get="/message?user_id={{ current_user_id }}" hx-trigger="load, every 3s" hx-target="#chatbox" hx-swap="innerHTML" hx-on::after-request="scrollToBottom()">
+<div id="chatbox" style="border: 1px solid #ccc; padding: 15px; height: 300px; overflow-y: scroll; background-color: #f9f9f9;" hx-get="/message?user_id={{ current_user_id }}" hx-trigger="load, every 3s" hx-target="#chatbox" hx-swap="innerHTML" hx-on::after-request="scrollToBottom()">
     {% include 'message.html' %}
 </div>
 <script>
@@ -63,7 +63,8 @@
     </form> -->
 
     <br>
-    <a href = "/clear"> Clear Messages </a>
+    <a href = "/clear"> Clear Chat </a> |
+    <a href = "/chat/history"> Chat History </a>
 
 </body>
 </html>

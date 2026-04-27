@@ -274,3 +274,10 @@ def get_message():
     current_user_id = session.get("user_id")
     messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
     return render_template("message.html", messages=messages, current_user_id=current_user_id)
+
+@app.route("/chat/history")
+@login_required
+def chat_history():
+    current_user_id = session.get("user_id")
+    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
+    return render_template("history.html", messages=messages, current_user_id=current_user_id)
