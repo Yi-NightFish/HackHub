@@ -1,8 +1,8 @@
-"""initial
+"""Final sync after merging event model updates
 
-Revision ID: 579a1efeef1c
+Revision ID: e4524ff871a4
 Revises: 
-Create Date: 2026-04-22 22:48:17.564152
+Create Date: 2026-04-27 15:02:48.581436
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '579a1efeef1c'
+revision = 'e4524ff871a4'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -45,7 +45,10 @@ def upgrade():
     sa.Column('date', sa.DateTime(), nullable=True),
     sa.Column('description', sa.Text(), nullable=False),
     sa.Column('organizer_id', sa.Integer(), nullable=False),
+    sa.Column('start_time', sa.DateTime(), nullable=False),
+    sa.Column('end_time', sa.DateTime(), nullable=False),
     sa.Column('status', sa.String(length=20), nullable=False),
+    sa.CheckConstraint("status IN ('open', 'cancelled', 'completed', 'ongoing')", name='check_status'),
     sa.ForeignKeyConstraint(['organizer_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -98,8 +101,8 @@ def upgrade():
     sa.Column('description', sa.Text(), nullable=False),
     sa.Column('deadline', sa.DateTime(), nullable=False),
     sa.Column('status', sa.String(length=20), nullable=False),
-    sa.Column('dashboard_id', sa.Integer(), nullable=True),
     sa.Column('is_done', sa.Boolean(), nullable=True),
+    sa.Column('dashboard_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['assigned_to'], ['user.id'], ),
     sa.ForeignKeyConstraint(['dashboard_id'], ['dashboard.id'], ),
     sa.ForeignKeyConstraint(['team_id'], ['team.id'], ),
