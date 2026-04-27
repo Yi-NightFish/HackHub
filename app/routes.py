@@ -266,7 +266,9 @@ def tasks():
         query = query.filter(Task.is_done == False, Task.deadline >= now)
     elif status_filter == "overdue":
         query = query.filter(Task.is_done == False, Task.deadline < now)
-    query = query.order_by(Task.deadline.asc())
+    status_order = case((((Task.is_done == False) & (Task.deadline < now)), 0), (Task.is_done == False, 1), (Task.is_done == True, 2),else_=3)    
+    priority_order = case((Task.priority.in_(["High","high"]), 0), (Task.priority.in_(["Medium","medium"]), 1), (Task.priority.in_(["Low","low"]), 2), else_=3)
+    query = query.order_by(status_order, priority_order, Task.deadline.asc())
     tasks = query.all()
     return render_template("tasks.html", form=form, tasks=tasks, datetime=dt, status_filter=status_filter)
 
