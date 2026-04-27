@@ -1,0 +1,15 @@
+{% for msg in messages %}
+<div style="margin-bottom: 8px; border-bottom: 1px dashed #eee; {% if msg.sender_id == current_user_id %} text-align: right; {% endif %}">
+    <span style="color: #888; font-size: 0.8em;">
+        {{ msg.timestamp.strftime('%Y-%m-%d %H:%M') }}
+    </span>
+    <br>
+    <span style="font-weight: bold;">
+        {% if msg.sender_id == current_user_id %}
+            You:
+        {% else %}
+            User {{ msg.sender_id }}:
+        {% endif %}
+    </span> {{ msg.message }}
+</div>
+{% endfor %}

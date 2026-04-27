@@ -2,7 +2,8 @@
 <html>
 <head>
     <title> Chat </title>
-    <meta http-equiv="refresh" content="30">
+    <!-- <meta http-equiv="refresh" content="30"> -->
+     <script src="https://unpkg.com/htmx.org@1.9.10"></script>"
 </head>
 <body>
     <h2> SIMPLE CHAT </h2>
@@ -14,8 +15,8 @@
         </span> -->
     </div>
     
-<div style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;">
-    {% for msg in messages %}
+<!-- <div style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;"> -->
+    <!-- {% for msg in messages %}
     <div style="margin-bottom: 8px; border-bottom: 1px dashed #eee; {% if msg.sender_id == current_user_id %} text-align: right; {% endif %}">
         <span style="color: #888; font-size: 0.8em;">
             {{ msg.timestamp.strftime('%Y-%m-%d %H:%M') }}
@@ -29,14 +30,21 @@
             {% endif %}
         </span> {{ msg.message }}
     </div>
-    {% endfor %}
+    {% endfor %} -->
+<!-- </div> -->
+<div id="chatbox" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;" hx-get="/messages" hx-trigger="load, every 3s" hx-target="#chatbox" hx-swap="innerHTML">
+    {% include 'message.html' %}
 </div>
-
-    <form method ="POST" action="/send_message">
+<form hx-post="/send_message" hx-target="#chatbox" hx-swap="innerHTML">
         <input type = "text" name = "message" placeholder = "Type message" required>
         <input type = "hidden" name = "user_id" value = "{{ current_user_id }}">
         <button type = "submit"> Send </button>
-    </form>
+
+    <!-- <form method ="POST" action="/send_message">
+        <input type = "text" name = "message" placeholder = "Type message" required>
+        <input type = "hidden" name = "user_id" value = "{{ current_user_id }}">
+        <button type = "submit"> Send </button>
+    </form> -->
 
     <br>
     <a href = "/clear"> Clear Messages </a>

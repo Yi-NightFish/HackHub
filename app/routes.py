@@ -249,7 +249,8 @@ def send_message():
     new_message = Message(message=message, sender_id=sender_id, receiver_id=receiver_id) #timestamp会自动生成/存数据库
     db.session.add(new_message)
     db.session.commit()
-    return redirect(url_for("chat", user_id=sender_id)) #发完消息回聊天界面，user_id不变
+    # return redirect(url_for("chat", user_id=sender_id)) #发完消息回聊天界面，user_id不变
+    return render_template("message.html", messages=[new_message], current_user_id=sender_id) #只返回新消息，前端htmx负责更新页面
     
 @app.route("/clear")
 def clear_messages():
@@ -257,15 +258,8 @@ def clear_messages():
     db.session.commit()
     return redirect(url_for("chat"))
     
-    # from app.models import User
-
-    # @app.route("/init")
-    # def init():
-    #     user1 = User(name="user1", email="u1@test.com", password="123") #create acc,email/ps在models.py里comment掉了,暂放
-    #     user2 = User(name="user2", email="u2@test.com", password="123")
-
-    #     db.session.add(user1)
-    #     db.session.add(user2)
-    #     db.session.commit()
-
-    #     return "Users created"
+@app.route("/message")
+def get_messages():
+    current_user_id = request.args.get("user_id", type=int)
+    messages = Message.query.order_by(Message.timestamp.asc()).all()
+    return render_template("message.html", messages=messages, current_user_id=current_user_id)
