@@ -1,6 +1,6 @@
 {% for msg in messages %}
 <div style="display: flex; flex-direction: column; margin-bottom: 12px; align-items: {% if msg.sender_id == current_user_id %} flex-end {% else %} flex-start {% endif %};">
-    <div style="padding: 10px 15px; border-radius: 12px; border: 1px solid #ddd; max-width: 80%; background-color: {% if msg.sender_id == current_user_id %} #white {% else %} #f9f9f9 {% endif %};">
+    <div style="padding: 10px 15px; border-radius: 12px; border: 1px solid #ddd; max-width: 80%; background-color: {% if msg.sender_id == current_user_id %} white {% else %} #f9f9f9 {% endif %};">
         <span style="color: #888; font-size: 0.8em;">
             {{ msg.timestamp.strftime('%Y-%m-%d %H:%M') }}
         </span>
@@ -9,17 +9,13 @@
             {% if msg.sender_id == current_user_id %}
                 You:
             {% else %}
-                User {{ msg.sender_id }}:
+                {{ msg.sender.name if msg.sender else "User" ~ msg.sender_id }}:
             {% endif %}
         </span> {{ msg.message }}
     </div>
     {% if msg.sender_id == current_user_id %}
         <div style="font-size: 0.7em; color: #888; margin-top: 2px; padding: 0 5px;">
-            {% if msg.is_read %}
-                Seen
-            {% else %}
-                Delivered
-            {% endif %}
+            {% if msg.is_read %} Seen {% else %} Delivered {% endif %}
         </div>
     {% endif %}
 </div>

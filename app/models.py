@@ -16,6 +16,14 @@ class User(db.Model):
     assigned_tasks = db.relationship('Task', foreign_keys='Task.assigned_to', backref='assigned_user', lazy=True)
     team_memberships = db.relationship('TeamMember', backref='user', lazy=True)
     announcements = db.relationship('Announcement', backref='creator', lazy=True)
+    last_seen = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
+
+    def is_online(self):
+        if self.last_seen is None:
+            return False
+        now = datetime.datetime.now(datetime.UTC).replace(tzinfo=None)
+        # Consider user online if last seen within the last 5 minutes
+        return (now - self.last_seen) < datetime.timedelta(minutes=1)
 
     def __repr__(self):
         return f'<User {self.name}>'

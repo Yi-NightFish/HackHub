@@ -7,11 +7,28 @@
 </head>
 <body>
     <h2> SIMPLE CHAT </h2>
-    <div style="margin-bottom: 20px; padding: 10px; background-color: #f0f0f0; border-radius: 5px;">
-        <strong>User {{ current_user_id }}</strong> 
+    <div style="margin-bottom: 20px; padding: 15px; background-color: #f0f0f0; border-radius: 8px;">
+    <strong>Chatting with: {{ other_user.name }}</strong>
+    
+    <span style="margin-left: 10px;">
+        {% if other_user.is_online() %}
+            <span style="color: #28a745;"> Online</span>
+        {% else %}
+            <span style="color: #888;"> Offline</span>
+        {% endif %}
+    </span>
+</div>
+    <div style="margin-bottom: 20px; padding: 10px; background-color: #f0f0f0; border-radius: 5px; display: flex; align-items: center; justify-content: space-between;">
+        <div><strong>User: {{ current_user.name if current_user else "User" ~ current_user_id }}</strong></div>
+    </div>
+    <div style="font-size: 0.9em;">
+        <a href="/profile/{{ current_user.id }}">My Profile</a> | 
+        <a href="/logout">Logout</a> |
+        <a href = "/clear"> Clear Chat </a> |
+        <a href = "/chat/history"> Chat History </a>
     </div>
     
-<div id="chatbox" style="border: 1px solid #ccc; padding: 15px; height: 70vh; overflow-y: scroll; background-color: #f9f9f9;" hx-get="/message?user_id={{ current_user_id }}" hx-trigger="load, every 3s" hx-target="#chatbox" hx-swap="innerHTML" hx-on::after-request="scrollToBottom()">
+<div id="chatbox" style="border: 1px solid #ccc; padding: 15px; height: 60vh; overflow-y: scroll; background-color: #f9f9f9;" hx-get="/message?user_id={{ current_user_id }}" hx-trigger="load, every 3s" hx-target="#chatbox" hx-swap="innerHTML" hx-on::after-request="scrollToBottom()">
     {% include 'message.html' %}
 </div>
 <script>
@@ -31,19 +48,9 @@
     });
 </script>
 <form hx-post="/send_message" hx-target="#chatbox" hx-swap="innerHTML" hx-on:htmx:after-request="this.reset(); scrollToBottom();">
-        <input type = "text" name = "message" placeholder = "Type message" required>
+        <input type = "text" name = "message" placeholder = "Type message" style="width: 80%; padding: 10px;" required>
         <input type = "hidden" name = "user_id" value = "{{ current_user_id }}">
         <button type = "submit"> Send </button>
-
-    <!-- <form method ="POST" action="/send_message">
-        <input type = "text" name = "message" placeholder = "Type message" required>
-        <input type = "hidden" name = "user_id" value = "{{ current_user_id }}">
-        <button type = "submit"> Send </button>
-    </form> -->
-
-    <br>
-    <a href = "/clear"> Clear Chat </a> |
-    <a href = "/chat/history"> Chat History </a>
-
+</form>
 </body>
 </html>
