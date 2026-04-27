@@ -272,6 +272,10 @@ def clear_messages():
 @app.route("/message")
 def get_message():
     current_user_id = session.get("user_id")
+    unread_messages = Message.query.filter_by(receiver_id=current_user_id, is_read=False).all()
+    for message in unread_messages:
+        message.is_read = True
+    db.session.commit()
     messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
     return render_template("message.html", messages=messages, current_user_id=current_user_id)
 

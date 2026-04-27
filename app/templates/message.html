@@ -13,5 +13,14 @@
             {% endif %}
         </span> {{ msg.message }}
     </div>
+    {% if msg.sender_id == current_user_id %}
+        <div style="font-size: 0.7em; color: #888; margin-top: 2px; padding: 0 5px;">
+            {% if msg.is_read %}
+                Seen
+            {% else %}
+                Delivered
+            {% endif %}
+        </div>
+    {% endif %}
 </div>
 {% endfor %}
