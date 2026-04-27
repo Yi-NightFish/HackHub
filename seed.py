@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import random
 
 from app import app, db
-from app.models import User, Event, Team, TeamMember, Task, Announcement, Messages, Dashboard
+from app.models import User, Event, Team, TeamMember, Task, Announcement, Message, Dashboard
 from werkzeug.security import generate_password_hash
 
 with app.app_context():
@@ -61,6 +61,8 @@ with app.app_context():
     event1 = Event(
         title="HackHub Launch Hackathon",
         date=datetime.now(),
+        start_time=datetime.now(),
+        end_time=datetime.now() + timedelta(hours=2),
         description="A beginner-friendly hackathon to celebrate the HackHub launch.",
         organizer_id=user3.id,
         status="open"
@@ -68,13 +70,17 @@ with app.app_context():
     event2 = Event(
         title="Spring Innovation Challenge",
         date=datetime.now(),
+        start_time=datetime.now(),
+        end_time=datetime.now() + timedelta(hours=3),
         description="A team-based event for solving real-world problems.",
         organizer_id=user1.id,
-        status="closed"
+        status="completed"
     )
     event3 = Event(
         title="AI Workshop Weekend",
         date=datetime.now(),
+        start_time=datetime.now(),
+        end_time=datetime.now() + timedelta(hours=4),
         description="An educational event with workshops and demos.",
         organizer_id=user1.id,
         status="cancelled"
@@ -82,6 +88,8 @@ with app.app_context():
     event4 = Event(
         title="Summer Sprint Hack",
         date=datetime.now(),
+        start_time=datetime.now(),
+        end_time=datetime.now() + timedelta(hours=1),
         description="A fast-paced event for prototyping new apps.",
         organizer_id=user4.id,
         status="completed"
@@ -89,9 +97,11 @@ with app.app_context():
     event5 = Event(
         title="Open Source Collaboration Day",
         date=datetime.now(),
+        start_time=datetime.now(),
+        end_time=datetime.now() + timedelta(hours=5),
         description="A community event for contributing to open source projects.",
         organizer_id=user5.id,
-        status="pending"
+        status="open"
     )
     db.session.add_all([event1, event2, event3, event4, event5])
     db.session.commit()
@@ -163,9 +173,11 @@ with app.app_context():
         event = Event(
             title=f"Event {i}",
             date=datetime.now() + timedelta(days=i),
+            start_time=datetime.now() + timedelta(days=i),
+            end_time=datetime.now() + timedelta(days=i, hours=2),
             description=f"Description for Event {i}",
             organizer_id=random.choice(all_users).id,
-            status=random.choice(["upcoming", "ongoing", "completed", "open"])
+            status=random.choice(["open", "ongoing", "completed", "cancelled"])
         )
         db.session.add(event)
     db.session.commit()
@@ -187,12 +199,18 @@ with app.app_context():
     # Get all teams
     all_teams = Team.query.all()
 
-    # Add 10 more team members (Memberships 8-17)
-    for i in range(8, 18):
-        team_member = TeamMember(
-            team_id=random.choice(all_teams).id,
-            user_id=random.choice(all_users).id
-        )
+    # Add 10 more team members (Memberships 8-17) - ensure unique (team_id, user_id) pairs
+    existing_memberships = {(tm.team_id, tm.user_id) for tm in TeamMember.query.all()}
+    new_memberships = set()
+    while len(new_memberships) < 10:
+        team_id = random.choice(all_teams).id
+        user_id = random.choice(all_users).id
+        pair = (team_id, user_id)
+        if pair not in existing_memberships and pair not in new_memberships:
+            new_memberships.add(pair)
+    
+    for team_id, user_id in new_memberships:
+        team_member = TeamMember(team_id=team_id, user_id=user_id)
         db.session.add(team_member)
     db.session.commit()
 
@@ -204,7 +222,7 @@ with app.app_context():
             assigned_to=random.choice(all_users).id,
             priority=random.choice(["low", "medium", "high"]),
             description=f"Description for Task {i}",
-            deadline=(datetime.now() + timedelta(days=random.randint(1, 30))).strftime('%Y-%m-%d'),
+            deadline=(datetime.now() + timedelta(days=random.randint(1, 30))),
             status=random.choice(["pending", "in_progress", "completed"])
         )
         db.session.add(task)
@@ -225,7 +243,7 @@ with app.app_context():
     for i in range(1, 11):
         sender = random.choice(all_users)
         receiver = random.choice([u for u in all_users if u != sender])
-        message = Messages(
+        message = Message(
             sender_id=sender.id,
             receiver_id=receiver.id,
             message=f"Message {i} from {sender.name} to {receiver.name}",
