@@ -244,16 +244,19 @@ def verify_update_email():
 @app.route("/chat")
 @login_required
 def chat():
+    # get user_id
     user_id = session.get("user_id")
     current_user = db.session.get(User, user_id)
     receiver_id = 2 if user_id == 1 else 1
     other_user = db.session.get(User, receiver_id)
+    # search msg i send or receive and not deleted with 时间顺序
     messages = Message.query.filter(((Message.sender_id == user_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
     return render_template("chat.html", messages = messages, current_user_id = user_id, current_user = current_user, other_user = other_user)
     
 @app.route("/send_message", methods=["POST"])
 @login_required
 def send_message():
+    # get msg and sender_id
     content = request.form["message"]
     sender_id = session.get("user_id")
     receiver_id = 2 if sender_id == 1 else 1  #user1/2互发消息
@@ -268,7 +271,7 @@ def send_message():
 @login_required
 def clear_messages():
     current_user_id = session.get("user_id")
-    # find all my msg
+    # find all my msg and 标记为deleted for sender/receiver depend on my身份，真正删除在数据库里保留但不展示(soft delete)
     messages = Message.query.filter((Message.sender_id == current_user_id) | (Message.receiver_id == current_user_id)).all()
     for message in messages:
         if message.sender_id == current_user_id:
@@ -284,16 +287,11 @@ def get_message():
     user = db.session.get(User, current_user_id)
     if user:
         user.last_seen = dt.datetime.now(dt.UTC).replace(tzinfo=None)
+    # find unread msg
     unread_messages = Message.query.filter_by(receiver_id=current_user_id, is_read=False).all()
     for message in unread_messages:
+        # seen
         message.is_read = True
     db.session.commit()
     messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
     return render_template("message.html", messages = messages, current_user_id = current_user_id)
-
-@app.route("/chat/history")
-@login_required
-def chat_history():
-    current_user_id = session.get("user_id")
-    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
-    return render_template("history.html", messages = messages, current_user_id = current_user_id)

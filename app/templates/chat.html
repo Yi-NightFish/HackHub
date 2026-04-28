@@ -8,7 +8,7 @@
 <body>
     <h2> SIMPLE CHAT </h2>
     <div style="margin-bottom: 20px; padding: 15px; background-color: #f0f0f0; border-radius: 8px;">
-    <strong>Chatting with: {{ other_user.name }}</strong>
+    <strong>Chat with: {{ other_user.name }}</strong>
     
     <span style="margin-left: 10px;">
         {% if other_user.is_online() %}
@@ -25,28 +25,13 @@
         <a href="/profile/{{ current_user.id }}">My Profile</a> | 
         <a href="/logout">Logout</a> |
         <a href = "/clear"> Clear Chat </a> |
-        <a href = "/chat/history"> Chat History </a>
     </div>
-    
+<!-- // hx-get=requst for/message route to get msg list, hx-trigger=load and every 3s, hx-target=renew chatbox, hx-swap=change content, hx-on::after-request=scrollToBottom() to scroll to bottom after update -->
 <div id="chatbox" style="border: 1px solid #ccc; padding: 15px; height: 60vh; overflow-y: scroll; background-color: #f9f9f9;" hx-get="/message?user_id={{ current_user_id }}" hx-trigger="load, every 3s" hx-target="#chatbox" hx-swap="innerHTML" hx-on::after-request="scrollToBottom()">
     {% include 'message.html' %}
 </div>
-<script>
-    // 自动滚动到底部
-    function scrollToBottom() {
-        var chatbox = document.getElementById("chatbox");
-        if (chatbox) {
-            chatbox.scrollTop = chatbox.scrollHeight;
-        }
-    }
-    window.onload = scrollToBottom; //页面加载时滚动到底部
-    document.addEventListener("htmx:afterSwap", function(evt) {
-        //only chatbox f5 will scroll to bottom
-        if (evt.target.id === "chatbox") {
-            scrollToBottom();
-        }
-    });
-</script>
+
+<!-- //post msg to /send_message, target chatbox to update, swap message.html, after request reset form and scroll to bottom -->
 <form hx-post="/send_message" hx-target="#chatbox" hx-swap="innerHTML" hx-on:htmx:after-request="this.reset(); scrollToBottom();">
         <input type = "text" name = "message" placeholder = "Type message" style="width: 80%; padding: 10px;" required>
         <input type = "hidden" name = "user_id" value = "{{ current_user_id }}">
