@@ -1,99 +1,103 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Tasks</title>
     <link rel="stylesheet" href="{{url_for('static', filename='css/task.css')}}">
 </head>
 
 <body>
-<div class="container">
-    <h1>Team Name</h1>
+    <div class="container">
+        <h1>Team Name</h1>
 
-    <div class="task-layout">
+        <div class="task-layout">
 
-        <div class="create-task-panel">
-            <form method="POST">
-                {{form.hidden_tag()}}
+            <div class="create-task-panel">
+                <form method="POST">
+                    {{form.hidden_tag()}}
 
-                <div>{{form.title.label()}}{{form.title()}}</div>
-                <div>{{form.description.label()}}{{form.description()}}</div>
-                <div>{{form.assigned_to.label()}}{{form.assigned_to()}}</div>
-                <div>{{form.deadline.label()}}{{form.deadline()}}</div>
-                <div>{{form.priority.label()}}{{form.priority()}}</div>
-                <div>{{form.status.label()}}{{form.status()}}</div>
+                    <div>{{form.title.label()}}{{form.title()}}</div>
+                    <div>{{form.description.label()}}{{form.description()}}</div>
+                    <div>{{form.assigned_to.label()}}{{form.assigned_to()}}</div>
+                    <div>{{form.deadline.label()}}{{form.deadline()}}</div>
+                    <div>{{form.priority.label()}}{{form.priority()}}</div>
+                    <div>{{form.status.label()}}{{form.status()}}</div>
 
-                <div>{{form.submit(class="create-btn")}}</div>
-            </form>
-        </div>
-
-        <div class="task-main">
-            <div class="filter-bar">
-                <a class="filter-link filter-all {%if status_filter=='all'%}active{%endif%}"
-                   href="{{url_for('tasks', status='all')}}">All</a>
-
-                <a class="filter-link filter-wishlist {%if status_filter=='Wishlist'%}active{%endif%}"
-                   href="{{url_for('tasks', status='Wishlist')}}">Wishlist</a>
-
-                <a class="filter-link filter-to-do {%if status_filter=='To Do'%}active{%endif%}"
-                   href="{{url_for('tasks', status='To Do')}}">To Do</a>
-
-                <a class="filter-link filter-in-progress {%if status_filter=='In Progress'%}active{%endif%}"
-                   href="{{url_for('tasks', status='In Progress')}}">In Progress</a>
-
-                <a class="filter-link filter-in-review {%if status_filter=='In Review'%}active{%endif%}"
-                   href="{{url_for('tasks', status='In Review')}}">In Review</a>
-
-                <a class="filter-link filter-complete {%if status_filter=='Complete'%}active{%endif%}"
-                   href="{{url_for('tasks', status='Complete')}}">Complete</a>
+                    <div>{{form.submit(class="create-btn")}}</div>
+                </form>
             </div>
 
-            <div class="task-scroll-area">
-                <div class="task-card-list">
-                    {%for task in tasks%}
-                    <div class="task-card">
-                        <a class="task-card-link" href="{{url_for('task_details', id=task.id)}}">
-                            <h3>{{task.title}}</h3>
+            <div class="task-main">
+                <div class="filter-bar">
+                    <a class="filter-link filter-all {%if status_filter=='all'%}active{%endif%}"
+                        href="{{url_for('tasks', status='all')}}">All</a>
 
-                            <p>
-                                <strong>Assigned:</strong>
-                                {%if task.assigned_user%}
+                    <a class="filter-link filter-wishlist {%if status_filter=='Wishlist'%}active{%endif%}"
+                        href="{{url_for('tasks', status='Wishlist')}}">Wishlist</a>
+
+                    <a class="filter-link filter-to-do {%if status_filter=='To Do'%}active{%endif%}"
+                        href="{{url_for('tasks', status='To Do')}}">To Do</a>
+
+                    <a class="filter-link filter-in-progress {%if status_filter=='In Progress'%}active{%endif%}"
+                        href="{{url_for('tasks', status='In Progress')}}">In Progress</a>
+
+                    <a class="filter-link filter-in-review {%if status_filter=='In Review'%}active{%endif%}"
+                        href="{{url_for('tasks', status='In Review')}}">In Review</a>
+
+                    <a class="filter-link filter-complete {%if status_filter=='Complete'%}active{%endif%}"
+                        href="{{url_for('tasks', status='Complete')}}">Complete</a>
+                </div>
+
+                <div class="task-scroll-area">
+                    <div class="task-card-list">
+                        {%for task in tasks%}
+                        {%set is_overdue = task.deadline < datetime.datetime.now() and not task.is_done%} <div
+                            class="task-card {%if is_overdue%}overdue-card{%endif%}">
+                            <a class="task-card-link" href="{{url_for('task_details', id=task.id)}}">
+                                <h3>{{task.title}}</h3>
+
+                                <p>
+                                    <strong>Assigned:</strong>
+                                    {%if task.assigned_user%}
                                     {{task.assigned_user.name}}
-                                {%else%}
+                                    {%else%}
                                     User ID: {{task.assigned_to}}
-                                {%endif%}
-                            </p>
+                                    {%endif%}
+                                </p>
 
-                            <p>
-                                <strong>Priority:</strong>
-                                {%if task.priority%}
+                                <p>
+                                    <strong>Priority:</strong>
+                                    {%if task.priority%}
                                     <span class="badge {{task.priority|lower}}">{{task.priority}}</span>
-                                {%else%}
+                                    {%else%}
                                     No priority
+                                    {%endif%}
+                                </p>
+
+                                <p><strong>Deadline:</strong> {{task.deadline.strftime('%d %b %Y, %I:%M %p')}}</p>
+                                {%if is_overdue%}
+                                <p class="overdue-text">⚠ Overdue</p>
                                 {%endif%}
-                            </p>
+                                <p>
+                                    <span class="status-badge status-{{task.status|lower|replace(' ', '-')}}">
+                                        {{task.status}}
+                                    </span>
+                                </p>
+                            </a>
 
-                            <p><strong>Deadline:</strong> {{task.deadline.strftime('%d %b %Y, %I:%M %p')}}</p>
+                            <div class="task-actions">
+                                <form method="POST" action="/task/{{task.id}}/toggle">
+                                    <button type="submit">
+                                        {%if task.is_done%}Undo{%else%}Done{%endif%}
+                                    </button>
+                                </form>
 
-                            <p>
-                                <span class="status-badge status-{{task.status|lower|replace(' ', '-')}}">
-                                    {{task.status}}
-                                </span>
-                            </p>
-                        </a>
-
-                        <div class="task-actions">
-                            <form method="POST" action="/task/{{task.id}}/toggle">
-                                <button type="submit">
-                                    {%if task.is_done%}Undo{%else%}Done{%endif%}
-                                </button>
-                            </form>
-
-                            <form method="POST" action="{{url_for('delete_task', id=task.id)}}">
-                                <button type="submit" onclick="return confirm('Delete this task?')">
-                                    Delete
-                                </button>
-                            </form>
-                        </div>
+                                <form method="POST" action="{{url_for('delete_task', id=task.id)}}">
+                                    <button type="submit" onclick="return confirm('Delete this task?')">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
                     </div>
                     {%else%}
                     <p class="empty">No tasks found.</p>
@@ -103,6 +107,7 @@
         </div>
 
     </div>
-</div>
+    </div>
 </body>
+
 </html>

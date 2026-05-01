@@ -98,6 +98,19 @@ class Announcement(db.Model):
     def __repr__(self):
         return f'<Announcement {self.title}>'
     
+class TaskActivity(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    action = db.Column(db.String(200), nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now())
+
+    task = db.relationship('Task', backref='activities')
+    user = db.relationship('User', backref='task_activities')
+
+    def __repr__(self):
+        return f'<TaskActivity {self.action}>'
+    
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

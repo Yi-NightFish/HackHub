@@ -68,11 +68,20 @@
             </tr>
         </table>
 
-        <h3>Activity</h3>
-        <div class="activity-box">
-            <p class="empty">...</p>
-        </div>
+<h3>Activity</h3>
 
+<div class="activity-box">
+    {%for activity in task.activities%}
+        <p>
+            <strong>{{activity.user.name}}</strong>
+            {{activity.action}}
+            <br>
+            <small>{{activity.created_at.strftime('%d %b %Y, %I:%M %p')}}</small>
+        </p>
+    {%else%}
+        <p class="empty">No activity yet.</p>
+    {%endfor%}
+</div>
         <button type="submit">Update Task</button>
     </form>
 

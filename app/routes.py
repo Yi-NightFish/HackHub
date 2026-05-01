@@ -262,7 +262,7 @@ def tasks():
     query = Task.query
     if status_filter != "all":
         query = query.filter(Task.status == status_filter)
-    status_order = case((Task.status == "Wishlist", 0), (Task.status == "To Do", 1), (Task.status == "In Progress", 2), (Task.status == "In Review", 3), (Task.status == "Complete", 4),else_=5)    
+    status_order = case((((Task.is_done == False) & (Task.deadline < now)), 0), (Task.status == "Wishlist", 1), (Task.status == "To Do", 2), (Task.status == "In Progress", 3), (Task.status == "In Review", 4), (Task.status == "Complete", 5), else_=6)   
     priority_order = case((Task.priority.in_(["High","high"]), 0), (Task.priority.in_(["Medium","medium"]), 1), (Task.priority.in_(["Low","low"]), 2), else_=3)
     query = query.order_by(status_order, priority_order, Task.deadline.asc())
     tasks = query.all()
@@ -288,6 +288,7 @@ def delete_task(id):
     task = db.session.get(Task, id)
     if task is None:
         return "Task not found"
+    TaskActivity.query.filter_by(task_id=id).delete()
     db.session.delete(task)
     db.session.commit()
     return redirect(url_for("tasks"))
@@ -299,6 +300,12 @@ def task_details(id):
         return "Task not found"
     users = User.query.all()
     if request.method == "POST":
+        old_title = task.title
+        old_description = task.description
+        old_assigned_to = task.assigned_to
+        old_priority = task.priority
+        old_deadline = task.deadline
+        old_status = task.status
         task.title = request.form.get("title")
         task.description = request.form.get("description")
         task.assigned_to = int(request.form.get("assigned_to"))
@@ -306,7 +313,31 @@ def task_details(id):
         task.deadline = dt.datetime.strptime(request.form.get("deadline"), "%Y-%m-%dT%H:%M")
         task.status = request.form.get("status")
         task.is_done = task.status == "Complete"
+        if old_title != task.title:
+            add_task_activity(task.id, f"changed title to {task.title}")
+        if old_description != task.description:
+            add_task_activity(task.id, "updated description")
+        if old_assigned_to != task.assigned_to:
+            new_user = db.session.get(User, task.assigned_to)
+            add_task_activity(task.id, f"changed assigned member to {new_user.name}")
+        if old_priority != task.priority:
+            add_task_activity(task.id, f"changed priority from {old_priority} to {task.priority}")
+        if old_deadline != task.deadline:
+            add_task_activity(task.id, "changed deadline")
+        if old_status != task.status:
+            add_task_activity(task.id, f"changed status from {old_status} to {task.status}")
         db.session.commit()
         return redirect(url_for("tasks"))
     return render_template("task_details.html", task=task, users=users)
+
+def add_task_activity(task_id, action):
+    user_id = session.get("user_id", 1)
+
+    activity = TaskActivity(
+        task_id=task_id,
+        user_id=user_id,
+        action=action
+    )
+
+    db.session.add(activity)
 # --------------------------------------------------------------------------------------------------------
