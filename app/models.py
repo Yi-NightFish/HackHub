@@ -78,7 +78,7 @@ class Task(db.Model):
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
     assigned_to = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     priority = db.Column(db.String(20), nullable=True)
-    description = db.Column(db.Text, nullable=False)
+    description = db.Column(db.Text, nullable=True)
     deadline = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.UTC), nullable=False)
     status = db.Column(db.String(30), nullable=False, default="To Do")
     is_done = db.Column(db.Boolean, default=False)

@@ -253,7 +253,7 @@ def tasks():
                     description = form.description.data, 
                     deadline = form.deadline.data, 
                     status = form.status.data, 
-                    is_done = (form.status.data == "Done"))
+                    is_done = (form.status.data == "Complete"))
         db.session.add(task)
         db.session.commit()
         return redirect(url_for("tasks"))
@@ -276,7 +276,7 @@ def toggle_task(id):
         return "Task not found"
     task.is_done = not task.is_done
     if task.is_done:
-        task.status = "Done"
+        task.status = "Complete"
     else:
         task.status = "Pending"
     db.session.commit()
@@ -292,23 +292,21 @@ def delete_task(id):
     db.session.commit()
     return redirect(url_for("tasks"))
 
-@app.route("/task/<int:id>/edit", methods=["GET", "POST"])
-def edit_task(id):
+@app.route("/task/<int:id>/details", methods=["GET", "POST"])
+def task_details(id):
     task = db.session.get(Task, id)
     if task is None:
         return "Task not found"
-    form = TaskForm(obj=task)
     users = User.query.all()
-    form.assigned_to.choices = [(user.id, user.name) for user in users]
-    if form.validate_on_submit():
-        task.title = form.title.data
-        task.description = form.description.data
-        task.assigned_to = form.assigned_to.data
-        task.priority = form.priority.data
-        task.deadline = form.deadline.data
-        task.status = form.status.data
-        task.is_done = form.status.data == "Complete"
+    if request.method == "POST":
+        task.title = request.form.get("title")
+        task.description = request.form.get("description")
+        task.assigned_to = int(request.form.get("assigned_to"))
+        task.priority = request.form.get("priority")
+        task.deadline = dt.datetime.strptime(request.form.get("deadline"), "%Y-%m-%dT%H:%M")
+        task.status = request.form.get("status")
+        task.is_done = task.status == "Complete"
         db.session.commit()
-        return redirect(url_for("tasks"))    
-    return render_template("edit_task.html", form=form, task=task)
+        return redirect(url_for("tasks"))
+    return render_template("task_details.html", task=task, users=users)
 # --------------------------------------------------------------------------------------------------------

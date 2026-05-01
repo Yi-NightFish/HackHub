@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task Details</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/task.css')}}">
+</head>
+
+<body>
+<div class="container">
+
+    <form method="POST" class="task-detail-card">
+
+        <input type="text" name="title" value="{{task.title}}" class="detail-title">
+
+        <div class="detail-row">
+            <label>Deadline</label>
+            <input type="datetime-local" name="deadline" value="{{task.deadline.strftime('%Y-%m-%dT%H:%M')}}">
+        </div>
+
+        <div class="detail-row">
+            <label>Priority</label>
+            <select name="priority">
+                <option value="">No priority</option>
+                <option value="High" {%if task.priority=='High'%}selected{%endif%}>High</option>
+                <option value="Medium" {%if task.priority=='Medium'%}selected{%endif%}>Medium</option>
+                <option value="Low" {%if task.priority=='Low'%}selected{%endif%}>Low</option>
+            </select>
+        </div>
+
+        <div class="detail-row">
+            <label>Status</label>
+            <select name="status">
+                <option value="Wishlist" {%if task.status=='Wishlist'%}selected{%endif%}>Wishlist</option>
+                <option value="To Do" {%if task.status=='To Do'%}selected{%endif%}>To Do</option>
+                <option value="In Progress" {%if task.status=='In Progress'%}selected{%endif%}>In Progress</option>
+                <option value="In Review" {%if task.status=='In Review'%}selected{%endif%}>In Review</option>
+                <option value="Complete" {%if task.status=='Complete'%}selected{%endif%}>Complete</option>
+            </select>
+        </div>
+
+        <div class="detail-row">
+            <label>Assigned Member</label>
+            <select name="assigned_to">
+                {%for user in users%}
+                    <option value="{{user.id}}" {%if task.assigned_to==user.id%}selected{%endif%}>
+                        {{user.name}}
+                    </option>
+                {%endfor%}
+            </select>
+        </div>
+
+        <h3>Description</h3>
+        <textarea name="description" rows="5">{{task.description or ""}}</textarea>
+
+        <h3>Subtasks</h3>
+        <table>
+            <tr>
+                <th>Done</th>
+                <th>Title</th>
+                <th>Assigned Member</th>
+                <th>Priority</th>
+                <th>Deadline</th>
+                <th>Status</th>
+                <th>Delete</th>
+            </tr>
+            <tr>
+                <td colspan="7" class="empty">...</td>
+            </tr>
+        </table>
+
+        <h3>Activity</h3>
+        <div class="activity-box">
+            <p class="empty">...</p>
+        </div>
+
+        <button type="submit">Update Task</button>
+    </form>
+
+</div>
+</body>
+</html>
