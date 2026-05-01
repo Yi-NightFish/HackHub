@@ -235,6 +235,7 @@ def verify_update_email():
         return "Invalid OTP"
     return render_template("otp_veri.html", email = new_email)
 
+# wy - task management system ----------------------------------------------------------------------------
 @app.route ("/tasks", methods = ["GET", "POST"])
 #@login_required
 def tasks():
@@ -312,3 +313,4 @@ def edit_task(id):
         db.session.commit()
         return redirect(url_for("tasks"))
     return render_template("edit_task.html", form=form, task=task)
+# --------------------------------------------------------------------------------------------------------

@@ -72,7 +72,7 @@ class Task(db.Model):
     priority = db.Column(db.String(20), nullable=True)
     description = db.Column(db.Text, nullable=False)
     deadline = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.UTC), nullable=False)
-    status = db.Column(db.String(20), nullable=False)
+    status = db.Column(db.String(30), nullable=False, default="To Do")
     is_done = db.Column(db.Boolean, default=False)
     dashboard_id = db.Column(db.Integer, db.ForeignKey('dashboard.id'))
 

@@ -1,8 +1,8 @@
-"""initial
+"""initial migration
 
-Revision ID: 579a1efeef1c
+Revision ID: e16fc71a9dc0
 Revises: 
-Create Date: 2026-04-22 22:48:17.564152
+Create Date: 2026-05-01 15:45:14.544925
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '579a1efeef1c'
+revision = 'e16fc71a9dc0'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -97,9 +97,9 @@ def upgrade():
     sa.Column('priority', sa.String(length=20), nullable=True),
     sa.Column('description', sa.Text(), nullable=False),
     sa.Column('deadline', sa.DateTime(), nullable=False),
-    sa.Column('status', sa.String(length=20), nullable=False),
-    sa.Column('dashboard_id', sa.Integer(), nullable=True),
+    sa.Column('status', sa.String(length=30), nullable=False),
     sa.Column('is_done', sa.Boolean(), nullable=True),
+    sa.Column('dashboard_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['assigned_to'], ['user.id'], ),
     sa.ForeignKeyConstraint(['dashboard_id'], ['dashboard.id'], ),
     sa.ForeignKeyConstraint(['team_id'], ['team.id'], ),
