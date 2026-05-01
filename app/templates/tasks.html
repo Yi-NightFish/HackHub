@@ -16,6 +16,10 @@
                 {{form.hidden_tag()}}
                 <div>{{form.title.label()}}<br>
                     {{form.title()}}</div>
+                <div>{{form.description.label()}}<br>
+                    {{form.description()}}</div>
+                <div>{{form.status.label()}}<br>
+                    {{form.status()}}</div>
                 <div>{{form.assigned_to.label()}}<br>
                     {{form.assigned_to()}}</div>
                 <div>{{form.priority.label()}}<br>
@@ -27,21 +31,28 @@
         </div>
 
         <div class="card">
-            <strong>Filter:</strong>
-            <a class="filter-link {%if status_filter=='all'%}active{%endif%}"
-                href="{{url_for('tasks', status='all')}}">All</a>
-            <a class="filter-link {%if status_filter=='incomplete'%}active{%endif%}"
-                href="{{url_for('tasks', status='incomplete')}}">Incomplete</a>
-            <a class="filter-link {%if status_filter=='completed'%}active{%endif%}"
-                href="{{url_for('tasks', status='completed')}}">Completed</a>
-            <a class="filter-link {%if status_filter=='overdue'%}active{%endif%}"
-                href="{{url_for('tasks', status='overdue')}}">Overdue</a>
+            <div class="card">
+                <strong>Filter:</strong>
+                <a class="filter-link {%if status_filter=='all'%}active{%endif%}"
+                    href="{{url_for('tasks', status='all')}}">All</a>
+                <a class="filter-link {%if status_filter=='Wishlist'%}active{%endif%}"
+                    href="{{url_for('tasks', status='Wishlist')}}">Wishlist</a>
+                <a class="filter-link {%if status_filter=='To Do'%}active{%endif%}"
+                    href="{{url_for('tasks', status='To Do')}}">To Do</a>
+                <a class="filter-link {%if status_filter=='In Progress'%}active{%endif%}"
+                    href="{{url_for('tasks', status='In Progress')}}">In Progress</a>
+                <a class="filter-link {%if status_filter=='In Review'%}active{%endif%}"
+                    href="{{url_for('tasks', status='In Review')}}">In Review</a>
+                <a class="filter-link {%if status_filter=='Complete'%}active{%endif%}"
+                    href="{{url_for('tasks', status='Complete')}}">Complete</a>
+            </div>
         </div>
 
         <table border="1" cellpadding="10">
             <tr>
                 <th>Done</th>
                 <th>Title</th>
+                <th>Description</th>
                 <th>Assigned Member</th>
                 <th>Priority</th>
                 <th>Deadline</th>
@@ -50,9 +61,9 @@
             </tr>
 
             {%for task in tasks%}
-            {%set is_overdue = task.deadline < datetime.datetime.now() and not task.is_done%}
-            <tr class="{%if task.is_done%}completed{%elif is_overdue%}overdue{%endif%}">
-                
+            {%set is_overdue = task.deadline < datetime.datetime.now() and not task.is_done%} <tr
+                class="{%if task.is_done%}completed{%elif is_overdue%}overdue{%endif%}">
+
                 <td>
                     <form method="POST" action="/task/{{task.id}}/toggle">
                         <button type="submit">
@@ -62,12 +73,13 @@
                 </td>
 
                 <td>{{task.title}}</td>
+                <td>{{task.description or "No description"}}</td>
 
                 <td>
                     {%if task.assigned_user%}
-                        {{task.assigned_user.name}}
+                    {{task.assigned_user.name}}
                     {%else%}
-                        User ID: {{task.assigned_to}}
+                    User ID: {{task.assigned_to}}
                     {%endif%}
                 </td>
 
@@ -80,19 +92,15 @@
                 <td>{{task.deadline.strftime('%d %b %Y, %I:%M %p')}}</td>
 
                 <td>
-                    {%if task.is_done%}
-                        <span class="badge status-done">Completed</span>
-                    {%elif is_overdue%}
-                        <span class="badge status-overdue">Overdue</span>
-                    {%else%}
-                        <span class="badge status-pending">Incomplete</span>
-                    {%endif%}
+                    <span class="badge status-{{task.status|lower|replace(' ', '-')}}">
+                        {{task.status}}
+                    </span>
                 </td>
 
                 <td>
                     <a href="{{url_for('edit_task', id=task.id)}}">
                         <button type="button">Edit</button>
-                    </a><br><br>    
+                    </a><br><br>
 
                     <form method="POST" action="{{url_for('delete_task', id=task.id)}}">
                         <button type="submit" onclick="return confirm('Delete this task?')">
@@ -101,12 +109,12 @@
                     </form>
                 </td>
 
-            </tr>
-            {%else%}
-            <tr>
-                <td colspan="7" class="empty">No tasks found.</td>
-            </tr>
-            {%endfor%}
+                </tr>
+                {%else%}
+                <tr>
+                    <td colspan="7" class="empty">No tasks found.</td>
+                </tr>
+                {%endfor%}
 
         </table>
     </div>

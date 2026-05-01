@@ -250,24 +250,19 @@ def tasks():
                     team_id = 1,
                     assigned_to = assigned_user_id, 
                     priority = form.priority.data, 
-                    description = form.title.data, 
+                    description = form.description.data, 
                     deadline = form.deadline.data, 
-                    status = "Pending", 
-                    is_done = False)
+                    status = form.status.data, 
+                    is_done = (form.status.data == "Done"))
         db.session.add(task)
         db.session.commit()
-        print("TASK CREATED:", task.title)  # Debugging line to confirm task creation
         return redirect(url_for("tasks"))
     status_filter = request.args.get("status", "all")
     now = dt.datetime.now()
     query = Task.query
-    if status_filter == "completed":
-        query = query.filter(Task.is_done == True)
-    elif status_filter == "incomplete":
-        query = query.filter(Task.is_done == False, Task.deadline >= now)
-    elif status_filter == "overdue":
-        query = query.filter(Task.is_done == False, Task.deadline < now)
-    status_order = case((((Task.is_done == False) & (Task.deadline < now)), 0), (Task.is_done == False, 1), (Task.is_done == True, 2),else_=3)    
+    if status_filter != "all":
+        query = query.filter(Task.status == status_filter)
+    status_order = case((Task.status == "Wishlist", 0), (Task.status == "To Do", 1), (Task.status == "In Progress", 2), (Task.status == "In Review", 3), (Task.status == "Complete", 4),else_=5)    
     priority_order = case((Task.priority.in_(["High","high"]), 0), (Task.priority.in_(["Medium","medium"]), 1), (Task.priority.in_(["Low","low"]), 2), else_=3)
     query = query.order_by(status_order, priority_order, Task.deadline.asc())
     tasks = query.all()
@@ -307,10 +302,13 @@ def edit_task(id):
     form.assigned_to.choices = [(user.id, user.name) for user in users]
     if form.validate_on_submit():
         task.title = form.title.data
+        task.description = form.description.data
         task.assigned_to = form.assigned_to.data
         task.priority = form.priority.data
         task.deadline = form.deadline.data
+        task.status = form.status.data
+        task.is_done = form.status.data == "Complete"
         db.session.commit()
-        return redirect(url_for("tasks"))
+        return redirect(url_for("tasks"))    
     return render_template("edit_task.html", form=form, task=task)
 # --------------------------------------------------------------------------------------------------------
