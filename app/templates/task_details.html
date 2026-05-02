@@ -15,7 +15,7 @@
             <span id="save-status"></span>
         </div>
 
-        <h1>Task Details</h1>
+        <h1>Details</h1>
 
         <div class="details-layout">
 
@@ -72,6 +72,7 @@
             <!-- RIGHT: SUBTASK + ACTIVITY -->
             <div class="right-side">
 
+                <!-- SUBTASKS -->
                 <section class="card">
                     <h2>Subtask</h2>
 
@@ -98,8 +99,9 @@
 
                     <div class="subtask-list">
                         {% for subtask in subtasks %}
-                        <div class="subtask-row">
-
+                        <div class="subtask-row 
+                                    {% if subtask.is_done %}completed{% endif %} 
+                                    {% if subtask.is_overdue %}overdue{% endif %}">
                             <form method="POST" action="{{ url_for('toggle_subtask', id=subtask.id) }}">
                                 <button type="submit" class="checkbox-btn">
                                     {% if subtask.is_done %}✓{% else %}☐{% endif %}
@@ -110,7 +112,6 @@
                             <span>{{ subtask.assigned_user.name if subtask.assigned_user else "-" }}</span>
                             <span>{{ subtask.priority }}</span>
                             <span>{{ subtask.deadline.strftime('%d %b %Y') if subtask.deadline else "-" }}</span>
-
                         </div>
                         {% else %}
                         <p class="empty">No subtasks found.</p>
@@ -118,9 +119,9 @@
                     </div>
                 </section>
 
+                <!-- ACTIVITY -->
                 <section class="card">
                     <h2>Activity</h2>
-
                     <div class="activity-list">
                         {% for activity in task.activities %}
                         <div class="activity-item">
@@ -136,7 +137,6 @@
                 </section>
 
             </div>
-
         </div>
     </div>
 </body>

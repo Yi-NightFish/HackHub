@@ -264,7 +264,7 @@ def tasks():
     query = Task.query.filter_by(team_id = team.id)
     if status_filter != "all":
         query = query.filter(Task.status == status_filter)
-    status_order = case((((Task.is_done == False) & (Task.deadline < now)), 0), (Task.status == "Wishlist", 1), (Task.status == "To Do", 2), (Task.status == "In Progress", 3), (Task.status == "In Review", 4), (Task.status == "Complete", 5), else_=6)   
+    status_order = case(((Task.is_done == False) & (Task.deadline < now) & (Task.status.in_(["To Do", "In Progress"])), 0), (Task.status == "Wishlist", 1), (Task.status == "To Do", 2), (Task.status == "In Progress", 3), (Task.status == "In Review", 4), (Task.status == "Complete", 5), else_=6)   
     priority_order = case((Task.priority.in_(["High","high"]), 0), (Task.priority.in_(["Medium","medium"]), 1), (Task.priority.in_(["Low","low"]), 2), else_=3)
     query = query.order_by(status_order, priority_order, Task.deadline.asc())
     tasks = query.all()
@@ -344,6 +344,12 @@ def task_details(id):
     subtasks = Subtask.query.filter_by(task_id = id).all()
     if task is None:
         return "Task not found"
+    today = dt.date.today()
+    for subtask in subtasks:
+        if not subtask.is_done and subtask.deadline and subtask.deadline.date() < today:
+            subtask.is_overdue = True
+        else:
+            subtask.is_overdue = False
     if request.method == "POST":
         old_title = task.title
         old_description = task.description

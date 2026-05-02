@@ -11,15 +11,15 @@ body {
     margin: auto;
 }
 
-/* Project Title */
+/* Header */
 h1 {
     font-size: 64px;
     font-weight: bold;
     margin: 0;
-    padding: 0;
+    margin-bottom: 20px;
 }
 
-/* Main layout */
+/* Layout */
 .task-layout {
     display: grid;
     grid-template-columns: 320px 1fr;
@@ -27,77 +27,59 @@ h1 {
     align-items: start;
 }
 
-/* Left create task panel */
+/* Create Task Panel */
 .create-task-panel {
     background: white;
     border: 2px solid black;
-    border-radius: 8px;
-    padding: 15px;
+    border-radius: 12px;
+    padding: 20px;
 }
 
-.create-task-panel h2 {
-    font-size: 24px;
-    margin-top: 0;
-    margin-bottom: 15px;
-}
-
-/* Keep your original form fields */
-form div {
-    margin-bottom: 12px;
+/* Form layout */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 14px;
 }
 
 label {
-    font-size: 16px;
-    font-weight: normal;
-    display: block;
-    margin-bottom: 4px;
+    font-size: 14px;
+    margin-bottom: 6px;
 }
 
+/* Inputs */
 input,
 select,
 textarea {
     width: 100%;
-    padding: 8px 12px;
+    padding: 10px 12px;
     border: 2px solid black;
-    border-radius: 14px;
-    font-size: 15px;
+    border-radius: 10px;
+    font-size: 14px;
     box-sizing: border-box;
     background: white;
 }
 
 textarea {
     resize: vertical;
-    min-height: 60px;
+    min-height: 70px;
 }
 
-/* Status buttons inside create task */
-.status-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.status-option {
-    border: none;
-    padding: 8px 14px;
-    border-radius: 14px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* Create button */
+/* Button */
 .create-btn {
     width: 100%;
     background: #a5b4fc;
     border: 2px solid black;
     color: black;
     font-weight: bold;
-    padding: 10px;
-    border-radius: 14px;
+    padding: 12px;
+    border-radius: 12px;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 15px;
+}
+
+button:hover {
+    transform: translateY(-1px);
 }
 
 /* Right side */
@@ -107,34 +89,31 @@ textarea {
     gap: 15px;
 }
 
-/* Top filter bar */
+/* Filter bar */
 .filter-bar {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     background: white;
     border: 2px solid black;
-    border-radius: 14px;
-    padding: 10px 15px;
+    border-radius: 16px;
+    padding: 12px 16px;
 }
 
-/* Filter button */
 .filter-link {
-    display: inline-block;
     text-decoration: none;
-    padding: 8px 18px;
+    padding: 6px 14px;
     border-radius: 14px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: bold;
     color: black;
-    border: none;
 }
 
 .filter-link.active {
     outline: 2px solid black;
 }
 
-/* Status Colors */
+/* Status colors */
 .filter-wishlist,
 .status-wishlist {
     background: #d1d5db;
@@ -160,26 +139,25 @@ textarea {
     background: #bbf7d0;
 }
 
-/* Scroll card area */
+/* Scroll */
 .task-scroll-area {
     max-height: 700px;
     overflow-y: auto;
-    padding-right: 8px;
+    padding-right: 6px;
 }
 
-/* Cards list */
+/* Cards */
 .task-card-list {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-/* KEEPING your previous card details */
 .task-card {
     background: white;
     border: 2px solid black;
-    border-radius: 14px;
-    padding: 18px;
+    border-radius: 16px;
+    padding: 20px;
     transition: transform 0.15s ease;
 }
 
@@ -195,20 +173,20 @@ textarea {
 
 .task-card h3 {
     margin-top: 0;
-    margin-bottom: 12px;
-    font-size: 24px;
+    margin-bottom: 10px;
+    font-size: 22px;
 }
 
 .task-card p {
-    margin: 8px 0;
-    font-size: 15px;
+    margin: 6px 0;
+    font-size: 14px;
 }
 
-/* Task actions */
+/* Actions */
 .task-actions {
     display: flex;
-    gap: 10px;
-    margin-top: 15px;
+    gap: 8px;
+    margin-top: 12px;
 }
 
 .task-actions form {
@@ -217,20 +195,21 @@ textarea {
 
 .task-actions button {
     width: 100%;
-    padding: 8px;
-    border-radius: 12px;
+    padding: 6px;
+    border-radius: 10px;
     border: 2px solid black;
     font-weight: bold;
     cursor: pointer;
+    font-size: 13px;
 }
 
-/* Badge */
+/* Badges */
 .badge,
 .status-badge {
     display: inline-block;
-    padding: 6px 14px;
-    border-radius: 14px;
-    font-size: 13px;
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-size: 12px;
     font-weight: bold;
     color: black;
 }
@@ -248,32 +227,15 @@ textarea {
     background: #bbf7d0;
 }
 
-/* Detail page remains */
-.task-detail-card {
-    background: white;
-    padding: 25px;
-    border-radius: 14px;
-    border: 2px solid black;
+/* Overdue */
+.overdue-card {
+    border: 3px solid #dc2626;
+    background: #fee2e2;
 }
 
-.detail-title {
-    font-size: 32px;
+.overdue-text {
+    color: #dc2626;
     font-weight: bold;
-    border: none;
-    width: 100%;
-    margin-bottom: 20px;
-    background: transparent;
-}
-
-.detail-row {
-    margin-bottom: 15px;
-}
-
-.activity-box {
-    background: #f9fafb;
-    padding: 15px;
-    border-radius: 10px;
-    border: 2px solid black;
 }
 
 /* Empty */
@@ -285,7 +247,7 @@ textarea {
 
 /* Scrollbar */
 .task-scroll-area::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
 }
 
 .task-scroll-area::-webkit-scrollbar-track {
@@ -297,78 +259,4 @@ textarea {
     background: #fed7aa;
     border-radius: 10px;
     border: 1px solid black;
-}
-
-.task-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    font-size: 14px;
-}
-
-.task-table th {
-    text-align: left;
-    padding: 10px;
-    background: #f5f5f5;
-}
-
-.task-table td {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-}
-
-/* Completed row */
-.completed {
-    opacity: 0.6;
-    text-decoration: line-through;
-}
-
-/* Status badges */
-.status {
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    color: white;
-}
-
-.status.not-started {
-    background: gray;
-}
-
-.status.in-progress {
-    background: orange;
-}
-
-.status.done {
-    background: green;
-}
-
-/* Priority badges */
-.priority {
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    color: white;
-}
-
-.priority.low {
-    background: #6c757d;
-}
-
-.priority.medium {
-    background: #007bff;
-}
-
-.priority.high {
-    background: #dc3545;
-}
-
-.overdue-card {
-    border: 3px solid #dc2626;
-    background: #fee2e2;
-}
-
-.overdue-text {
-    color: #dc2626;
-    font-weight: bold;
 }

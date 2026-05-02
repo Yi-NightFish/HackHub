@@ -13,8 +13,7 @@ body {
 h1 {
     text-align: center;
     font-size: 42px;
-    margin: 0;
-    margin-bottom: 25px;
+    margin: 0 0 25px 0;
 }
 
 .details-layout {
@@ -81,6 +80,19 @@ h2 {
     border-radius: 10px;
     margin-bottom: 8px;
     background: #fafafa;
+    align-items: center;
+}
+
+/* Strike-through completed subtasks (from title to date) */
+.subtask-row.completed span:nth-child(n+2):nth-child(-n+5) {
+    text-decoration: line-through;
+    color: #777;
+}
+
+/* Highlight overdue subtasks */
+.subtask-row.overdue {
+    background-color: #ffe6e6;
+    color: #b00;
 }
 
 .empty {
