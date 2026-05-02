@@ -1,90 +1,144 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Task Details</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='css/task.css')}}">
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/task_details.css') }}">
 </head>
 
 <body>
-<div class="container">
+    <div class="page">
 
-    <form method="POST" class="task-detail-card">
-
-        <input type="text" name="title" value="{{task.title}}" class="detail-title">
-
-        <div class="detail-row">
-            <label>Deadline</label>
-            <input type="datetime-local" name="deadline" value="{{task.deadline.strftime('%Y-%m-%dT%H:%M')}}">
+        <div class="top-bar">
+            <a href="{{ url_for('tasks') }}" class="back-link">← Back</a>
+            <span id="save-status"></span>
         </div>
 
-        <div class="detail-row">
-            <label>Priority</label>
-            <select name="priority">
-                <option value="">No priority</option>
-                <option value="High" {%if task.priority=='High'%}selected{%endif%}>High</option>
-                <option value="Medium" {%if task.priority=='Medium'%}selected{%endif%}>Medium</option>
-                <option value="Low" {%if task.priority=='Low'%}selected{%endif%}>Low</option>
-            </select>
-        </div>
+        <h1>Task Details</h1>
 
-        <div class="detail-row">
-            <label>Status</label>
-            <select name="status">
-                <option value="Wishlist" {%if task.status=='Wishlist'%}selected{%endif%}>Wishlist</option>
-                <option value="To Do" {%if task.status=='To Do'%}selected{%endif%}>To Do</option>
-                <option value="In Progress" {%if task.status=='In Progress'%}selected{%endif%}>In Progress</option>
-                <option value="In Review" {%if task.status=='In Review'%}selected{%endif%}>In Review</option>
-                <option value="Complete" {%if task.status=='Complete'%}selected{%endif%}>Complete</option>
-            </select>
-        </div>
+        <div class="details-layout">
 
-        <div class="detail-row">
-            <label>Assigned Member</label>
-            <select name="assigned_to">
-                {%for user in users%}
-                    <option value="{{user.id}}" {%if task.assigned_to==user.id%}selected{%endif%}>
-                        {{user.name}}
+            <!-- LEFT: TASK DETAILS -->
+            <div class="task-info-box">
+
+                <label>Title</label>
+                <input type="text" name="value" value="{{ task.title }}"
+                    hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change" hx-swap="innerHTML"
+                    hx-target="#save-status" hx-vals='{"field":"title"}'>
+
+                <label>Description</label>
+                <textarea name="value" hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change"
+                    hx-swap="innerHTML" hx-target="#save-status"
+                    hx-vals='{"field":"description"}'>{{ task.description }}</textarea>
+
+                <label>Assignee</label>
+                <select name="value" hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change"
+                    hx-swap="innerHTML" hx-target="#save-status" hx-vals='{"field":"assigned_to"}'>
+                    {% for user in users %}
+                    <option value="{{ user.id }}" {% if task.assigned_to==user.id %}selected{% endif %}>
+                        {{ user.name }}
                     </option>
-                {%endfor%}
-            </select>
+                    {% endfor %}
+                </select>
+
+                <label>Priority</label>
+                <select name="value" hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change"
+                    hx-swap="innerHTML" hx-target="#save-status" hx-vals='{"field":"priority"}'>
+                    <option value="Low" {% if task.priority=="Low" %}selected{% endif %}>Low</option>
+                    <option value="Medium" {% if task.priority=="Medium" %}selected{% endif %}>Medium</option>
+                    <option value="High" {% if task.priority=="High" %}selected{% endif %}>High</option>
+                </select>
+
+                <label>Deadline</label>
+                <input type="date" name="value"
+                    value="{{ task.deadline.strftime('%Y-%m-%d') if task.deadline else '' }}"
+                    hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change" hx-swap="innerHTML"
+                    hx-target="#save-status" hx-vals='{"field":"deadline"}'>
+
+                <label>Status</label>
+                <select name="value" hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change"
+                    hx-swap="innerHTML" hx-target="#save-status" hx-vals='{"field":"status"}'>
+                    <option value="Wishlist" {% if task.status=="Wishlist" %}selected{% endif %}>Wishlist</option>
+                    <option value="To Do" {% if task.status=="To Do" %}selected{% endif %}>To Do</option>
+                    <option value="In Progress" {% if task.status=="In Progress" %}selected{% endif %}>In Progress
+                    </option>
+                    <option value="In Review" {% if task.status=="In Review" %}selected{% endif %}>In Review</option>
+                    <option value="Complete" {% if task.status=="Complete" %}selected{% endif %}>Complete</option>
+                </select>
+
+            </div>
+
+            <!-- RIGHT: SUBTASK + ACTIVITY -->
+            <div class="right-side">
+
+                <section class="card">
+                    <h2>Subtask</h2>
+
+                    <form method="POST" action="{{ url_for('add_subtask', id=task.id) }}" class="subtask-form">
+
+                        <input type="text" name="title" placeholder="Subtask title" required>
+
+                        <select name="assigned_to">
+                            {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.name }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <select name="priority">
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+
+                        <input type="date" name="deadline">
+
+                        <button type="submit">Add</button>
+                    </form>
+
+                    <div class="subtask-list">
+                        {% for subtask in subtasks %}
+                        <div class="subtask-row">
+
+                            <form method="POST" action="{{ url_for('toggle_subtask', id=subtask.id) }}">
+                                <button type="submit" class="checkbox-btn">
+                                    {% if subtask.is_done %}✓{% else %}☐{% endif %}
+                                </button>
+                            </form>
+
+                            <span>{{ subtask.title }}</span>
+                            <span>{{ subtask.assigned_user.name if subtask.assigned_user else "-" }}</span>
+                            <span>{{ subtask.priority }}</span>
+                            <span>{{ subtask.deadline.strftime('%d %b %Y') if subtask.deadline else "-" }}</span>
+
+                        </div>
+                        {% else %}
+                        <p class="empty">No subtasks found.</p>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section class="card">
+                    <h2>Activity</h2>
+
+                    <div class="activity-list">
+                        {% for activity in task.activities %}
+                        <div class="activity-item">
+                            <strong>{{ activity.user.name }}</strong>
+                            {{ activity.action }}
+                            <br>
+                            <small>{{ activity.created_at.strftime('%d %b %Y, %I:%M %p') }}</small>
+                        </div>
+                        {% else %}
+                        <p class="empty">No activity yet.</p>
+                        {% endfor %}
+                    </div>
+                </section>
+
+            </div>
+
         </div>
-
-        <h3>Description</h3>
-        <textarea name="description" rows="5">{{task.description or ""}}</textarea>
-
-        <h3>Subtasks</h3>
-        <table>
-            <tr>
-                <th>Done</th>
-                <th>Title</th>
-                <th>Assigned Member</th>
-                <th>Priority</th>
-                <th>Deadline</th>
-                <th>Status</th>
-                <th>Delete</th>
-            </tr>
-            <tr>
-                <td colspan="7" class="empty">...</td>
-            </tr>
-        </table>
-
-<h3>Activity</h3>
-
-<div class="activity-box">
-    {%for activity in task.activities%}
-        <p>
-            <strong>{{activity.user.name}}</strong>
-            {{activity.action}}
-            <br>
-            <small>{{activity.created_at.strftime('%d %b %Y, %I:%M %p')}}</small>
-        </p>
-    {%else%}
-        <p class="empty">No activity yet.</p>
-    {%endfor%}
-</div>
-        <button type="submit">Update Task</button>
-    </form>
-
-</div>
+    </div>
 </body>
+
 </html>

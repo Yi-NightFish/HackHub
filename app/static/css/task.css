@@ -18,6 +18,7 @@ h1 {
     margin: 0;
     padding: 0;
 }
+
 /* Main layout */
 .task-layout {
     display: grid;
@@ -296,6 +297,70 @@ textarea {
     background: #fed7aa;
     border-radius: 10px;
     border: 1px solid black;
+}
+
+.task-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.task-table th {
+    text-align: left;
+    padding: 10px;
+    background: #f5f5f5;
+}
+
+.task-table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Completed row */
+.completed {
+    opacity: 0.6;
+    text-decoration: line-through;
+}
+
+/* Status badges */
+.status {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: white;
+}
+
+.status.not-started {
+    background: gray;
+}
+
+.status.in-progress {
+    background: orange;
+}
+
+.status.done {
+    background: green;
+}
+
+/* Priority badges */
+.priority {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: white;
+}
+
+.priority.low {
+    background: #6c757d;
+}
+
+.priority.medium {
+    background: #007bff;
+}
+
+.priority.high {
+    background: #dc3545;
 }
 
 .overdue-card {

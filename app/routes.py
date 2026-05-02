@@ -1,5 +1,6 @@
 from flask import render_template, request, url_for, redirect, session
 import random
+from flask_login import current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime as dt
 from flask_mail import Message
@@ -237,21 +238,22 @@ def verify_update_email():
 
 # wy - task management system ----------------------------------------------------------------------------
 @app.route ("/tasks", methods = ["GET", "POST"])
-#@login_required
+@login_required
 def tasks():
+    team_id = 1
+    team = db.session.get(Team, team_id)   
     form = TaskForm()
-    users = User.query.all()
-    form.assigned_to.choices = [(0, "No user selected")] + [(user.id, user.name) for user in users]
+    form.assigned_to.choices = [(0, "No user selected")] + [(user.id, user.name) for user in User.query.all()]
     if form.validate_on_submit():
         assigned_user_id = form.assigned_to.data
         if assigned_user_id == 0:
-            assigned_user_id = session["user_id"]  # Default to current user if no selection
+            assigned_user_id = session["user_id"]  
         task = Task(title = form.title.data, 
-                    team_id = 1,
+                    team_id = team.id,
                     assigned_to = assigned_user_id, 
                     priority = form.priority.data, 
                     description = form.description.data, 
-                    deadline = form.deadline.data, 
+                    deadline = dt.datetime.combine(form.deadline.data, dt.datetime.min.time()), 
                     status = form.status.data, 
                     is_done = (form.status.data == "Complete"))
         db.session.add(task)
@@ -259,17 +261,17 @@ def tasks():
         return redirect(url_for("tasks"))
     status_filter = request.args.get("status", "all")
     now = dt.datetime.now()
-    query = Task.query
+    query = Task.query.filter_by(team_id = team.id)
     if status_filter != "all":
         query = query.filter(Task.status == status_filter)
     status_order = case((((Task.is_done == False) & (Task.deadline < now)), 0), (Task.status == "Wishlist", 1), (Task.status == "To Do", 2), (Task.status == "In Progress", 3), (Task.status == "In Review", 4), (Task.status == "Complete", 5), else_=6)   
     priority_order = case((Task.priority.in_(["High","high"]), 0), (Task.priority.in_(["Medium","medium"]), 1), (Task.priority.in_(["Low","low"]), 2), else_=3)
     query = query.order_by(status_order, priority_order, Task.deadline.asc())
     tasks = query.all()
-    return render_template("tasks.html", form=form, tasks=tasks, datetime=dt, status_filter=status_filter)
+    return render_template("tasks.html", form = form, tasks = tasks, datetime = dt, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]), team = team)
 
-@app.route("/task/<int:id>/toggle", methods=["POST"])
-#@login_required
+@app.route("/task/<int:id>/toggle", methods = ["POST"])
+@login_required
 def toggle_task(id):
     task = db.session.get(Task, id)
     if task is None:
@@ -278,27 +280,70 @@ def toggle_task(id):
     if task.is_done:
         task.status = "Complete"
     else:
-        task.status = "Pending"
+        task.status = "To Do"
     db.session.commit()
     return redirect(url_for("tasks"))
 
-@app.route("/task/<int:id>/delete", methods=["POST"])
-# @login_required
+@app.route("/task/<int:id>/delete", methods = ["POST"])
+@login_required
 def delete_task(id):
     task = db.session.get(Task, id)
     if task is None:
         return "Task not found"
-    TaskActivity.query.filter_by(task_id=id).delete()
+    TaskActivity.query.filter_by(task_id = id).delete()
     db.session.delete(task)
     db.session.commit()
     return redirect(url_for("tasks"))
 
-@app.route("/task/<int:id>/details", methods=["GET", "POST"])
+@app.route("/task/<int:id>/autosave", methods = ["POST"])
+@login_required
+def autosave_task(id):
+    task = Task.query.get(id)
+    field = request.form.get("field")
+    value = request.form.get("value")
+    user_id = session.get("user_id")
+    old_value = getattr(task, field, None)
+    if field == "title":
+        task.title = value
+    elif field == "description":
+        task.description = value
+    elif field == "assigned_to":
+        old_user = db.session.get(User, task.assigned_to)
+        new_user = db.session.get(User, int(value))
+        old_value = old_user.name if old_user else "No assignee"
+        new_value = new_user.name if new_user else "No assignee"
+        task.assigned_to = int(value)
+    elif field == "priority":
+        task.priority = value
+    elif field == "status":
+        task.status = value
+    elif field == "deadline":
+        old_value = task.deadline.strftime("%d %b %Y") if task.deadline else "No deadline"
+        if value:
+            task.deadline = dt.datetime.strptime(value, "%Y-%m-%d")
+            new_value = task.deadline.strftime("%d %b %Y")
+        else:
+            new_value = "No deadline"
+    if field not in ["assigned_to", "deadline"]:
+        new_value = value
+    if str(old_value) != str(new_value):
+        activity = TaskActivity(
+            task_id = task.id,
+            user_id = user_id,
+            action = f"changed {field} from '{old_value}' to '{new_value}'"
+        )
+        db.session.add(activity)
+    db.session.commit()
+    return "Saved" # "Saved" for checking response in frontend, can be removed later
+
+@app.route("/task/<int:id>/details", methods = ["GET", "POST"])
+@login_required
 def task_details(id):
     task = db.session.get(Task, id)
+    users = User.query.all()
+    subtasks = Subtask.query.filter_by(task_id = id).all()
     if task is None:
         return "Task not found"
-    users = User.query.all()
     if request.method == "POST":
         old_title = task.title
         old_description = task.description
@@ -310,7 +355,7 @@ def task_details(id):
         task.description = request.form.get("description")
         task.assigned_to = int(request.form.get("assigned_to"))
         task.priority = request.form.get("priority")
-        task.deadline = dt.datetime.strptime(request.form.get("deadline"), "%Y-%m-%dT%H:%M")
+        task.deadline = dt.datetime.strptime(request.form.get("deadline"), "%Y-%m-%d")
         task.status = request.form.get("status")
         task.is_done = task.status == "Complete"
         if old_title != task.title:
@@ -328,16 +373,53 @@ def task_details(id):
             add_task_activity(task.id, f"changed status from {old_status} to {task.status}")
         db.session.commit()
         return redirect(url_for("tasks"))
-    return render_template("task_details.html", task=task, users=users)
+    return render_template("task_details.html", task = task, users = users, subtasks = subtasks)
+
+@app.route("/task/<int:id>/add_subtask", methods = ["POST"])
+@login_required
+def add_subtask(id):
+    title = request.form.get("title")
+    assigned_to = request.form.get("assigned_to")
+    status = request.form.get("status")
+    deadline = request.form.get("deadline")
+    priority = request.form.get("priority")
+    new_subtask = Subtask(title = title, assigned_to = int(assigned_to) if assigned_to else None, status = status, priority = priority, deadline = dt.datetime.strptime(deadline, "%Y-%m-%d") if deadline else None, task_id = id)
+    db.session.add(new_subtask)
+    db.session.commit()
+    return redirect(url_for("task_details", id = id))
+
+@app.route("/subtask/<int:sub_id>/edit", methods = ["POST"])
+@login_required
+def edit_subtask(sub_id):
+    sub = db.session.get(Subtask, sub_id)
+    if not sub:
+        return "Subtask not found"
+    sub.title = request.form.get("title", sub.title)
+    sub.status = request.form.get("status", sub.status)
+    sub.priority = request.form.get("priority", sub.priority)
+    deadline = request.form.get("deadline")
+    if deadline:
+        try:
+            sub.deadline = dt.datetime.strptime(deadline, "%Y-%m-%d")
+        except:
+            return "Invalid date format"
+    db.session.commit()
+    return redirect(url_for("task_details", id = sub.task_id))
+
+@app.route("/subtask/<int:id>/toggle", methods=["POST"])
+@login_required
+def toggle_subtask(id):
+    subtask = Subtask.query.get(id)
+    subtask.is_done = not subtask.is_done
+    db.session.commit()
+    return redirect(url_for("task_details", id = subtask.task_id))
 
 def add_task_activity(task_id, action):
     user_id = session.get("user_id", 1)
-
     activity = TaskActivity(
         task_id=task_id,
         user_id=user_id,
         action=action
     )
-
     db.session.add(activity)
 # --------------------------------------------------------------------------------------------------------

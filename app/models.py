@@ -83,9 +83,36 @@ class Task(db.Model):
     status = db.Column(db.String(30), nullable=False, default="To Do")
     is_done = db.Column(db.Boolean, default=False)
     dashboard_id = db.Column(db.Integer, db.ForeignKey('dashboard.id'))
-
+    subtasks = db.relationship('Subtask', backref='task', lazy=True, cascade="all, delete")
     def __repr__(self):
         return f'<Task {self.team_id} - {self.description}>'
+    
+class Subtask(db.Model):
+   id = db.Column(db.Integer, primary_key=True)
+   task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
+   title = db.Column(db.String(120), nullable=False)
+   description = db.Column(db.Text, nullable=True)
+   assigned_to = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+   priority = db.Column(db.String(20), nullable=True)
+   deadline = db.Column(db.DateTime, nullable=True)
+   status = db.Column(db.String(30), nullable=False, default="Wishlist")
+   is_done = db.Column(db.Boolean, default=False)
+   assigned_user = db.relationship('User', foreign_keys=[assigned_to])
+
+   def __repr__(self):
+       return f'<Subtask {self.task_id} - {self.title}>'
+    
+class TaskActivity(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    action = db.Column(db.String(200), nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now())
+    task = db.relationship('Task', backref='activities')
+    user = db.relationship('User', backref='task_activities')
+
+    def __repr__(self):
+        return f'<TaskActivity {self.action}>'
     
 class Announcement(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -97,19 +124,6 @@ class Announcement(db.Model):
 
     def __repr__(self):
         return f'<Announcement {self.title}>'
-    
-class TaskActivity(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    action = db.Column(db.String(200), nullable=False)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now())
-
-    task = db.relationship('Task', backref='activities')
-    user = db.relationship('User', backref='task_activities')
-
-    def __repr__(self):
-        return f'<TaskActivity {self.action}>'
     
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
