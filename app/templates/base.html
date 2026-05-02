@@ -28,6 +28,7 @@
             <a href = '{{url_for("home")}}'>Home</a>
             {% if current_user %}
                 <a href = '{{url_for("profile", user_id = current_user.id)}}'>Profile</a>
+                <a href='{{ url_for("teams") }}'>Teams</a>
                 <a href = '{{url_for("logout")}}'>Log Out</a>
             {% else %}
                 <a href = '{{url_for("login")}}'>Login</a>

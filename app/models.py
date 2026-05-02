@@ -54,9 +54,14 @@ class Event(db.Model):
 class Team(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
+    motto = db.Column(db.String(200), nullable=True)
+    roles = db.Column(db.String(300), nullable=True)
+    project_idea = db.Column(db.Text, nullable=True)
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    leader_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     team_code = db.Column(db.String(20), unique=True, nullable=False)
     max_members = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now())
     tasks = db.relationship('Task', backref='team', lazy=True)
     members = db.relationship('TeamMember', backref='team', lazy=True)
 
@@ -67,6 +72,8 @@ class TeamMember(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    roles = db.Column(db.String(300), nullable=True)
+    joined_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now())
     __table_args__ = (db.UniqueConstraint('team_id', 'user_id'),)
 
     def __repr__(self):

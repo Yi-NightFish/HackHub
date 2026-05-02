@@ -62,6 +62,13 @@ def verify_otp(purpose, session_key):
         return True
     return False
 
+def generate_team_code():
+    while True:
+        code = ''.join(random.choices(str.ascii_uppercase + str.digits, k=6))
+        existing_team = Team.query.filter_by(team_code=code).first()
+        if not existing_team:
+            return code
+
 # Main routes
 @app.route("/")
 def home():
@@ -429,3 +436,146 @@ def add_task_activity(task_id, action):
     )
     db.session.add(activity)
 # --------------------------------------------------------------------------------------------------------
+# wy - team formation system -----------------------------------------------------------------------------
+@app.route("/teams")
+@login_required
+def teams():
+    all_teams = Team.query.all()
+    current_user = db.session.get(User, session["user_id"])
+    return render_template("teams.html", teams = all_teams, current_user = current_user)
+
+@app.route("/team/create", methods = ["GET", "POST"])
+@login_required
+def create_team():
+    current_user = db.session.get(User, session["user_id"])
+    events = Event.query.all()
+    if request.method == "POST":
+        name = request.form.get("name")
+        roles = request.form.get("roles")
+        motto = request.form.get("motto")
+        project_idea = request.form.get("project_idea")
+        event_id = request.form.get("event_id")
+        max_members = int(request.form.get("max_members"))
+        if max_members < 1 or max_members > 6:
+            return "Team size must be between 1 and 6"
+        new_team = Team(
+            name = name,
+            roles = roles,
+            motto = motto,
+            project_idea = project_idea,
+            event_id = event_id,
+            leader_id = session["user_id"],
+            team_code = generate_team_code(),
+            max_members = max_members
+        )
+        db.session.add(new_team)
+        db.session.commit()
+        leader = TeamMember(team_id = new_team.id, user_id = session["user_id"],role = "Leader")
+        db.session.add(leader)
+        db.session.commit()
+        return redirect(url_for("team_detail", team_id = new_team.id))
+    return render_template("create_team.html", events = events, current_user = current_user)
+
+@app.route("/team/join", methods = ["GET", "POST"])
+@login_required
+def join_team():
+    current_user = db.session.get(User, session["user_id"])
+    if request.method == "POST":
+        team_code = request.form.get("team_code")
+        team = Team.query.filter_by(team_code = team_code).first()
+        if not team:
+            return "Invalid team code"
+        existing_member = TeamMember.query.filter_by(
+            team_id = team.id,
+            user_id = session["user_id"]
+        ).first()
+        if existing_member:
+            return "You already joined this team"
+        member_count = TeamMember.query.filter_by(team_id=team.id).count()
+        if member_count >= team.max_members:
+            return "This team is already full"
+        new_member = TeamMember(
+            team_id = team.id,
+            user_id = session["user_id"],
+            role = "Member"
+        )
+        db.session.add(new_member)
+        db.session.commit()
+        return redirect(url_for("team_detail", team_id = team.id))
+    return render_template("join_team.html", current_user = current_user)
+
+@app.route("/team/<int:team_id>")
+@login_required
+def team_detail(team_id):
+    team = db.session.get(Team, team_id)
+    if not team:
+        return "Team not found"
+    current_user = db.session.get(User, session["user_id"])
+    return render_template("team_detail.html", team = team, current_user = current_user)
+
+@app.route("/team/<int:team_id>/edit", methods=["GET", "POST"])
+@login_required
+def edit_team(team_id):
+    team = db.session.get(Team, team_id)
+    current_user = db.session.get(User, session["user_id"])
+    if not team:
+        return "Team not found"
+    if team.leader_id != session["user_id"]:
+        return "Only leader can edit this team"
+    if request.method == "POST":
+        team.name = request.form.get("name")
+        team.motto = request.form.get("motto")
+        team.roles = request.form.get("roles")
+        team.project_idea = request.form.get("project_idea")
+        max_members = int(request.form.get("max_members"))
+        if max_members < 1 or max_members > 6:
+            return "Team size must be between 1 and 6"
+        team.max_members = max_members
+        db.session.commit()
+        return redirect(url_for("team_detail", team_id = team.id))
+    return render_template("edit_team.html", team = team, current_user = current_user)
+
+@app.route("/team/<int:team_id>/leave", methods=["POST"])
+@login_required
+def leave_team(team_id):
+    team = db.session.get(Team, team_id)
+    if not team:
+        return "Team not found"
+    if team.leader_id == session["user_id"]:
+        return "Leader cannot leave. Delete the team instead."
+    member = TeamMember.query.filter_by(team_id = team.id, user_id = session["user_id"]).first()
+    if not member:
+        return "You are not in this team"
+    db.session.delete(member)
+    db.session.commit()
+    return redirect(url_for("teams"))
+
+@app.route("/team/<int:team_id>/delete", methods=["POST"])
+@login_required
+def delete_team(team_id):
+    team = db.session.get(Team, team_id)
+    if not team:
+        return "Team not found"
+    if team.leader_id != session["user_id"]:
+        return "Only leader can delete this team"
+    TeamMember.query.filter_by(team_id = team.id).delete()
+    db.session.delete(team)
+    db.session.commit()
+    return redirect(url_for("teams"))
+
+@app.route("/team/<int:team_id>/remove/<int:user_id>", methods=["POST"])
+@login_required
+def remove_member(team_id, user_id):
+    team = db.session.get(Team, team_id)
+    if not team:
+        return "Team not found"
+    if team.leader_id != session["user_id"]:
+        return "Only leader can remove members"
+    if user_id == team.leader_id:
+        return "Cannot remove the leader"
+    member = TeamMember.query.filter_by(team_id = team.id, user_id = user_id).first()
+    if member:
+        db.session.delete(member)
+        db.session.commit()
+    return redirect(url_for("team_detail", team_id = team.id))
+#---------------------------------------------------------------------------------------------------------

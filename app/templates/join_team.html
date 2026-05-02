@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="team-page">
+    <h1 class="team-title">{{ team.name }}</h1>
+
+    <div class="detail-box">
+        <p><strong>Motto:</strong> {{ team.motto or "-" }}</p>
+        <p><strong>Roles Needed:</strong> {{ team.roles or "-" }}</p>
+        <p><strong>Project Idea:</strong> {{ team.project_idea or "-" }}</p>
+        <p><strong>Team Code:</strong> {{ team.team_code }}</p>
+        <p><strong>Members:</strong> {{ team.members|length }} / {{ team.max_members }}</p>
+    </div>
+
+    <h2>Team Members</h2>
+
+    {% for member in team.members %}
+    <div class="member-row">
+        {{ member.user.name or member.user.email }} - {{ member.role }}
+
+        {% if team.leader_id == current_user.id and member.user_id != team.leader_id %}
+        <form method="POST" action="{{ url_for('remove_member', team_id=team.id, user_id=member.user_id) }}">
+            <button type="submit">Remove</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    <div class="team-actions">
+        {% if team.leader_id == current_user.id %}
+        <a class="team-btn" href="{{ url_for('edit_team', team_id=team.id) }}">Edit Team</a>
+
+        <form method="POST" action="{{ url_for('delete_team', team_id=team.id) }}">
+            <button class="danger" type="submit">Delete Team</button>
+        </form>
+        {% else %}
+        <form method="POST" action="{{ url_for('leave_team', team_id=team.id) }}">
+            <button type="submit">Leave Team</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <a class="back-link" href="{{ url_for('teams') }}">Back to Teams</a>
+</div>
+{% endblock %}
