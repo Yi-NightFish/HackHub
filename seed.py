@@ -60,48 +60,39 @@ with app.app_context():
     # Create events with varied statuses for UI testing
     event1 = Event(
         title="HackHub Launch Hackathon",
-        date=datetime.now(),
         start_time=datetime.now(),
         end_time=datetime.now() + timedelta(hours=2),
         description="A beginner-friendly hackathon to celebrate the HackHub launch.",
         organizer_id=user3.id,
-        status="open"
     )
     event2 = Event(
         title="Spring Innovation Challenge",
-        date=datetime.now(),
         start_time=datetime.now(),
         end_time=datetime.now() + timedelta(hours=3),
         description="A team-based event for solving real-world problems.",
         organizer_id=user1.id,
-        status="completed"
     )
     event3 = Event(
         title="AI Workshop Weekend",
-        date=datetime.now(),
         start_time=datetime.now(),
         end_time=datetime.now() + timedelta(hours=4),
         description="An educational event with workshops and demos.",
         organizer_id=user1.id,
-        status="cancelled"
     )
     event4 = Event(
         title="Summer Sprint Hack",
-        date=datetime.now(),
         start_time=datetime.now(),
         end_time=datetime.now() + timedelta(hours=1),
         description="A fast-paced event for prototyping new apps.",
         organizer_id=user4.id,
-        status="completed"
     )
     event5 = Event(
         title="Open Source Collaboration Day",
-        date=datetime.now(),
         start_time=datetime.now(),
         end_time=datetime.now() + timedelta(hours=5),
         description="A community event for contributing to open source projects.",
         organizer_id=user5.id,
-        status="open"
+        cancelled = True
     )
     db.session.add_all([event1, event2, event3, event4, event5])
     db.session.commit()
@@ -172,12 +163,10 @@ with app.app_context():
     for i in range(6, 16):
         event = Event(
             title=f"Event {i}",
-            date=datetime.now() + timedelta(days=i),
             start_time=datetime.now() + timedelta(days=i),
             end_time=datetime.now() + timedelta(days=i, hours=2),
             description=f"Description for Event {i}",
             organizer_id=random.choice(all_users).id,
-            status=random.choice(["open", "ongoing", "completed", "cancelled"])
         )
         db.session.add(event)
     db.session.commit()
