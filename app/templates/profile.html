@@ -47,7 +47,7 @@
             <h2>History</h2>
             {% for event in events %}
                 <div class = "event">
-                    <h3>{{event.title}} ({{event.date.date()}})</h3>
+                    <h3>{{event.title}} ({{event.start_time.date()}})</h3>
                     <hr>
                     <p id = "history-description">{{event.description}}</p>
                 </div>

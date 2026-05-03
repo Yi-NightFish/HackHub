@@ -28,9 +28,11 @@ body {
     margin-bottom: 20px;
 }
 
-.event-date {
-    font-weight: bold;
-    color: #28a745;
+.event-date-ongoing span{
+    background-color: rgb(212, 205, 0);
+    color: white;
+    border-radius: 20px;
+    padding: 5px;
 }
 
 .event-list {
@@ -43,4 +45,18 @@ body {
     margin-bottom: 10px;
     padding: 10px;
     border-radius: 4px;
+}
+
+.event-date-open span{
+    background-color: rgb(35, 161, 150);
+    color: white;
+    border-radius: 20px;
+    padding: 5px;
+}
+
+.event-date-cancelled span{
+    background-color: rgb(190, 0, 0);
+    color: white;
+    border-radius: 20px;
+    padding: 5px;
 }

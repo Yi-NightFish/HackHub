@@ -7,12 +7,45 @@
 {% block content %}
     <div id="events">
         {% if events %}
+            <div id = "filter-container">
+                <form method = "GET">
+                    <input name = "filter-by-name" id = "filter-by-name">
+                    <input type = "submit" value = "search">
+                    <select id = "filter-by-status" name = "filter-by-status">
+                        <option value = "open">Open</option>
+                        <option value = "closed">Closed</option>
+                        <option value = "ongoing">Ongoing</option>
+                        <option value = "cancelled">Cancelled</option>
+                        <option value = "all" default>All</option>
+                    </select>
+                </form>
+            </div>
             <ul class="event-list">
                 {% for event in events %}
                     <li>
                         <div class="event-container">
                             <h3 class="event-title"><a href = "{{url_for('event_detail', event_id = event.id)}}">{{ event.title }}</a></h3>
-                            <p class="event-date">{{ event.date.strftime('%Y-%m-%d') }}</p>
+                            {% if event.status == "open" %}
+                                <p class="event-date-open">
+                                    {{ event.start_time.strftime('%Y-%m-%d') }}
+                                    <span>{{ (event.start_time - current_time).days }} days remaining</span>
+                                </p>
+                            {% elif event.status == "ongoing" %}
+                                <p class="event-date-ongoing">
+                                    {{ event.start_time.strftime('%Y-%m-%d') }}
+                                    <span> Ongoing </span>
+                                </p>
+                            {% elif event.status == "closed" %}
+                                <p class="event-date-closed">
+                                    {{ event.start_time.strftime('%Y-%m-%d') }}
+                                    <span> Ongoing </span>
+                                </p>
+                            {% else %}
+                                <p class="event-date-cancelled">
+                                    {{ event.start_time.strftime('%Y-%m-%d') }}
+                                    <span> Cancelled </span>
+                                </p>
+                            {% endif %}
                             <hr>
                             <p class="event-description">{{ event.description }}</p>
                         </div>
