@@ -55,8 +55,16 @@ body {
 }
 
 .event-date-cancelled span{
+    background-color: rgb(78, 78, 78);
+    color: white;
+    border-radius: 20px;
+    padding: 5px;
+}
+
+.event-date-closed span{
     background-color: rgb(190, 0, 0);
     color: white;
     border-radius: 20px;
     padding: 5px;
 }
+

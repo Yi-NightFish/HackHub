@@ -53,7 +53,7 @@ class Event(db.Model):
         if now < self.start_time:
             return "open"
         if now > self.end_time:
-            return "completed"
+            return "closed"
         return "ongoing"
     
 class Team(db.Model):

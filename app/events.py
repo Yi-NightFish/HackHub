@@ -24,11 +24,18 @@ VALID_STATUSES = ["open", "ongoing", "cancelled", "closed"]
 @app.route("/events")
 def events():
     status = request.args.get("status")
+    name = request.args.get("name").strip(" ")
     status = status if status in VALID_STATUSES else "all"
     if status == "open":
-        events = db.session.scalars(select(Event).where(Event.start_time > now())).all()
-    else:
+        events = db.session.scalars(select(Event).where(Event.start_time > now()).where(Event.cancelled == False)).all()
+    elif status == "all":
         events = db.session.scalars(select(Event)).all()
+    elif status == "cancelled":
+        events = db.session.scalars(select(Event).where(Event.cancelled == True)).all()
+    elif status == "closed":
+        events = db.session.scalars(select(Event).where(Event.end_time < now()).where(Event.cancelled == False))
+    else:
+        events = db.session.scalars(select(Event).where(Event.start_time < now()).where(Event.end_time > now()).where(Event.cancelled == False))
     return render_template("events.html", events = events, current_user = get_current_user(), current_time = now())
 
 @app.route("/event/<event_id>")

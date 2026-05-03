@@ -9,15 +9,15 @@
         {% if events %}
             <div id = "filter-container">
                 <form method = "GET">
-                    <input name = "filter-by-name" id = "filter-by-name">
-                    <input type = "submit" value = "search">
-                    <select id = "filter-by-status" name = "filter-by-status">
+                    <input name = "name" id = "filter-by-name" placeholder = "Search by event name..">
+                    <select id = "filter-by-status" name = "status">
                         <option value = "open">Open</option>
                         <option value = "closed">Closed</option>
                         <option value = "ongoing">Ongoing</option>
                         <option value = "cancelled">Cancelled</option>
-                        <option value = "all" default>All</option>
+                        <option value = "all" selected>All</option>
                     </select>
+                    <input type = "submit" value = "search">
                 </form>
             </div>
             <ul class="event-list">
@@ -38,7 +38,7 @@
                             {% elif event.status == "closed" %}
                                 <p class="event-date-closed">
                                     {{ event.start_time.strftime('%Y-%m-%d') }}
-                                    <span> Ongoing </span>
+                                    <span> Closed </span>
                                 </p>
                             {% else %}
                                 <p class="event-date-cancelled">
