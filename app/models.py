@@ -49,7 +49,7 @@ class Event(db.Model):
     def status(self):
         if self.cancelled:
             return "cancelled"
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         if now < self.start_time:
             return "open"
         if now > self.end_time:
