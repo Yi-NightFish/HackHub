@@ -28,7 +28,7 @@
         {% if paginate.has_prev %}
         <button hx-get="/explore?page={{ paginate.prev_num }}" 
                 hx-target="#event-list" 
-                hx-include="[name='search'], [name='status'], [name='start_date'], [name='sort']"
+                hx-include="[name='search'], [name='status'], [name='sort']"
                 style="padding: 8px 15px; cursor: pointer;">
             Previous
         </button>

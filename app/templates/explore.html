@@ -18,10 +18,10 @@
       <option value="completed" {% if status_filter == "completed" %}selected{% endif %}>Completed</option>
       <option value="ongoing" {% if status_filter == "ongoing" %}selected{% endif %}>Ongoing</option>
     </select>
-    
+
     <select name="sort" style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" hx-get="/explore" hx-trigger="change" hx-target="#event-list" hx-include="[name='search'], [name='status']" hx-swap="innerHTML">
-        <option value="newest" {% if sort_option == "newest" %}selected{% endif %}>Newest</option>
-        <option value="oldest" {% if sort_option == "oldest" %}selected{% endif %}>Oldest</option>
+        <option value="newest" {% if sort_by == "newest" %}selected{% endif %}>Newest</option>
+        <option value="oldest" {% if sort_by == "oldest" %}selected{% endif %}>Oldest</option>
     </select>
     </div>
 

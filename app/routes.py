@@ -247,14 +247,16 @@ def explore():
 
     if search_query:
         history = session.get("search_history", [])
-        if search_query not in history:
-            history.insert(0, search_query)
-            session["search_history"] = history[:5]  # Keep only last 5 unique searches
+        if search_query in history:
+            history.remove(search_query) #remove old one
+        history.insert(0, search_query) #add to front
+        session["search_history"] = history[:5]  # Keep only last 5 unique searches
+        session.modified = True # tell flask is updated
 
     query = Event.query.join(User, Event.organizer_id == User.id)
 
     if search_query:
-        query = query.filter(Event.title.contains(search_query) | Event.description.contains(search_query) | User.name.contains(search_query))
+        query = query.filter(Event.title.ilike(f"%{search_query}%") | Event.description.ilike(f"%{search_query}%") | User.name.ilike(f"%{search_query}%"))
     if status_filter != "all":
         query = query.filter(Event.status == status_filter)
     if start_date:
