@@ -278,6 +278,8 @@ def clear_messages():
             message.deleted_by_sender = True
         if message.receiver_id == current_user_id:
             message.deleted_by_receiver = True
+        if message.deleted_by_sender and message.deleted_by_receiver:
+            db.session.delete(message) #双方都删除了才真正从数据库删除
     db.session.commit()
     return redirect(url_for("chat"))
     
@@ -293,5 +295,7 @@ def get_message():
         # seen
         message.is_read = True
     db.session.commit()
+    receiver_id = 2 if current_user_id == 1 else 1
+    other_user = db.session.get(User, receiver_id)
     messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
-    return render_template("message.html", messages = messages, current_user_id = current_user_id)
+    return render_template("message.html", messages = messages, current_user_id = current_user_id, other_user = other_user)
