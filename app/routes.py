@@ -207,9 +207,10 @@ def profile(user_id):
             return redirect(url_for("verify_update_email"))
         return redirect(url_for("profile", user_id=user_id))
 
-    team_member_subquery = select(TeamMember.team_id).where(TeamMember.user_id == user_id).subquery()
-    is_team_members_of = db.session.query(Team.event_id).join(team_member_subquery, Team.id == team_member_subquery.c.team_id).subquery()
-    events = db.session.execute(db.session.query(Event).join(is_team_members_of, is_team_members_of.c.event_id == Event.id)).scalars().all()
+    # team_member_subquery = select(TeamMember.team_id).where(TeamMember.user_id == user_id).subquery()
+    # is_team_members_of = db.session.query(Team.event_id).join(team_member_subquery, Team.id == team_member_subquery.c.team_id).subquery()
+    # events = db.session.execute(db.session.query(Event).join(is_team_members_of, is_team_members_of.c.event_id == Event.id)).scalars().all()
+    events = map(lambda team_membership: team_membership.event, user.team_memberships)
     return render_template("profile.html", 
                            form = profile_page, 
                            user = user, 

@@ -57,17 +57,22 @@ def event_detail(event_id):
         event = db.session.get(Event, event_id)
 
         def get_participants():
-            teams = event.teams
-            return [member.user for team in teams for member in team.members]
+            return map(lambda participant: participant.user, event.participants)
 
+        participants = get_participants()
         if active_tab == "overview":
-            no_participant = reduce(lambda total, team : total + len(team.members), event.teams, 0)
+            current_user = get_current_user()
+            enrolled = False
+            if current_user:
+                enrolled = current_user in participants
+            no_participant = len(event.participants)
             return render_template(
                 "event_detail.html", 
                 event = event, 
-                current_user = get_current_user(), 
+                current_user = current_user, 
                 no_participant = no_participant,
-                active_tab = active_tab
+                active_tab = active_tab,
+                enrolled = enrolled
             )
         elif active_tab == "participants":
             if not get_current_user():
@@ -77,6 +82,15 @@ def event_detail(event_id):
                 event = event, 
                 current_user = get_current_user(),
                 active_tab = active_tab,
-                participants = get_participants()
+                participants = participants
             )
-    
+    else:
+        user_id = request.form.get("user-id")
+        participation = Participation(
+            user_id = user_id,
+            event_id = event_id,
+            team_id = None
+        )
+        db.session.add(participation)
+        db.session.commit()
+        return redirect(request.url)
