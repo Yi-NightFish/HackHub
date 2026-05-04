@@ -129,3 +129,12 @@
     border: 1px solid transparent;
     width: 50%;
 }
+
+.join-now{
+    padding: 10px 16px;
+    border-radius: 999px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: 1px solid transparent;
+    margin-top: 10px;
+}

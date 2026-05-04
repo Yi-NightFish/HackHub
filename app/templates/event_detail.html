@@ -40,10 +40,11 @@
         {% if not enrolled %}
           <form method = "POST">
             <input name = "user-id" value = '{{ current_user.id }}' hidden>
-            <input type = "submit" value = "Join Now">
+            <input type = "submit" value = "Join Now" class = "join-now">
           </form>
         {% else %}
             <p class = "enrolled">Enrolled</p>
+            <p>Press here to <a href = '{{ url_for("unroll", event_id = event.id) }}'>unroll</a></p>
         {% endif %}
       {% else %}
         <p>Please <a href="{{ url_for('login', next = request.url) }}">log in</a> to join!</p>

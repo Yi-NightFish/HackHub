@@ -94,3 +94,12 @@ def event_detail(event_id):
         db.session.add(participation)
         db.session.commit()
         return redirect(request.url)
+    
+@app.route("/unroll/<event_id>")
+@login_required
+def unroll(event_id):
+    participation = Participation.query.filter_by(event_id = event_id, user_id = get_current_user().id).first()
+    print(participation)
+    db.session.delete(participation)
+    db.session.commit()
+    return redirect(url_for("event_detail", event_id = event_id))
