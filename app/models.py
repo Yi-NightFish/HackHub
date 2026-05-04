@@ -48,6 +48,17 @@ class Event(db.Model):
         db.CheckConstraint(status.in_(STATUS), name = "check_status"),
     )
 
+    def get_status(self):
+        now = datetime.datetime.now(datetime.UTC)
+        if self.status == "cancelled":
+            return "cancelled"
+        elif self.status == "completed" or now > self.end_time:
+            return "completed"
+        elif self.status == "ongoing" or (self.start_time <= now <= self.end_time):
+            return "ongoing"
+        else:
+            return "open"
+
     def __repr__(self):
         return f'<Event {self.title}>'
     

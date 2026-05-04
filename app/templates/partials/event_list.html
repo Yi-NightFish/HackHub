@@ -1,0 +1,19 @@
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+    {% for event in events %}
+    <div style="border: 1px solid #ccc; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); background-color: white; transition: transform 0.2s;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin: 0;">{{ event.title }}</h3>
+            <span style="font-size: 0.8em; color: white; background: {% if event.status == 'open' %}#28a745{% elif event.status == 'cancelled' %}#dc3545{% elif event.status == 'completed' %}#6c757d{% elif event.status == 'ongoing' %}#007bff{% else %}#17a2b8{% endif %}; padding: 3px 8px; border-radius: 12px;">{{ event.status.capitalize() }}</span>
+            <!-- <small style="color: #888;">{{ event.date.strftime('%Y-%m-%d') }}</small> -->
+        </div>
+        <h3 style="margin: 0 0 10px 0; color: #333; font-size: 1.25em;">{{ event.title }}</h3>
+        <p><strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d') }}</p>
+        <p><strong>Status:</strong> {{ event.status.capitalize() }}</p>
+        <p>{{ event.description[:100] }}{% if event.description|length > 100 %}...{% endif %}</p>
+        <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+            <a href="/event/{{ event.id }}">View Details</a>
+        </div>
+    </div>
+    {% else %}
+    <p>No events found.</p>
+    {% endfor %}

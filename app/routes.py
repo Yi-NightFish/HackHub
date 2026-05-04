@@ -234,3 +234,18 @@ def verify_update_email():
             return redirect(url_for("profile", user_id = user.id))
         return "Invalid OTP"
     return render_template("otp_veri.html", email = new_email)
+
+@app.route("/explore")
+@login_required
+def explore():
+    search_query = request.args.get("search", "").strip()
+    status_filter = request.args.get("status", "all")
+    query = Event.query
+    if search_query:
+        query = query.filter(Event.title.contains(search_query) | Event.description.contains(search_query))
+    if status_filter != "all":
+        query = query.filter(Event.status == status_filter)
+    events = query.order_by(Event.date.asc()).all()
+    if request.headers.get("HX-Request"):
+        return render_template("partials/event_list.html", events=events)
+    return render_template("explore.html", events = events, search_query = search_query, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]))
