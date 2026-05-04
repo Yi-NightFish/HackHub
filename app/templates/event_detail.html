@@ -37,10 +37,14 @@
 
     {% if event.status == "open" %}
       {% if current_user %}
-        <form method = "POST">
-          <input name = "user-id" value = '{{ current_user.id }}' hidden>
-          <input type = "submit" value = "Join Now">
-        </form>
+        {% if not enrolled %}
+          <form method = "POST">
+            <input name = "user-id" value = '{{ current_user.id }}' hidden>
+            <input type = "submit" value = "Join Now">
+          </form>
+        {% else %}
+            <p class = "enrolled">Enrolled</p>
+        {% endif %}
       {% else %}
         <p>Please <a href="{{ url_for('login', next = request.url) }}">log in</a> to join!</p>
       {% endif %}
