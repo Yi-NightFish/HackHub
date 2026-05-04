@@ -10,14 +10,21 @@
             <!-- <small style="color: #888;">{{ event.date.strftime('%Y-%m-%d') }}</small> -->
         </div>
         <!-- <h3 style="margin: 0 0 10px 0; color: #333; font-size: 1.25em;">{{ event.title }}</h3> -->
-        <p><strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d') }}</p>
+        <!-- <p><strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d') }}</p> -->
         <!-- <p><strong>Status:</strong> {{ event.status.capitalize() }}</p> -->
+        <p><strong>Start Time:</strong> {{ event.start_time.strftime('%Y-%m-%d %H:%M') }}</p>
+        <p><strong>End Time:</strong> {{ event.end_time.strftime('%Y-%m-%d %H:%M') }}</p>
+        <p><strong>Organizer:</strong> {{ event.organizer.name }}</p>
         <p>{{ event.description[:100] }}{% if event.description|length > 100 %}...{% endif %}</p>
         <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
             <a href="/event/{{ event.id }}">View Details</a>
         </div>
     </div>
     {% else %}
-    <p>No events found.</p>
+    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #fafafa; border-radius: 12px; border: 2px dashed #eee;">
+        <h3 style="color: #333; margin: 15px 0 5px 0;">No events found</h3>
+        <p style="color: #888;">We couldn't find any events matching "{{ search_query }}".</p>
+        <a href="/explore" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #888; color: white; border-radius: 5px; font-weight: bold;">Clear all filters</a>
+    </div>
     {% endfor %}
 </div>
