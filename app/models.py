@@ -15,7 +15,7 @@ class User(db.Model):
     messages_received = db.relationship('Message', foreign_keys='Message.receiver_id', backref='receiver', lazy=True)
     organized_events = db.relationship('Event', backref='organizer', lazy=True)
     assigned_tasks = db.relationship('Task', foreign_keys='Task.assigned_to', backref='assigned_user', lazy=True)
-    team_memberships = db.relationship('TeamMember', backref='user', lazy=True)
+    team_memberships = db.relationship('Participation', backref='user', lazy=True)
     announcements = db.relationship('Announcement', backref='creator', lazy=True)
 
     def __repr__(self):
@@ -63,19 +63,25 @@ class Team(db.Model):
     team_code = db.Column(db.String(20), unique=True, nullable=False)
     max_members = db.Column(db.Integer, nullable=False)
     tasks = db.relationship('Task', backref='team', lazy=True)
-    members = db.relationship('TeamMember', backref='team', lazy=True)
+    members = db.relationship('Participation', backref='team', lazy=True)
 
     def __repr__(self):
         return f'<Team {self.name}>'
     
-class TeamMember(db.Model):
+class Participation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    __table_args__ = (db.UniqueConstraint('team_id', 'user_id'),)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    # Nullable team_id allows for solo participants
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=True)
+    joined_at = db.Column(db.DateTime, default=datetime.datetime.now)
+
+    event = db.relationship("Event", backref='participants', lazy=True)
+
+    __table_args__ = (db.UniqueConstraint('user_id', 'event_id'),)
 
     def __repr__(self):
-        return f'<TeamMember {self.team_id} - {self.user_id}>'
+        return f'<Participation User:{self.user_id} Event:{self.event_id} Team:{self.team_id}>'
     
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
