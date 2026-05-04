@@ -27,4 +27,27 @@
         <a href="/explore" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #888; color: white; border-radius: 5px; font-weight: bold;">Clear all filters</a>
     </div>
     {% endfor %}
+    {% if paginate.pages > 1 %}
+    <div style="margin-top: 30px; display: flex; justify-content: center; gap: 10px; align-items: center;">
+        {% if paginate.has_prev %}
+        <button hx-get="/explore?page={{ paginate.prev_num }}" 
+                hx-target="#event-list" 
+                hx-include="[name='search'], [name='status'], [name='start_date'], [name='sort']"
+                style="padding: 8px 15px; cursor: pointer;">
+            Previous
+        </button>
+        {% endif %}
+
+        <span style="color: #666;">Page {{ paginate.page }} of {{ paginate.pages }}</span>
+
+        {% if paginate.has_next %}
+        <button hx-get="/explore?page={{ paginate.next_num }}" 
+                hx-target="#event-list" 
+                hx-include="[name='search'], [name='status'], [name='start_date'], [name='sort']"
+                style="padding: 8px 15px; cursor: pointer;">
+            Next
+        </button>
+        {% endif %}
+    </div>
+    {% endif %}
 </div>

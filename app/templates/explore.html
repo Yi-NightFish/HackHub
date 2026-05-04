@@ -23,7 +23,7 @@
     <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
         Recent search:
         {% for word in history %}
-        <span style="background: #ddd; padding: 2px 5px; border-radius: 3px; cursor: pointer;" onclick="document.getElementsByName('search')[0].value='{{word}}';">{{word}}</span> {% endfor %}
+        <span style="background: #ddd; padding: 2px 5px; border-radius: 3px; cursor: pointer;" onclick="document.getElementsByName('search')[0].value='{{word}}'; htmx.trigger(document.getElementsByName('search')[0], 'keyup');">{{word}}</span> {% endfor %}
     </div>
     <div id="event-list">
     {% include "partials/event_list.html" %}
