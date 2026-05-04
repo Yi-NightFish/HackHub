@@ -10,6 +10,35 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+#event-tab {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+#event-tab a {
+    padding: 10px 16px;
+    border-radius: 999px;
+    background-color: #ffffff;
+    color: #007bff;
+    border: 1px solid transparent;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+#event-tab a:hover,
+#event-tab a:focus {
+    background-color: rgba(0, 123, 255, 0.08);
+    text-decoration: none;
+}
+
+#event-tab a.active {
+    background-color: #007bff;
+    color: #ffffff;
+    border-color: #007bff;
+}
+
 .event-detail h1 {
     color: #333;
     text-align: center;
@@ -33,4 +62,61 @@
     line-height: 1.6;
     font-size: 16px;
     color: rgb(90, 117, 127);
+}
+
+.participants-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+}
+
+.participants-table th,
+.participants-table td {
+    padding: 12px 14px;
+    border: 1px solid #e0e0e0;
+    text-align: left;
+}
+
+.participants-table thead {
+    background-color: #f2f6fb;
+}
+
+.participants-table tbody tr:hover {
+    background-color: #fafafa;
+}
+
+.event-detail p a {
+    color: #007bff;
+}
+
+.event-detail p a:hover {
+    text-decoration: underline;
+}
+
+.event-status-open span{
+    background-color: rgb(35, 161, 150);
+    color: white;
+    border-radius: 20px;
+    padding: 5px;
+}
+
+.event-status-cancelled span{
+    background-color: rgb(78, 78, 78);
+    color: white;
+    border-radius: 20px;
+    padding: 5px;
+}
+
+.event-status-closed span{
+    background-color: rgb(190, 0, 0);
+    color: white;
+    border-radius: 20px;
+    padding: 5px;
+}
+
+.event-status-ongoing span{
+    background-color: rgb(212, 205, 0);
+    color: white;
+    border-radius: 20px;
+    padding: 5px;
 }

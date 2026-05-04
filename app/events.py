@@ -1,9 +1,9 @@
 from app import *
 from app.models import *
-from flask import render_template, session, request
+from flask import render_template, session, request, redirect, url_for
 from sqlalchemy import select
 from functools import reduce
-import re
+from app.routes import login_required
 
 # Helper function
 def get_user_by_id(user_id):
@@ -21,6 +21,7 @@ def now():
 #------------------------------------------------------------------------------------------------------------
 
 VALID_STATUSES = ["open", "ongoing", "cancelled", "closed"]
+VALID_TABS = ["overview", "participants"]
 
 # Main
 @app.route("/events")
@@ -51,10 +52,29 @@ def events():
 
 @app.route("/event/<event_id>")
 def event_detail(event_id):
+    active_tab = request.args.get("tab") if request.args.get("tab") in VALID_TABS else "overview"
     event = db.session.get(Event, event_id)
-    no_participant = reduce(lambda total, team : total + len(team.members), event.teams, 0)
-    return render_template("event_detail.html", 
-                           event = event, 
-                           current_user = get_current_user(), 
-                           no_participant = no_participant
-    )
+
+    def get_participants():
+        teams = event.teams
+        return [member.user for team in teams for member in team.members]
+
+    if active_tab == "overview":
+        no_participant = reduce(lambda total, team : total + len(team.members), event.teams, 0)
+        return render_template(
+            "event_detail.html", 
+            event = event, 
+            current_user = get_current_user(), 
+            no_participant = no_participant,
+            active_tab = active_tab
+        )
+    elif active_tab == "participants":
+        if not get_current_user():
+            return redirect(url_for("login", next = request.url))
+        return render_template(
+            "event_detail.html", 
+            event = event, 
+            current_user = get_current_user(),
+            active_tab = active_tab,
+            participants = get_participants()
+        )

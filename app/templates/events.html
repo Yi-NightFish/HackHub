@@ -26,25 +26,25 @@
                     {% for event in events %}
                         <li>
                             <div class="event-container">
-                                <h3 class="event-title"><a href = "{{url_for('event_detail', event_id = event.id)}}">{{ event.title }}</a></h3>
+                                <h3 class="event-title"><a href = "{{url_for('event_detail', event_id = event.id, tab = 'overview')}}">{{ event.title }}</a></h3>
                                 {% if event.status == "open" %}
                                     <p class="event-date-open">
-                                        {{ event.start_time.strftime('%Y-%m-%d') }}
+                                        {{ event.start_time.strftime('%b %d, %Y') }}
                                         <span>{{ (event.start_time - current_time).days }} days remaining</span>
                                     </p>
                                 {% elif event.status == "ongoing" %}
                                     <p class="event-date-ongoing">
-                                        {{ event.start_time.strftime('%Y-%m-%d') }}
+                                        {{ event.start_time.strftime('%b %d, %Y') }}
                                         <span> Ongoing </span>
                                     </p>
                                 {% elif event.status == "closed" %}
                                     <p class="event-date-closed">
-                                        {{ event.start_time.strftime('%Y-%m-%d') }}
+                                        {{ event.start_time.strftime('%b %d, %Y') }}
                                         <span> Closed </span>
                                     </p>
                                 {% else %}
                                     <p class="event-date-cancelled">
-                                        {{ event.start_time.strftime('%Y-%m-%d') }}
+                                        {{ event.start_time.strftime('%b %d, %Y') }}
                                         <span> Cancelled </span>
                                     </p>
                                 {% endif %}
