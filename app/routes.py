@@ -261,8 +261,10 @@ def explore():
         query = query.filter(Event.date >= start_date)
     if end_date:
         query = query.filter(Event.date <= end_date)
-    if sort_by == "date_desc":
+    if sort_by == "newest":
         query = query.order_by(Event.date.desc())
+    elif sort_by == "oldest":
+        query = query.order_by(Event.date.asc())
     elif sort_by == "title_asc":
         query = query.order_by(Event.title.asc())
     else:
@@ -271,5 +273,5 @@ def explore():
     paginate = query.paginate(page=page, per_page=6, error_out=False)
     events = paginate.items
     if request.headers.get("HX-Request"):
-        return render_template("partials/event_list.html", events=events, search_query=search_query)
+        return render_template("partials/event_list.html", events = events, search_query = search_query, paginate = paginate)
     return render_template("explore.html", events = events, search_query = search_query, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]), sort_by = sort_by, paginate = paginate, history = session.get("search_history", []))
