@@ -109,6 +109,9 @@ def login():
 
         if user and check_password_hash(user.password, password):
             session["user_id"] = user.id
+            next = request.args.get("next")
+            if next:
+                return redirect(next)
             return redirect("/dashboard")
         return "Invalid credentials"
     return render_template("login.html")
