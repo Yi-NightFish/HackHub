@@ -50,31 +50,33 @@ def events():
                            selected_status = status
     )
 
-@app.route("/event/<event_id>")
+@app.route("/event/<event_id>", methods = ["GET", "POST"])
 def event_detail(event_id):
-    active_tab = request.args.get("tab") if request.args.get("tab") in VALID_TABS else "overview"
-    event = db.session.get(Event, event_id)
+    if request.method == "GET":
+        active_tab = request.args.get("tab") if request.args.get("tab") in VALID_TABS else "overview"
+        event = db.session.get(Event, event_id)
 
-    def get_participants():
-        teams = event.teams
-        return [member.user for team in teams for member in team.members]
+        def get_participants():
+            teams = event.teams
+            return [member.user for team in teams for member in team.members]
 
-    if active_tab == "overview":
-        no_participant = reduce(lambda total, team : total + len(team.members), event.teams, 0)
-        return render_template(
-            "event_detail.html", 
-            event = event, 
-            current_user = get_current_user(), 
-            no_participant = no_participant,
-            active_tab = active_tab
-        )
-    elif active_tab == "participants":
-        if not get_current_user():
-            return redirect(url_for("login", next = request.url))
-        return render_template(
-            "event_detail.html", 
-            event = event, 
-            current_user = get_current_user(),
-            active_tab = active_tab,
-            participants = get_participants()
-        )
+        if active_tab == "overview":
+            no_participant = reduce(lambda total, team : total + len(team.members), event.teams, 0)
+            return render_template(
+                "event_detail.html", 
+                event = event, 
+                current_user = get_current_user(), 
+                no_participant = no_participant,
+                active_tab = active_tab
+            )
+        elif active_tab == "participants":
+            if not get_current_user():
+                return redirect(url_for("login", next = request.url))
+            return render_template(
+                "event_detail.html", 
+                event = event, 
+                current_user = get_current_user(),
+                active_tab = active_tab,
+                participants = get_participants()
+            )
+    

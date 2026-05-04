@@ -35,6 +35,17 @@
       {{ event.description }}
     </div>
 
+    {% if event.status == "open" %}
+      {% if current_user %}
+        <form method = "POST">
+          <input name = "user-id" value = '{{ current_user.id }}' hidden>
+          <input type = "submit" value = "Join Now">
+        </form>
+      {% else %}
+        <p>Please <a href="{{ url_for('login', next = request.url) }}">log in</a> to join!</p>
+      {% endif %}
+    {% endif %}
+
   {% elif active_tab == "participants" %}
     {% if current_user %}
       {% if participants %}
