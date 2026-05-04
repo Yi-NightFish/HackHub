@@ -9,7 +9,4 @@ class Config:
     MAIL_SERVER = "smtp.gmail.com"
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-    from functools import reduce
-    app.jinja_env.globals["reduce"] = reduce
-    app.jinja_env.globals["count_participants"] = lambda total, team : total + len(team.members)
     

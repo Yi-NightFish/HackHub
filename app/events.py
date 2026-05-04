@@ -2,6 +2,7 @@ from app import *
 from app.models import *
 from flask import render_template, session, request
 from sqlalchemy import select
+from functools import reduce
 
 # Helper function
 def get_user_by_id(user_id):
@@ -33,11 +34,22 @@ def events():
     elif status == "cancelled":
         events = db.session.scalars(select(Event).where(Event.cancelled == True)).all()
     elif status == "closed":
-        events = db.session.scalars(select(Event).where(Event.end_time < now()).where(Event.cancelled == False))
+        events = db.session.scalars(select(Event).where(Event.end_time < now()).where(Event.cancelled == False)).all()
     else:
-        events = db.session.scalars(select(Event).where(Event.start_time < now()).where(Event.end_time > now()).where(Event.cancelled == False))
-    return render_template("events.html", events = events, current_user = get_current_user(), current_time = now())
+        events = db.session.scalars(select(Event).where(Event.start_time < now()).where(Event.end_time > now()).where(Event.cancelled == False)).all()
+    return render_template("events.html", 
+                           events = events, 
+                           current_user = get_current_user(), 
+                           current_time = now(),
+                           selected_status = status
+    )
 
 @app.route("/event/<event_id>")
 def event_detail(event_id):
-    return render_template("event_detail.html", event = db.session.get(Event, event_id), current_user = get_current_user())
+    event = db.session.get(Event, event_id)
+    no_participant = reduce(lambda total, team : total + len(team.members), event.teams, 0)
+    return render_template("event_detail.html", 
+                           event = event, 
+                           current_user = get_current_user(), 
+                           no_participant = no_participant
+    )
