@@ -240,12 +240,36 @@ def verify_update_email():
 def explore():
     search_query = request.args.get("search", "").strip()
     status_filter = request.args.get("status", "all")
+    sort_by = request.args.get("sort", "date")
+    start_date = request.args.get("start_date", "")
+    end_date = request.args.get("end_date", "")
+    page = request.args.get("page", 1, type=int)
+
+    if search_query:
+        history = session.get("search_history", [])
+        if search_query not in history:
+            history.insert(0, search_query)
+            session["search_history"] = history[:5]  # Keep only last 5 unique searches
+
     query = Event.query.join(User, Event.organizer_id == User.id)
+
     if search_query:
         query = query.filter(Event.title.contains(search_query) | Event.description.contains(search_query) | User.name.contains(search_query))
     if status_filter != "all":
         query = query.filter(Event.status == status_filter)
-    events = query.order_by(Event.date.asc()).all()
+    if start_date:
+        query = query.filter(Event.date >= start_date)
+    if end_date:
+        query = query.filter(Event.date <= end_date)
+    if sort_by == "date_desc":
+        query = query.order_by(Event.date.desc())
+    elif sort_by == "title_asc":
+        query = query.order_by(Event.title.asc())
+    else:
+        query = query.order_by(Event.date.asc())
+
+    paginate = query.paginate(page=page, per_page=6, error_out=False)
+    events = paginate.items
     if request.headers.get("HX-Request"):
         return render_template("partials/event_list.html", events=events, search_query=search_query)
-    return render_template("explore.html", events = events, search_query = search_query, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]))
+    return render_template("explore.html", events = events, search_query = search_query, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]), sort_by = sort_by, paginate = paginate, history = session.get("search_history", []))
