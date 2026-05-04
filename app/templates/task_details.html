@@ -11,7 +11,7 @@
     <div class="page">
 
         <div class="top-bar">
-            <a href="{{ url_for('tasks') }}" class="back-link">← Back</a>
+            <a href="{{ url_for('tasks', team_id=task.team_id) }}" class="back-link">← Back</a>
             <span id="save-status"></span>
         </div>
 

@@ -1,6 +1,6 @@
 from flask import render_template, request, url_for, redirect, session
 import random
-from flask_login import current_user
+import string
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime as dt
 from flask_mail import Message
@@ -62,9 +62,18 @@ def verify_otp(purpose, session_key):
         return True
     return False
 
+def add_task_activity(task_id, action):
+    user_id = session.get("user_id")
+    activity = TaskActivity(
+        task_id = task_id,
+        user_id = user_id,
+        action = action
+    )
+    db.session.add(activity)
+
 def generate_team_code():
     while True:
-        code = ''.join(random.choices(str.ascii_uppercase + str.digits, k=6))
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 6))
         existing_team = Team.query.filter_by(team_code=code).first()
         if not existing_team:
             return code
@@ -244,10 +253,9 @@ def verify_update_email():
     return render_template("otp_veri.html", email = new_email)
 
 # wy - task management system ----------------------------------------------------------------------------
-@app.route ("/tasks", methods = ["GET", "POST"])
+@app.route ("/team/<int:team_id>/tasks", methods = ["GET", "POST"])
 @login_required
-def tasks():
-    team_id = 1
+def tasks(team_id):
     team = db.session.get(Team, team_id)   
     form = TaskForm()
     form.assigned_to.choices = [(0, "No user selected")] + [(user.id, user.name) for user in User.query.all()]
@@ -265,7 +273,7 @@ def tasks():
                     is_done = (form.status.data == "Complete"))
         db.session.add(task)
         db.session.commit()
-        return redirect(url_for("tasks"))
+        return redirect(url_for("tasks", team_id = team.id))
     status_filter = request.args.get("status", "all")
     now = dt.datetime.now()
     query = Task.query.filter_by(team_id = team.id)
@@ -289,7 +297,7 @@ def toggle_task(id):
     else:
         task.status = "To Do"
     db.session.commit()
-    return redirect(url_for("tasks"))
+    return redirect(url_for("tasks", team_id = task.team_id))
 
 @app.route("/task/<int:id>/delete", methods = ["POST"])
 @login_required
@@ -300,7 +308,7 @@ def delete_task(id):
     TaskActivity.query.filter_by(task_id = id).delete()
     db.session.delete(task)
     db.session.commit()
-    return redirect(url_for("tasks"))
+    return redirect(url_for("tasks", team_id = task.team_id))
 
 @app.route("/task/<int:id>/autosave", methods = ["POST"])
 @login_required
@@ -358,12 +366,6 @@ def task_details(id):
         else:
             subtask.is_overdue = False
     if request.method == "POST":
-        old_title = task.title
-        old_description = task.description
-        old_assigned_to = task.assigned_to
-        old_priority = task.priority
-        old_deadline = task.deadline
-        old_status = task.status
         task.title = request.form.get("title")
         task.description = request.form.get("description")
         task.assigned_to = int(request.form.get("assigned_to"))
@@ -371,21 +373,8 @@ def task_details(id):
         task.deadline = dt.datetime.strptime(request.form.get("deadline"), "%Y-%m-%d")
         task.status = request.form.get("status")
         task.is_done = task.status == "Complete"
-        if old_title != task.title:
-            add_task_activity(task.id, f"changed title to {task.title}")
-        if old_description != task.description:
-            add_task_activity(task.id, "updated description")
-        if old_assigned_to != task.assigned_to:
-            new_user = db.session.get(User, task.assigned_to)
-            add_task_activity(task.id, f"changed assigned member to {new_user.name}")
-        if old_priority != task.priority:
-            add_task_activity(task.id, f"changed priority from {old_priority} to {task.priority}")
-        if old_deadline != task.deadline:
-            add_task_activity(task.id, "changed deadline")
-        if old_status != task.status:
-            add_task_activity(task.id, f"changed status from {old_status} to {task.status}")
         db.session.commit()
-        return redirect(url_for("tasks"))
+        return redirect(url_for("tasks", team_id = task.team_id))
     return render_template("task_details.html", task = task, users = users, subtasks = subtasks)
 
 @app.route("/task/<int:id>/add_subtask", methods = ["POST"])
@@ -427,14 +416,6 @@ def toggle_subtask(id):
     db.session.commit()
     return redirect(url_for("task_details", id = subtask.task_id))
 
-def add_task_activity(task_id, action):
-    user_id = session.get("user_id", 1)
-    activity = TaskActivity(
-        task_id=task_id,
-        user_id=user_id,
-        action=action
-    )
-    db.session.add(activity)
 # --------------------------------------------------------------------------------------------------------
 # wy - team formation system -----------------------------------------------------------------------------
 @app.route("/teams")
@@ -470,11 +451,28 @@ def create_team():
         )
         db.session.add(new_team)
         db.session.commit()
-        leader = TeamMember(team_id = new_team.id, user_id = session["user_id"],role = "Leader")
+        leader = TeamMember(team_id = new_team.id, user_id = session["user_id"],roles = "Leader")
         db.session.add(leader)
         db.session.commit()
         return redirect(url_for("team_detail", team_id = new_team.id))
     return render_template("create_team.html", events = events, current_user = current_user)
+
+@app.route("/team/<int:team_id>/join", methods = ["POST"])
+@login_required
+def join_specific_team(team_id):
+    team = db.session.get(Team, team_id)
+    if not team:
+        return "Team not found"
+    existing_member = TeamMember.query.filter_by(team_id = team.id, user_id = session["user_id"]).first()
+    if existing_member:
+        return redirect(url_for("team_detail", team_id = team.id))
+    member_count = TeamMember.query.filter_by(team_id = team.id).count()
+    if member_count >= team.max_members:
+        return "This team is already full"
+    new_member = TeamMember(team_id = team.id, user_id = session["user_id"], roles = "Member")
+    db.session.add(new_member)
+    db.session.commit()
+    return redirect(url_for("team_detail", team_id = team.id))
 
 @app.route("/team/join", methods = ["GET", "POST"])
 @login_required
@@ -482,23 +480,16 @@ def join_team():
     current_user = db.session.get(User, session["user_id"])
     if request.method == "POST":
         team_code = request.form.get("team_code")
-        team = Team.query.filter_by(team_code = team_code).first()
+        team = Team.query.filter_by(team_code=team_code).first()
         if not team:
             return "Invalid team code"
-        existing_member = TeamMember.query.filter_by(
-            team_id = team.id,
-            user_id = session["user_id"]
-        ).first()
+        existing_member = TeamMember.query.filter_by(team_id = team.id, user_id = session["user_id"]).first()
         if existing_member:
             return "You already joined this team"
         member_count = TeamMember.query.filter_by(team_id=team.id).count()
         if member_count >= team.max_members:
             return "This team is already full"
-        new_member = TeamMember(
-            team_id = team.id,
-            user_id = session["user_id"],
-            role = "Member"
-        )
+        new_member = TeamMember(team_id = team.id, user_id = session["user_id"], roles = "Member")
         db.session.add(new_member)
         db.session.commit()
         return redirect(url_for("team_detail", team_id = team.id))
@@ -511,7 +502,8 @@ def team_detail(team_id):
     if not team:
         return "Team not found"
     current_user = db.session.get(User, session["user_id"])
-    return render_template("team_detail.html", team = team, current_user = current_user)
+    is_member = TeamMember.query.filter_by(team_id = team.id, user_id = session["user_id"]).first() is not None
+    return render_template("team_detail.html", team = team, current_user = current_user, is_member = is_member)
 
 @app.route("/team/<int:team_id>/edit", methods=["GET", "POST"])
 @login_required
