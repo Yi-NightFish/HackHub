@@ -1,6 +1,5 @@
 from flask import render_template, request, url_for, redirect, session
 import random
-from flask_login import current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime as dt
 from flask_mail import Message
@@ -62,6 +61,15 @@ def verify_otp(purpose, session_key):
         return True
     return False
 
+def add_task_activity(task_id, action):
+    user_id = session.get("user_id")
+    activity = TaskActivity(
+        task_id = task_id,
+        user_id = user_id,
+        action = action
+    )
+    db.session.add(activity)
+    
 # Main routes
 @app.route("/")
 def home():
@@ -295,46 +303,41 @@ def delete_task(id):
     db.session.commit()
     return redirect(url_for("tasks"))
 
-@app.route("/task/<int:id>/autosave", methods = ["POST"])
+@app.route("/task/<int:id>/autosave", methods=["POST"])
 @login_required
 def autosave_task(id):
     task = Task.query.get(id)
+    if not task:
+        return "Task not found"
     field = request.form.get("field")
     value = request.form.get("value")
-    user_id = session.get("user_id")
-    old_value = getattr(task, field, None)
-    if field == "title":
-        task.title = value
-    elif field == "description":
-        task.description = value
-    elif field == "assigned_to":
+    if field == "assigned_to":
         old_user = db.session.get(User, task.assigned_to)
-        new_user = db.session.get(User, int(value))
+        new_user = db.session.get(User, int(value)) if value else None
         old_value = old_user.name if old_user else "No assignee"
         new_value = new_user.name if new_user else "No assignee"
-        task.assigned_to = int(value)
-    elif field == "priority":
-        task.priority = value
-    elif field == "status":
-        task.status = value
+        task.assigned_to = int(value) if value else None
     elif field == "deadline":
         old_value = task.deadline.strftime("%d %b %Y") if task.deadline else "No deadline"
         if value:
             task.deadline = dt.datetime.strptime(value, "%Y-%m-%d")
             new_value = task.deadline.strftime("%d %b %Y")
         else:
+            task.deadline = None
             new_value = "No deadline"
-    if field not in ["assigned_to", "deadline"]:
+    else:
+        old_value = getattr(task, field, None)
         new_value = value
+        setattr(task, field, value)
+        if field == "status":
+            task.is_done = (value == "Complete")
     if str(old_value) != str(new_value):
-        activity = TaskActivity(
-            task_id = task.id,
-            user_id = user_id,
-            action = f"changed {field} from '{old_value}' to '{new_value}'"
+        add_task_activity(
+            task.id,
+            f"changed {field} from '{old_value}' to '{new_value}'"
         )
-        db.session.add(activity)
     db.session.commit()
-    return "Saved" # "Saved" for checking response in frontend, can be removed later
+    return "Saved"
 
 @app.route("/task/<int:id>/details", methods = ["GET", "POST"])
 @login_required
@@ -419,13 +422,4 @@ def toggle_subtask(id):
     subtask.is_done = not subtask.is_done
     db.session.commit()
     return redirect(url_for("task_details", id = subtask.task_id))
-
-def add_task_activity(task_id, action):
-    user_id = session.get("user_id", 1)
-    activity = TaskActivity(
-        task_id=task_id,
-        user_id=user_id,
-        action=action
-    )
-    db.session.add(activity)
 # --------------------------------------------------------------------------------------------------------
