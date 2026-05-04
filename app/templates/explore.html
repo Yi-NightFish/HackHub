@@ -3,29 +3,30 @@
 <div style="max-width: 1000px; margin: 0 auto; padding: 20px;">
   <h2>Explore Events</h2>
   <div style="background: #f4f4f4; padding: 20px; border-radius: 8px; margin-bottom: 30px; display: flex; gap: 15px;">
-    <input type="text" name="search" placeholder="Search events..." value="{{ search_query }}" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" hx-get="/explore" hx-trigger="keyup changed delay:500ms" hx-target="#event-list" hx-include="[name='status'], [name='sort'], [name='start_date']" hx-swap="innerHTML">
+    <input type="text" name="search" placeholder="Search events..." value="{{ search_query }}" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" hx-get="/explore" hx-trigger="keyup changed delay:500ms" hx-target="#event-list" hx-include="[name='status'], [name='sort']" hx-swap="innerHTML" list = "search-history">
+    
+    <datalist id="search-history">
+            {% for word in history %}
+                <option value="{{ word }}">
+            {% endfor %}
+        </datalist>
 
-    <select name="status" style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" hx-get="/explore" hx-trigger="change" hx-target="#event-list" hx-include="[name='search']" hx-swap="innerHTML">
+    <select name="status" style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" hx-get="/explore" hx-trigger="change" hx-target="#event-list" hx-include="[name='search'], [name='sort']" hx-swap="innerHTML">
       <option value="all" {% if status_filter == "all" %}selected{% endif %}>All Status</option>
       <option value="open" {% if status_filter == "open" %}selected{% endif %}>Open</option>
       <option value="cancelled" {% if status_filter == "cancelled" %}selected{% endif %}>Cancelled</option>
       <option value="completed" {% if status_filter == "completed" %}selected{% endif %}>Completed</option>
       <option value="ongoing" {% if status_filter == "ongoing" %}selected{% endif %}>Ongoing</option>
     </select>
+    
+    <select name="sort" style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" hx-get="/explore" hx-trigger="change" hx-target="#event-list" hx-include="[name='search'], [name='status']" hx-swap="innerHTML">
+        <option value="newest" {% if sort_option == "newest" %}selected{% endif %}>Newest</option>
+        <option value="oldest" {% if sort_option == "oldest" %}selected{% endif %}>Oldest</option>
+    </select>
     </div>
-    <div style="background: #f4f4f4; padding: 20px; border-radius: 8px; margin-bottom: 30px; display: flex; gap: 15px;">
-        <input type="date" name="start_date" value="{{ start_date_filter }}" style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" hx-get="/explore" hx-trigger="change" hx-target="#event-list" hx-include="[name='search'], [name='status']" hx-swap="innerHTML">
-        <select name="sort" hx-get="/explore" hx-trigger="change" hx-target="#event-list" hx-include="[name='search'], [name='status'], [name='start_date']" hx-swap="innerHTML" style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
-            <option value="newest" {% if sort_option == "newest" %}selected{% endif %}>Newest</option>
-            <option value="oldest" {% if sort_option == "oldest" %}selected{% endif %}>Oldest</option>
-        </select>
-    </div>
-    <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
-        Recent search:
-        {% for word in history %}
-        <span style="background: #ddd; padding: 2px 5px; border-radius: 3px; cursor: pointer;" onclick="document.getElementsByName('search')[0].value='{{word}}'; htmx.trigger(document.getElementsByName('search')[0], 'keyup');">{{word}}</span> {% endfor %}
-    </div>
+
     <div id="event-list">
     {% include "partials/event_list.html" %}
-  </div>
+    </div>
+</div>
 {% endblock %}

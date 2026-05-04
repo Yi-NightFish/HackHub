@@ -270,7 +270,7 @@ def explore():
     else:
         query = query.order_by(Event.date.asc())
 
-    paginate = query.paginate(page=page, per_page=6, error_out=False)
+    paginate = query.paginate(page=page, per_page=12, error_out=False)
     events = paginate.items
     if request.headers.get("HX-Request"):
         return render_template("partials/event_list.html", events = events, search_query = search_query, paginate = paginate)
