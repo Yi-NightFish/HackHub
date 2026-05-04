@@ -3,6 +3,7 @@ from app.models import *
 from flask import render_template, session, request
 from sqlalchemy import select
 from functools import reduce
+import re
 
 # Helper function
 def get_user_by_id(user_id):
@@ -37,6 +38,10 @@ def events():
         events = db.session.scalars(select(Event).where(Event.end_time < now()).where(Event.cancelled == False)).all()
     else:
         events = db.session.scalars(select(Event).where(Event.start_time < now()).where(Event.end_time > now()).where(Event.cancelled == False)).all()
+    events = filter(
+        lambda event: name.lower() in event.title.lower(),
+        events
+    )
     return render_template("events.html", 
                            events = events, 
                            current_user = get_current_user(), 
