@@ -1,5 +1,5 @@
 <div style="margin-bottom: 15px; color: #666; font-size: 0.9em;">
-    Found <strong>{{ paginate.total }}</strong> matching events
+    Found <strong>{{ events|length }}</strong> matching events on this page
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
     {% for event in events %}
@@ -8,12 +8,11 @@
             <h3 style="margin: 0;">{{ event.title }}</h3>
             <span style="font-size: 0.8em; color: white; background: {% if event.status == 'open' %}#28a745{% elif event.status == 'cancelled' %}#dc3545{% elif event.status == 'completed' %}#6c757d{% elif event.status == 'ongoing' %}#007bff{% else %}#17a2b8{% endif %}; padding: 3px 8px; border-radius: 12px;">{{ event.status.capitalize() }}</span>
         </div>
-        <p><strong>Start Time:</strong> {{ event.start_time.strftime('%Y-%m-%d %H:%M') }}</p>
-        <p><strong>End Time:</strong> {{ event.end_time.strftime('%Y-%m-%d %H:%M') }}</p>
+        <p><strong>Registration Deadline:</strong></p>
+            <p>{{ event.start_time.strftime('%a %Y-%m-%d') }}</p>
         <p><strong>Organizer:</strong> {{ event.organizer.name }}</p>
-        <p>{{ event.description[:100] }}{% if event.description|length > 100 %}...{% endif %}</p>
         <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
-            <a href="/event/{{ event.id }}">View Details</a>
+            <button hx-get="/event/{{ event.id }}" style="padding: 10px 20px; background: #7f98ae; color: white; border: none; border-radius: 5px; cursor: pointer;">Register now</button>
         </div>
     </div>
     {% else %}
@@ -39,7 +38,7 @@
         {% if paginate.has_next %}
         <button hx-get="/explore?page={{ paginate.next_num }}" 
                 hx-target="#event-list" 
-                hx-include="[name='search'], [name='status'], [name='start_date'], [name='sort']"
+                hx-include="[name='search'], [name='status'], [name='sort']"
                 style="padding: 8px 15px; cursor: pointer;">
             Next
         </button>
