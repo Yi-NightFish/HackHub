@@ -6,13 +6,14 @@
     <div style="border: 1px solid #ccc; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); background-color: white; transition: transform 0.2s;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
             <h3 style="margin: 0;">{{ event.title }}</h3>
-            <span style="font-size: 0.8em; color: white; background: {% if event.status == 'open' %}#28a745{% elif event.status == 'cancelled' %}#dc3545{% elif event.status == 'completed' %}#6c757d{% elif event.status == 'ongoing' %}#007bff{% else %}#17a2b8{% endif %}; padding: 3px 8px; border-radius: 12px;">{{ event.status.capitalize() }}</span>
+            {% set status = event.get_status() %} 
+            <span style="font-size: 0.8em; color: white; background: {% if status == 'open' %}#28a745{% elif status == 'cancelled' %}#dc3545{% elif status == 'completed' %}#6c757d{% elif status == 'ongoing' %}#007bff{% else %}#17a2b8{% endif %}; padding: 3px 8px; border-radius: 12px;"> {{ status.capitalize() }} </span>
         </div>
         <p><strong>Registration Deadline:</strong></p>
-            <p>{{ event.start_time.strftime('%a %Y-%m-%d') }}</p>
+            <p>{{ event.deadline.strftime('%a %Y-%m-%d') }}</p>
         <p><strong>Organizer:</strong> {{ event.organizer.name }}</p>
         <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
-            <button hx-get="/event/{{ event.id }}" style="padding: 10px 20px; background: #7f98ae; color: white; border: none; border-radius: 5px; cursor: pointer;">Register now</button>
+            <a href="/event/{{ event.id }}" style="display: inline-block; padding: 10px 20px; background: #7f98ae; color: white; border-radius: 5px; cursor: pointer; text-decoration: none; transition: 0.2s;">Register now</a>
         </div>
     </div>
     {% else %}
@@ -22,7 +23,7 @@
         <a href="/explore" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #888; color: white; border-radius: 5px; font-weight: bold;">Clear all filters</a>
     </div>
     {% endfor %}
-    {% if paginate.pages > 1 %}
+    {% if paginate and paginate.pages > 1 %}
     <div style="margin-top: 30px; display: flex; justify-content: center; gap: 10px; align-items: center;">
         {% if paginate.has_prev %}
         <button hx-get="/explore?page={{ paginate.prev_num }}" 

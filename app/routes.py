@@ -240,9 +240,10 @@ def verify_update_email():
 def explore():
     search_query = request.args.get("search", "").strip()
     status_filter = request.args.get("status", "all")
-    sort_by = request.args.get("sort", "date")
+    sort_by = request.args.get("sort", "newest")
     start_date = request.args.get("start_date", "")
     end_date = request.args.get("end_date", "")
+    deadline = request.args.get("deadline", "")
     page = request.args.get("page", 1, type=int)
 
     if search_query:
@@ -263,6 +264,8 @@ def explore():
         query = query.filter(Event.date >= start_date)
     if end_date:
         query = query.filter(Event.date <= end_date)
+    if deadline :
+        query = query.filter(Event.deadline <= deadline)
     if sort_by == "newest":
         query = query.order_by(Event.date.desc())
     elif sort_by == "oldest":
@@ -275,5 +278,5 @@ def explore():
     paginate = query.paginate(page=page, per_page=12, error_out=False)
     events = paginate.items
     if request.headers.get("HX-Request"):
-        return render_template("partials/event_list.html", events = events, search_query = search_query, paginate = paginate)
+        return render_template("partials/event_list.html", events = events, search_query = search_query, paginate = paginate or None)
     return render_template("explore.html", events = events, search_query = search_query, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]), sort_by = sort_by, paginate = paginate, history = session.get("search_history", []))
