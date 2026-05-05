@@ -42,7 +42,7 @@ class Event(db.Model):
     start_time = db.Column(db.DateTime, nullable = False)
     end_time = db.Column(db.DateTime, nullable = False)
     deadline = db.Column(db.DateTime, nullable = False)
-    status = db.Column(db.String(20), nullable = True)
+    status = db.Column(db.String(20), nullable = True, default = "open")
     teams = db.relationship('Team', backref='event', lazy=True)
     announcements = db.relationship('Announcement', backref='event', lazy=True)
     __table_args__ = (

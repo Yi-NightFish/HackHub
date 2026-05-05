@@ -259,7 +259,14 @@ def explore():
     if search_query:
         query = query.filter(Event.title.ilike(f"%{search_query}%") | Event.description.ilike(f"%{search_query}%") | User.name.ilike(f"%{search_query}%"))
     if status_filter != "all":
-        query = query.filter(Event.status == status_filter)
+        if status_filter == 'completed':
+            query = query.filter((Event.status == 'completed') | (Event.end_time < dt.datetime.now()))
+        elif status_filter == 'ongoing':
+            query = query.filter((Event.status == 'ongoing') | ((Event.start_time <= dt.datetime.now()) & (Event.end_time >= dt.datetime.now())))
+        elif status_filter == 'open':
+            query = query.filter((Event.status == 'open') | ((Event.start_time > dt.datetime.now())))
+        elif status_filter == 'cancelled':
+            query = query.filter(Event.status == 'cancelled')
     if start_date:
         query = query.filter(Event.date >= start_date)
     if end_date:

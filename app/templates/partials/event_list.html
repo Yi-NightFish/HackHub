@@ -1,7 +1,7 @@
 <div style="margin-bottom: 15px; color: #666; font-size: 0.9em;">
     Found <strong>{{ events|length }}</strong> matching events on this page
 </div>
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
     {% for event in events %}
     <div style="border: 1px solid #ccc; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); background-color: white; transition: transform 0.2s;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
