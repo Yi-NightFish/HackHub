@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import random
 
 from app import app, db
-from app.models import User, Event, Team, TeamMember, Task, Announcement, Message, Dashboard
+from app.models import User, Event, Team, Task, Announcement, Message, Dashboard
 from werkzeug.security import generate_password_hash
 
 with app.app_context():
@@ -137,15 +137,15 @@ with app.app_context():
     db.session.commit()
 
     # Simulate users joining multiple events via team memberships
-    membership1 = TeamMember(team_id=team1.id, user_id=user3.id)
-    membership2 = TeamMember(team_id=team2.id, user_id=user3.id)
-    membership3 = TeamMember(team_id=team3.id, user_id=user3.id)
-    membership4 = TeamMember(team_id=team2.id, user_id=user1.id)
-    membership5 = TeamMember(team_id=team1.id, user_id=user2.id)
-    membership6 = TeamMember(team_id=team4.id, user_id=user4.id)
-    membership7 = TeamMember(team_id=team5.id, user_id=user5.id)
-    db.session.add_all([membership1, membership2, membership3, membership4, membership5, membership6, membership7])
-    db.session.commit()
+    # membership1 = TeamMember(team_id=team1.id, user_id=user3.id)
+    # membership2 = TeamMember(team_id=team2.id, user_id=user3.id)
+    # membership3 = TeamMember(team_id=team3.id, user_id=user3.id)
+    # membership4 = TeamMember(team_id=team2.id, user_id=user1.id)
+    # membership5 = TeamMember(team_id=team1.id, user_id=user2.id)
+    # membership6 = TeamMember(team_id=team4.id, user_id=user4.id)
+    # membership7 = TeamMember(team_id=team5.id, user_id=user5.id)
+    # db.session.add_all([membership1, membership2, membership3, membership4, membership5, membership6, membership7])
+    # db.session.commit()
 
     # Add 10 more users (Users 6-15)
     for i in range(6, 16):
@@ -195,19 +195,19 @@ with app.app_context():
     all_teams = Team.query.all()
 
     # Add 10 more team members (Memberships 8-17) - ensure unique (team_id, user_id) pairs
-    existing_memberships = {(tm.team_id, tm.user_id) for tm in TeamMember.query.all()}
-    new_memberships = set()
-    while len(new_memberships) < 10:
-        team_id = random.choice(all_teams).id
-        user_id = random.choice(all_users).id
-        pair = (team_id, user_id)
-        if pair not in existing_memberships and pair not in new_memberships:
-            new_memberships.add(pair)
+    # existing_memberships = {(tm.team_id, tm.user_id) for tm in TeamMember.query.all()}
+    # new_memberships = set()
+    # while len(new_memberships) < 10:
+    #     team_id = random.choice(all_teams).id
+    #     user_id = random.choice(all_users).id
+    #     pair = (team_id, user_id)
+    #     if pair not in existing_memberships and pair not in new_memberships:
+    #         new_memberships.add(pair)
     
-    for team_id, user_id in new_memberships:
-        team_member = TeamMember(team_id=team_id, user_id=user_id)
-        db.session.add(team_member)
-    db.session.commit()
+    # for team_id, user_id in new_memberships:
+    #     team_member = TeamMember(team_id=team_id, user_id=user_id)
+    #     db.session.add(team_member)
+    # db.session.commit()
 
     # Add 10 tasks
     for i in range(1, 11):
