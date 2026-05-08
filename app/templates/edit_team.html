@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Edit Team</h1>
+
+    <form method="POST">
+        <label>Team Name:</label>
+        <input type="text" name="name" value="{{ team.name }}" required>
+
+        <label>Motto:</label>
+        <input type="text" name="motto" value="{{ team.motto }}">
+
+        <label>Roles Needed:</label>
+        <input type="text" name="roles" value="{{ team.roles }}">
+
+        <label>Project Idea:</label>
+        <textarea name="project_idea">{{ team.project_idea }}</textarea>
+
+        <label>Max Members:</label>
+        <input type="number" name="max_members" min="1" max="6" value="{{ team.max_members }}" required>
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <a class="back-link" href="{{ url_for('team_detail', team_id=team.id) }}">Cancel</a>
+</div>
+{% endblock %}

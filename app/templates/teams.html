@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="team-page">
+    <h1 class="team-title">Team Dashboard</h1>
+
+    <div class="team-grid">
+        {% for team in teams %}
+        <a class="team-card" href="{{ url_for('team_detail', team_id=team.id) }}">
+            <h2>{{ team.name }}</h2>
+            <p>Motto: {{ team.motto or "-" }}</p>
+            <p>Team Members: {{ team.members|length }} / {{ team.max_members }}</p>
+            <p>Members Needed: {{ team.max_members - team.members|length }}</p>
+
+            {% if team.id in joined_team_ids %}
+            <p><strong>Status: Joined</strong></p>
+            {% elif team.members|length >= team.max_members %}
+            <p><strong>Status: Full</strong></p>
+            {% else %}
+            <p><strong>Status: Open</strong></p>
+            {% endif %}
+        </a>
+        {% else %}
+        <p>No teams found.</p>
+        {% endfor %}
+    </div>
+
+    <div class="bottom-line"></div>
+
+    <div class="team-actions">
+        <a class="team-btn" href="{{ url_for('create_team') }}">Create New Team</a>
+    </div>
+
+</div>
+{% endblock %}
