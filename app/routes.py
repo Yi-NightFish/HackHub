@@ -261,7 +261,8 @@ def verify_update_email():
 def tasks(team_id):
     team = db.session.get(Team, team_id)   
     form = TaskForm()
-    form.assigned_to.choices = [(0, "No user selected")] + [(user.id, user.name) for user in User.query.all()]
+    team_members = (db.session.query(User).join(TeamMember, TeamMember.user_id == User.id).filter(TeamMember.team_id == team.id).all())
+    form.assigned_to.choices = [(0, "No user selected")] + [(u.id, u.name or u.email) for u in team_members]
     if form.validate_on_submit():
         assigned_user_id = form.assigned_to.data
         if assigned_user_id == 0:
@@ -355,7 +356,9 @@ def autosave_task(id):
 @login_required
 def task_details(id):
     task = db.session.get(Task, id)
-    users = User.query.all()
+    if not task:
+        return "Task not found"
+    team_members = (db.session.query(User).join(TeamMember, TeamMember.user_id == User.id).filter(TeamMember.team_id == task.team_id).all())
     subtasks = Subtask.query.filter_by(task_id = id).all()
     if task is None:
         return "Task not found"
@@ -375,7 +378,7 @@ def task_details(id):
         task.is_done = task.status == "Complete"
         db.session.commit()
         return redirect(url_for("tasks", team_id = task.team_id))
-    return render_template("task_details.html", task = task, users = users, subtasks = subtasks)
+    return render_template("task_details.html", task = task, users = team_members, subtasks = subtasks)
 
 @app.route("/task/<int:id>/add_subtask", methods = ["POST"])
 @login_required
@@ -415,7 +418,6 @@ def toggle_subtask(id):
     subtask.is_done = not subtask.is_done
     db.session.commit()
     return redirect(url_for("task_details", id = subtask.task_id))
-
 # --------------------------------------------------------------------------------------------------------
 # wy - team formation system -----------------------------------------------------------------------------
 @app.route("/teams")
