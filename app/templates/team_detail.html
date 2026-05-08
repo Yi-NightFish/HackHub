@@ -1,19 +1,97 @@
 {% extends "base.html" %}
 
 {% block css %}
+<script src="https://unpkg.com/htmx.org@1.9.12"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/team.css') }}">
 {% endblock %}
 
 {% block content %}
 <div class="team-page">
+
+    {% if team.leader_id == current_user.id %}
+    <input
+        class="team-title-input"
+        name="value"
+        value="{{ team.name }}"
+        hx-post="{{ url_for('autosave_team', team_id=team.id) }}"
+        hx-trigger="change"
+        hx-vals='{"field":"name"}'
+        hx-swap="none"
+    >
+    {% else %}
     <h1 class="team-title">{{ team.name }}</h1>
+    {% endif %}
 
     <div class="detail-box">
-        <p><strong>Motto:</strong> {{ team.motto or "-" }}</p>
-        <p><strong>Roles Needed:</strong> {{ team.roles or "-" }}</p>
-        <p><strong>Project Idea:</strong> {{ team.project_idea or "-" }}</p>
+
+        <p><strong>Motto:</strong></p>
+
+        {% if team.leader_id == current_user.id %}
+        <input
+            name="value"
+            value="{{ team.motto or '' }}"
+            hx-post="{{ url_for('autosave_team', team_id=team.id) }}"
+            hx-trigger="change"
+            hx-vals='{"field":"motto"}'
+            hx-swap="none"
+        >
+        {% else %}
+        <p>{{ team.motto or "-" }}</p>
+        {% endif %}
+
+        <p><strong>Roles Needed:</strong></p>
+
+        {% if team.leader_id == current_user.id %}
+        <input
+            name="value"
+            value="{{ team.roles or '' }}"
+            hx-post="{{ url_for('autosave_team', team_id=team.id) }}"
+            hx-trigger="change"
+            hx-vals='{"field":"roles"}'
+            hx-swap="none"
+        >
+        {% else %}
+        <p>{{ team.roles or "-" }}</p>
+        {% endif %}
+
+        <p><strong>Project Idea:</strong></p>
+
+        {% if team.leader_id == current_user.id %}
+        <textarea
+            name="value"
+            hx-post="{{ url_for('autosave_team', team_id=team.id) }}"
+            hx-trigger="change"
+            hx-vals='{"field":"project_idea"}'
+            hx-swap="none"
+        >{{ team.project_idea or '' }}</textarea>
+        {% else %}
+        <p>{{ team.project_idea or "-" }}</p>
+        {% endif %}
+
         <p><strong>Team Code:</strong> {{ team.team_code }}</p>
-        <p><strong>Members:</strong> {{ team.members|length }} / {{ team.max_members }}</p>
+
+        <p>
+            <strong>Members:</strong>
+
+            {{ team.members|length }} /
+
+            {% if team.leader_id == current_user.id %}
+            <input
+                class="member-limit-input"
+                type="number"
+                min="1"
+                max="6"
+                name="value"
+                value="{{ team.max_members }}"
+                hx-post="{{ url_for('autosave_team', team_id=team.id) }}"
+                hx-trigger="change"
+                hx-vals='{"field":"max_members"}'
+                hx-swap="none"
+            >
+            {% else %}
+            {{ team.max_members }}
+            {% endif %}
+        </p>
 
         {% if invite_link %}
         <p>
@@ -32,101 +110,167 @@
 
     <h2>Team Members</h2>
 
-    {% for member in team.members %}
-    <div class="member-row">
-        {{ member.user.name or member.user.email }} - {{ member.roles or "Member" }}
+    <div id="member-list">
 
-        {% if team.leader_id == current_user.id and member.user_id != team.leader_id %}
-        <form method="POST" action="{{ url_for('remove_member', team_id=team.id, user_id=member.user_id) }}">
-            <button type="submit">Remove</button>
-        </form>
-        {% endif %}
+        {% for member in team.members %}
+
+        <div class="member-row" id="member-{{ member.user_id }}">
+
+            {{ member.user.name or member.user.email }}
+            -
+            {{ member.roles or "Member" }}
+
+            {% if team.leader_id == current_user.id and member.user_id != team.leader_id %}
+
+            <form
+                hx-post="{{ url_for('remove_member', team_id=team.id, user_id=member.user_id) }}"
+                hx-target="#member-{{ member.user_id }}"
+                hx-swap="outerHTML"
+            >
+                <button type="submit">Remove</button>
+            </form>
+
+            {% endif %}
+        </div>
+
+        {% else %}
+        <p>No members yet.</p>
+        {% endfor %}
+
     </div>
-    {% else %}
-    <p>No members yet.</p>
-    {% endfor %}
 
     {% if team.leader_id == current_user.id %}
 
     <div class="team-actions">
-        <a class="team-btn" href="{{ url_for('edit_team', team_id=team.id) }}">Edit Team</a>
-        <a class="team-btn" href="{{ url_for('tasks', team_id=team.id) }}">Open Task</a>
 
         <form method="POST" action="{{ url_for('delete_team', team_id=team.id) }}">
-            <button class="danger" type="submit">Delete Team</button>
+            <button class="danger" type="submit">
+                Delete Team
+            </button>
         </form>
+
     </div>
 
     <h2>Change Leader</h2>
 
     <div class="detail-box">
+
         <form method="POST" action="{{ url_for('change_leader', team_id=team.id) }}">
+
             <label>Choose New Leader</label>
 
             <select name="new_leader_id" required>
+
                 {% for member in team.members %}
+
                     {% if member.user_id != current_user.id %}
+
                     <option value="{{ member.user_id }}">
                         {{ member.user.name or member.user.email }}
                     </option>
+
                     {% endif %}
+
                 {% endfor %}
+
             </select>
 
-            <button type="submit">Change Leader</button>
+            <button type="submit">
+                Change Leader
+            </button>
+
         </form>
 
         <p class="small-text">
             Leader must transfer leadership before leaving the team.
         </p>
+
     </div>
 
     <h2>Join Requests</h2>
 
-    {% for request in pending_requests %}
-    <div class="member-row">
-        {{ request.user.name or request.user.email }}
+    <div id="join-requests">
 
-        <form method="POST" action="{{ url_for('approve_join_request', request_id=request.id) }}">
-            <button type="submit">Approve</button>
-        </form>
+        {% for request in pending_requests %}
 
-        <form method="POST" action="{{ url_for('reject_join_request', request_id=request.id) }}">
-            <button type="submit">Reject</button>
-        </form>
+        <div class="member-row" id="request-{{ request.id }}">
+
+            {{ request.user.name or request.user.email }}
+
+            <form
+                hx-post="{{ url_for('approve_join_request', request_id=request.id) }}"
+                hx-target="#request-{{ request.id }}"
+                hx-swap="outerHTML"
+            >
+                <button type="submit">Approve</button>
+            </form>
+
+            <form
+                hx-post="{{ url_for('reject_join_request', request_id=request.id) }}"
+                hx-target="#request-{{ request.id }}"
+                hx-swap="outerHTML"
+            >
+                <button type="submit">Reject</button>
+            </form>
+
+        </div>
+
+        {% else %}
+        <p>No pending requests.</p>
+
+        {% endfor %}
+
     </div>
-    {% else %}
-    <p>No pending requests.</p>
-    {% endfor %}
 
     {% elif is_member %}
 
     <div class="team-actions">
-        <a class="team-btn" href="{{ url_for('tasks', team_id=team.id) }}">Open Task</a>
 
         <form method="POST" action="{{ url_for('leave_team', team_id=team.id) }}">
-            <button type="submit">Leave Team</button>
+            <button type="submit">
+                Leave Team
+            </button>
         </form>
+
     </div>
 
     {% else %}
 
-    <div class="team-actions">
+    <div class="team-actions" id="join-action">
+
         {% if existing_request %}
-        <button disabled>Request Sent</button>
+
+        <button disabled>
+            Request Sent
+        </button>
 
         {% elif team.members|length >= team.max_members %}
-        <button disabled>Team Full</button>
+
+        <button disabled>
+            Team Full
+        </button>
 
         {% else %}
-        <form method="POST" action="{{ url_for('request_join_team', team_id=team.id) }}">
-            <button type="submit">Request to Join</button>
+
+        <form
+            hx-post="{{ url_for('request_join_team', team_id=team.id) }}"
+            hx-target="#join-action"
+            hx-swap="outerHTML"
+        >
+            <button type="submit">
+                Request to Join
+            </button>
         </form>
+
         {% endif %}
+
     </div>
 
     {% endif %}
 
-    <a class="back-link" href="{{ url_for('teams') }}">Back to Teams</a>
+    <a class="back-link" href="{{ url_for('teams') }}">
+        Back to Teams
+    </a>
+
 </div>
 {% endblock %}

@@ -596,7 +596,7 @@ def leave_team(team_id):
     db.session.commit()
     return redirect(url_for("teams"))
 
-@app.route("/team/<int:team_id>/delete", methods = ["POST"])
+@app.route("/team/<int:team_id>/delete", methods=["POST"])
 @login_required
 def delete_team(team_id):
     team = db.session.get(Team, team_id)
@@ -604,7 +604,13 @@ def delete_team(team_id):
         return "Team not found"
     if team.leader_id != session["user_id"]:
         return "Only leader can delete this team"
+    TeamJoinRequest.query.filter_by(team_id = team.id).delete()
     TeamMember.query.filter_by(team_id = team.id).delete()
+    tasks = Task.query.filter_by(team_id = team.id).all()
+    for task in tasks:
+        TaskActivity.query.filter_by(task_id = task.id).delete()
+        Subtask.query.filter_by(task_id = task.id).delete()
+        db.session.delete(task)
     db.session.delete(team)
     db.session.commit()
     return redirect(url_for("teams"))
@@ -624,3 +630,33 @@ def remove_member(team_id, user_id):
         db.session.delete(member)
         db.session.commit()
     return redirect(url_for("team_detail", team_id = team.id))
+
+@app.route("/team/<int:team_id>/autosave", methods = ["POST"])
+@login_required
+def autosave_team(team_id):
+    team = db.session.get(Team, team_id)
+    if not team:
+        return "Team not found"
+    if team.leader_id != session["user_id"]:
+        return "Unauthorized"
+    field = request.form.get("field")
+    value = request.form.get("value")
+    if field == "name":
+        team.name = value
+    elif field == "motto":
+        team.motto = value
+    elif field == "roles":
+        team.roles = value
+    elif field == "project_idea":
+        team.project_idea = value
+    elif field == "max_members":
+        value = int(value)
+        if value < len(team.members):
+            return "Max members cannot be less than current members"
+        if value < 1 or value > 6:
+            return "Team size must be between 1 and 6"
+        team.max_members = value
+    else:
+        return "Invalid field"
+    db.session.commit()
+    return "Saved"

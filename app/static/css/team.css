@@ -184,3 +184,21 @@ h2 {
     background: white;
     padding: 8px;
 }
+
+.team-title-input {
+    font-size: 42px;
+    font-weight: 900;
+    border: none;
+    background: transparent;
+    margin-bottom: 18px;
+}
+
+.member-limit-input {
+    width: 80px;
+    display: inline-block;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
