@@ -423,7 +423,10 @@ def toggle_subtask(id):
 def teams():
     all_teams = Team.query.all()
     current_user = db.session.get(User, session["user_id"])
-    return render_template("teams.html", teams = all_teams, current_user = current_user)
+    joined_team_ids = [
+        member.team_id
+        for member in TeamMember.query.filter_by(user_id = session["user_id"]).all()]
+    return render_template("teams.html", teams = all_teams, current_user = current_user, joined_team_ids = joined_team_ids)
 
 @app.route("/team/create", methods = ["GET", "POST"])
 @login_required
@@ -451,28 +454,15 @@ def create_team():
         )
         db.session.add(new_team)
         db.session.commit()
-        leader = TeamMember(team_id = new_team.id, user_id = session["user_id"],roles = "Leader")
+        leader = TeamMember(
+            team_id = new_team.id,
+            user_id = session["user_id"],
+            roles = "Leader"
+        )
         db.session.add(leader)
         db.session.commit()
         return redirect(url_for("team_detail", team_id = new_team.id))
     return render_template("create_team.html", events = events, current_user = current_user)
-
-@app.route("/team/<int:team_id>/join", methods = ["POST"])
-@login_required
-def join_specific_team(team_id):
-    team = db.session.get(Team, team_id)
-    if not team:
-        return "Team not found"
-    existing_member = TeamMember.query.filter_by(team_id = team.id, user_id = session["user_id"]).first()
-    if existing_member:
-        return redirect(url_for("team_detail", team_id = team.id))
-    member_count = TeamMember.query.filter_by(team_id = team.id).count()
-    if member_count >= team.max_members:
-        return "This team is already full"
-    new_member = TeamMember(team_id = team.id, user_id = session["user_id"], roles = "Member")
-    db.session.add(new_member)
-    db.session.commit()
-    return redirect(url_for("team_detail", team_id = team.id))
 
 @app.route("/team/join", methods = ["GET", "POST"])
 @login_required
@@ -480,19 +470,22 @@ def join_team():
     current_user = db.session.get(User, session["user_id"])
     if request.method == "POST":
         team_code = request.form.get("team_code")
-        team = Team.query.filter_by(team_code=team_code).first()
+        team = Team.query.filter_by(team_code = team_code).first()
         if not team:
             return "Invalid team code"
         existing_member = TeamMember.query.filter_by(team_id = team.id, user_id = session["user_id"]).first()
         if existing_member:
             return "You already joined this team"
-        member_count = TeamMember.query.filter_by(team_id=team.id).count()
+        existing_request = TeamJoinRequest.query.filter_by(team_id = team.id, user_id = session["user_id"], status = "Pending").first()
+        if existing_request:
+            return "You already requested to join this team"
+        member_count = TeamMember.query.filter_by(team_id = team.id).count()
         if member_count >= team.max_members:
             return "This team is already full"
-        new_member = TeamMember(team_id = team.id, user_id = session["user_id"], roles = "Member")
-        db.session.add(new_member)
+        request_join = TeamJoinRequest(team_id = team.id, user_id = session["user_id"], status = "Pending")
+        db.session.add(request_join)
         db.session.commit()
-        return redirect(url_for("team_detail", team_id = team.id))
+        return "Join request sent. Waiting for leader approval."
     return render_template("join_team.html", current_user = current_user)
 
 @app.route("/team/<int:team_id>")
@@ -503,9 +496,63 @@ def team_detail(team_id):
         return "Team not found"
     current_user = db.session.get(User, session["user_id"])
     is_member = TeamMember.query.filter_by(team_id = team.id, user_id = session["user_id"]).first() is not None
-    return render_template("team_detail.html", team = team, current_user = current_user, is_member = is_member)
+    pending_requests = []
+    if team.leader_id == session["user_id"]:
+        pending_requests = TeamJoinRequest.query.filter_by(team_id = team.id, status = "Pending").all()
+    return render_template("team_detail.html", team = team, current_user = current_user, is_member = is_member, pending_requests = pending_requests)
 
-@app.route("/team/<int:team_id>/edit", methods=["GET", "POST"])
+@app.route("/team/request/<int:request_id>/approve", methods = ["POST"])
+@login_required
+def approve_join_request(request_id):
+    join_request = db.session.get(TeamJoinRequest, request_id)
+    if not join_request:
+        return "Request not found"
+    team = join_request.team
+    if team.leader_id != session["user_id"]:
+        return "Only leader can approve requests"
+    member_count = TeamMember.query.filter_by(team_id = team.id).count()
+    if member_count >= team.max_members:
+        return "This team is already full"
+    new_member = TeamMember(team_id = team.id, user_id = join_request.user_id, roles = "Member")
+    join_request.status = "Approved"
+    db.session.add(new_member)
+    db.session.commit()
+    return redirect(url_for("team_detail", team_id = team.id))
+
+@app.route("/team/request/<int:request_id>/reject", methods = ["POST"])
+@login_required
+def reject_join_request(request_id):
+    join_request = db.session.get(TeamJoinRequest, request_id)
+    if not join_request:
+        return "Request not found"
+    team = join_request.team
+    if team.leader_id != session["user_id"]:
+        return "Only leader can reject requests"
+    join_request.status = "Rejected"
+    db.session.commit()
+    return redirect(url_for("team_detail", team_id = team.id))
+
+@app.route("/team/<int:team_id>/change-leader", methods = ["POST"])
+@login_required
+def change_leader(team_id):
+    team = db.session.get(Team, team_id)
+    if not team:
+        return "Team not found"
+    if team.leader_id != session["user_id"]:
+        return "Only leader can change leader"
+    new_leader_id = int(request.form.get("new_leader_id"))
+    new_leader_member = TeamMember.query.filter_by(team_id = team.id, user_id = new_leader_id).first()
+    if not new_leader_member:
+        return "New leader must be a team member"
+    old_leader_member = TeamMember.query.filter_by(team_id = team.id, user_id = session["user_id"]).first()
+    if old_leader_member:
+        old_leader_member.roles = "Member"
+    new_leader_member.roles = "Leader"
+    team.leader_id = new_leader_id
+    db.session.commit()
+    return redirect(url_for("team_detail", team_id = team.id))
+
+@app.route("/team/<int:team_id>/edit", methods = ["GET", "POST"])
 @login_required
 def edit_team(team_id):
     team = db.session.get(Team, team_id)
@@ -522,27 +569,29 @@ def edit_team(team_id):
         max_members = int(request.form.get("max_members"))
         if max_members < 1 or max_members > 6:
             return "Team size must be between 1 and 6"
+        if max_members < len(team.members):
+            return "Max members cannot be less than current member count"
         team.max_members = max_members
         db.session.commit()
         return redirect(url_for("team_detail", team_id = team.id))
     return render_template("edit_team.html", team = team, current_user = current_user)
 
-@app.route("/team/<int:team_id>/leave", methods=["POST"])
+@app.route("/team/<int:team_id>/leave", methods = ["POST"])
 @login_required
 def leave_team(team_id):
     team = db.session.get(Team, team_id)
     if not team:
         return "Team not found"
     if team.leader_id == session["user_id"]:
-        return "Leader cannot leave. Delete the team instead."
-    member = TeamMember.query.filter_by(team_id = team.id, user_id = session["user_id"]).first()
+        return "You are the leader. Please transfer leader position before leaving."
+    member = TeamMember.query.filter_by(team_id=team.id, user_id = session["user_id"]).first()
     if not member:
         return "You are not in this team"
     db.session.delete(member)
     db.session.commit()
     return redirect(url_for("teams"))
 
-@app.route("/team/<int:team_id>/delete", methods=["POST"])
+@app.route("/team/<int:team_id>/delete", methods = ["POST"])
 @login_required
 def delete_team(team_id):
     team = db.session.get(Team, team_id)
@@ -555,7 +604,7 @@ def delete_team(team_id):
     db.session.commit()
     return redirect(url_for("teams"))
 
-@app.route("/team/<int:team_id>/remove/<int:user_id>", methods=["POST"])
+@app.route("/team/<int:team_id>/remove/<int:user_id>", methods = ["POST"])
 @login_required
 def remove_member(team_id, user_id):
     team = db.session.get(Team, team_id)
@@ -570,4 +619,3 @@ def remove_member(team_id, user_id):
         db.session.delete(member)
         db.session.commit()
     return redirect(url_for("team_detail", team_id = team.id))
-#---------------------------------------------------------------------------------------------------------

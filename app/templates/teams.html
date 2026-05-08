@@ -15,6 +15,14 @@
             <p>Motto: {{ team.motto or "-" }}</p>
             <p>Team Members: {{ team.members|length }} / {{ team.max_members }}</p>
             <p>Members Needed: {{ team.max_members - team.members|length }}</p>
+
+            {% if team.id in joined_team_ids %}
+            <p><strong>Status: Joined</strong></p>
+            {% elif team.members|length >= team.max_members %}
+            <p><strong>Status: Full</strong></p>
+            {% else %}
+            <p><strong>Status: Open</strong></p>
+            {% endif %}
         </a>
         {% else %}
         <p>No teams found.</p>
@@ -25,6 +33,7 @@
 
     <div class="team-actions">
         <a class="team-btn" href="{{ url_for('create_team') }}">Create New Team</a>
+        <a class="team-btn" href="{{ url_for('join_team') }}">Join Existing Team</a>
     </div>
 </div>
 {% endblock %}

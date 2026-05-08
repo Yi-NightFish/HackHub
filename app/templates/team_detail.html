@@ -20,7 +20,7 @@
 
     {% for member in team.members %}
     <div class="member-row">
-        {{ member.user.name or member.user.email }} - {{ member.roles }}
+        {{ member.user.name or member.user.email }} - {{ member.roles or "Member" }}
 
         {% if team.leader_id == current_user.id and member.user_id != team.leader_id %}
         <form method="POST" action="{{ url_for('remove_member', team_id=team.id, user_id=member.user_id) }}">
@@ -28,34 +28,73 @@
         </form>
         {% endif %}
     </div>
+    {% else %}
+    <p>No members yet.</p>
     {% endfor %}
 
+    {% if team.leader_id == current_user.id %}
     <div class="team-actions">
-        {% if team.leader_id == current_user.id %}
-
         <a class="team-btn" href="{{ url_for('edit_team', team_id=team.id) }}">Edit Team</a>
         <a class="team-btn" href="{{ url_for('tasks', team_id=team.id) }}">Open Task</a>
 
         <form method="POST" action="{{ url_for('delete_team', team_id=team.id) }}">
             <button class="danger" type="submit">Delete Team</button>
         </form>
+    </div>
 
-        {% elif is_member %}
+    <h2>Change Leader</h2>
 
+    <div class="detail-box">
+        {% set has_other_member = false %}
+
+        <form method="POST" action="{{ url_for('change_leader', team_id=team.id) }}">
+            <label>Choose New Leader</label>
+
+            <select name="new_leader_id" required>
+                {% for member in team.members %}
+                    {% if member.user_id != current_user.id %}
+                    <option value="{{ member.user_id }}">
+                        {{ member.user.name or member.user.email }}
+                    </option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+
+            <button type="submit">Change Leader</button>
+        </form>
+
+        <p class="small-text">Leader must transfer leadership before leaving the team.</p>
+    </div>
+
+    <h2>Join Requests</h2>
+
+    {% for request in pending_requests %}
+    <div class="member-row">
+        {{ request.user.name or request.user.email }}
+
+        <form method="POST" action="{{ url_for('approve_join_request', request_id=request.id) }}">
+            <button type="submit">Approve</button>
+        </form>
+
+        <form method="POST" action="{{ url_for('reject_join_request', request_id=request.id) }}">
+            <button type="submit">Reject</button>
+        </form>
+    </div>
+    {% else %}
+    <p>No pending requests.</p>
+    {% endfor %}
+
+    {% elif is_member %}
+
+    <div class="team-actions">
         <a class="team-btn" href="{{ url_for('tasks', team_id=team.id) }}">Open Task</a>
 
         <form method="POST" action="{{ url_for('leave_team', team_id=team.id) }}">
             <button type="submit">Leave Team</button>
         </form>
-
-        {% else %}
-
-        <form method="POST" action="{{ url_for('join_specific_team', team_id=team.id) }}">
-            <button type="submit">Join Team</button>
-        </form>
-
-        {% endif %}
     </div>
+
+    {% endif %}
 
     <a class="back-link" href="{{ url_for('teams') }}">Back to Teams</a>
 </div>

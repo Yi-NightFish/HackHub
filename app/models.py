@@ -78,6 +78,15 @@ class TeamMember(db.Model):
 
     def __repr__(self):
         return f'<TeamMember {self.team_id} - {self.user_id}>'
+
+class TeamJoinRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    status = db.Column(db.String(20), default="Pending")
+    created_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now())
+    team = db.relationship('Team', backref='join_requests')
+    user = db.relationship('User', backref='team_join_requests')
     
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
