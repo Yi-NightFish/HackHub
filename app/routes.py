@@ -358,7 +358,8 @@ def task_details(id):
     task = db.session.get(Task, id)
     if not task:
         return "Task not found"
-    team_members = (db.session.query(User).join(TeamMember, TeamMember.user_id == User.id).filter(TeamMember.team_id == task.team_id).all())
+    team_members = (db.session.query(User).join(TeamMember, TeamMember.user_id == User.id)
+                    .filter(TeamMember.team_id == task.team_id).all())
     subtasks = Subtask.query.filter_by(task_id = id).all()
     if task is None:
         return "Task not found"
@@ -378,7 +379,10 @@ def task_details(id):
         task.is_done = task.status == "Complete"
         db.session.commit()
         return redirect(url_for("tasks", team_id = task.team_id))
-    return render_template("task_details.html", task = task, users = team_members, subtasks = subtasks)
+    return render_template("task_details.html", 
+                           task = task,
+                           users = team_members,
+                           subtasks = subtasks)
 
 @app.route("/task/<int:id>/add_subtask", methods = ["POST"])
 @login_required
@@ -388,7 +392,12 @@ def add_subtask(id):
     status = request.form.get("status")
     deadline = request.form.get("deadline")
     priority = request.form.get("priority")
-    new_subtask = Subtask(title = title, assigned_to = int(assigned_to) if assigned_to else None, status = status, priority = priority, deadline = dt.datetime.strptime(deadline, "%Y-%m-%d") if deadline else None, task_id = id)
+    new_subtask = Subtask(title = title, 
+                          assigned_to = int(assigned_to) if assigned_to else None, 
+                          status = status, 
+                          priority = priority, 
+                          deadline = dt.datetime.strptime(deadline, "%Y-%m-%d") 
+                          if deadline else None, task_id = id)
     db.session.add(new_subtask)
     db.session.commit()
     return redirect(url_for("task_details", id = id))
@@ -428,7 +437,10 @@ def teams():
     joined_team_ids = [
         member.team_id
         for member in TeamMember.query.filter_by(user_id = session["user_id"]).all()]
-    return render_template("teams.html", teams = all_teams, current_user = current_user, joined_team_ids = joined_team_ids)
+    return render_template("teams.html",
+                           teams = all_teams,
+                           current_user = current_user,
+                           joined_team_ids = joined_team_ids)
 
 @app.route("/team/create", methods = ["GET", "POST"])
 @login_required
@@ -475,7 +487,9 @@ def request_join_team(team_id):
     existing_member = TeamMember.query.filter_by(team_id = team.id, user_id = session["user_id"]).first()
     if existing_member:
         return redirect(url_for("team_detail", team_id = team.id))
-    existing_request = TeamJoinRequest.query.filter_by(team_id = team.id, user_id = session["user_id"], status = "Pending").first()
+    existing_request = TeamJoinRequest.query.filter_by(team_id = team.id, 
+                                                       user_id = session["user_id"],
+                                                       status = "Pending").first()
     if existing_request:
         return "Request already sent"
     if TeamMember.query.filter_by(team_id = team.id).count() >= team.max_members:
@@ -492,7 +506,8 @@ def team_detail(team_id):
     if not team:
         return "Team not found"
     current_user = db.session.get(User, session["user_id"])
-    is_member = TeamMember.query.filter_by(team_id = team.id, user_id = session["user_id"]).first() is not None
+    is_member = TeamMember.query.filter_by(team_id = team.id,
+                                           user_id = session["user_id"]).first() is not None
     pending_requests = []
     if team.leader_id == session["user_id"]:
         pending_requests = TeamJoinRequest.query.filter_by(team_id = team.id, status = "Pending").all()
@@ -502,8 +517,17 @@ def team_detail(team_id):
     qr.save(buffer, format = "PNG")
     qr_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
     qr_code = f"data:image/png;base64, {qr_base64}"
-    existing_request = TeamJoinRequest.query.filter_by(team_id = team.id, user_id = session["user_id"], status = "Pending").first()
-    return render_template("team_detail.html", team = team, current_user = current_user, is_member = is_member, pending_requests = pending_requests, invite_link = invite_link, qr_code = qr_code, existing_request = existing_request)
+    existing_request = TeamJoinRequest.query.filter_by(team_id = team.id,
+                                                       user_id = session["user_id"],
+                                                       status = "Pending").first()
+    return render_template("team_detail.html",
+                           team = team,
+                           current_user = current_user,
+                           is_member = is_member,
+                           pending_requests = pending_requests,
+                           invite_link = invite_link,
+                           qr_code = qr_code,
+                           existing_request = existing_request)
     
 @app.route("/team/request/<int:request_id>/approve", methods = ["POST"])
 @login_required
@@ -548,7 +572,8 @@ def change_leader(team_id):
     new_leader_member = TeamMember.query.filter_by(team_id = team.id, user_id = new_leader_id).first()
     if not new_leader_member:
         return "New leader must be a team member"
-    old_leader_member = TeamMember.query.filter_by(team_id = team.id, user_id = session["user_id"]).first()
+    old_leader_member = TeamMember.query.filter_by(team_id = team.id, 
+                                                   user_id = session["user_id"]).first()
     if old_leader_member:
         old_leader_member.roles = "Member"
     new_leader_member.roles = "Leader"
