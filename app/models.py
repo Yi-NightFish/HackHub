@@ -38,7 +38,8 @@ class Event(db.Model):
     organizer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     start_time = db.Column(db.DateTime, nullable = False)
     end_time = db.Column(db.DateTime, nullable = False)
-    cancelled = db.Column(db.Boolean, nullable = False, default = False)
+    deadline = db.Column(db.DateTime, nullable = False)
+    cancelled = db.Column(db.Boolean, nullable = True, default = False)
     teams = db.relationship('Team', backref='event', lazy=True)
     announcements = db.relationship('Announcement', backref='event', lazy=True)
 

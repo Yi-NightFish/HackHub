@@ -1,8 +1,8 @@
-"""Final sync after merging event model updates
+"""initial
 
-Revision ID: e4524ff871a4
+Revision ID: 718625f9bfc4
 Revises: 
-Create Date: 2026-04-27 15:02:48.581436
+Create Date: 2026-05-07 15:57:12.691790
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e4524ff871a4'
+revision = '718625f9bfc4'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -47,7 +47,8 @@ def upgrade():
     sa.Column('organizer_id', sa.Integer(), nullable=False),
     sa.Column('start_time', sa.DateTime(), nullable=False),
     sa.Column('end_time', sa.DateTime(), nullable=False),
-    sa.Column('status', sa.String(length=20), nullable=False),
+    sa.Column('deadline', sa.DateTime(), nullable=False),
+    sa.Column('status', sa.String(length=20), nullable=True),
     sa.CheckConstraint("status IN ('open', 'cancelled', 'completed', 'ongoing')", name='check_status'),
     sa.ForeignKeyConstraint(['organizer_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')

@@ -62,13 +62,15 @@ with app.app_context():
         title="HackHub Launch Hackathon",
         start_time=datetime.now(),
         end_time=datetime.now() + timedelta(hours=2),
+        deadline=datetime.now() - timedelta(days=7),
         description="A beginner-friendly hackathon to celebrate the HackHub launch.",
         organizer_id=user3.id,
     )
     event2 = Event(
         title="Spring Innovation Challenge",
         start_time=datetime.now(),
-        end_time=datetime.now() + timedelta(hours=3),
+        end_time=datetime.now() - timedelta(hours=3),
+        deadline=datetime.now() - timedelta(days=10),
         description="A team-based event for solving real-world problems.",
         organizer_id=user1.id,
     )
@@ -76,6 +78,7 @@ with app.app_context():
         title="AI Workshop Weekend",
         start_time=datetime.now(),
         end_time=datetime.now() + timedelta(hours=4),
+        deadline=datetime.now() - timedelta(days=5),
         description="An educational event with workshops and demos.",
         organizer_id=user1.id,
     )
@@ -83,6 +86,7 @@ with app.app_context():
         title="Summer Sprint Hack",
         start_time=datetime.now(),
         end_time=datetime.now() + timedelta(hours=1),
+        deadline=datetime.now() - timedelta(days=3),
         description="A fast-paced event for prototyping new apps.",
         organizer_id=user4.id,
     )
@@ -90,6 +94,7 @@ with app.app_context():
         title="Open Source Collaboration Day",
         start_time=datetime.now(),
         end_time=datetime.now() + timedelta(hours=5),
+        deadline=datetime.now() - timedelta(days=14),
         description="A community event for contributing to open source projects.",
         organizer_id=user5.id,
         cancelled = True
@@ -165,6 +170,7 @@ with app.app_context():
             title=f"Event {i}",
             start_time=datetime.now() + timedelta(days=i),
             end_time=datetime.now() + timedelta(days=i, hours=2),
+            deadline=datetime.now() + timedelta(days=i-7),
             description=f"Description for Event {i}",
             organizer_id=random.choice(all_users).id,
         )
