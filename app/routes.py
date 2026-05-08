@@ -5,6 +5,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import datetime as dt
 from flask_mail import Message
 import functools
+import qrcode
+import io
+import base64
 
 from app import app, db, mail
 from app.models import *
@@ -253,7 +256,7 @@ def verify_update_email():
     return render_template("otp_veri.html", email = new_email)
 
 # wy - task management system ----------------------------------------------------------------------------
-@app.route ("/team/<int:team_id>/tasks", methods = ["GET", "POST"])
+@app.route ("/tasks/<int:team_id>", methods = ["GET", "POST"])
 @login_required
 def tasks(team_id):
     team = db.session.get(Team, team_id)   
@@ -464,29 +467,24 @@ def create_team():
         return redirect(url_for("team_detail", team_id = new_team.id))
     return render_template("create_team.html", events = events, current_user = current_user)
 
-@app.route("/team/join", methods = ["GET", "POST"])
+@app.route("/team/<int:team_id>/request", methods = ["POST"])
 @login_required
-def join_team():
-    current_user = db.session.get(User, session["user_id"])
-    if request.method == "POST":
-        team_code = request.form.get("team_code")
-        team = Team.query.filter_by(team_code = team_code).first()
-        if not team:
-            return "Invalid team code"
-        existing_member = TeamMember.query.filter_by(team_id = team.id, user_id = session["user_id"]).first()
-        if existing_member:
-            return "You already joined this team"
-        existing_request = TeamJoinRequest.query.filter_by(team_id = team.id, user_id = session["user_id"], status = "Pending").first()
-        if existing_request:
-            return "You already requested to join this team"
-        member_count = TeamMember.query.filter_by(team_id = team.id).count()
-        if member_count >= team.max_members:
-            return "This team is already full"
-        request_join = TeamJoinRequest(team_id = team.id, user_id = session["user_id"], status = "Pending")
-        db.session.add(request_join)
-        db.session.commit()
-        return "Join request sent. Waiting for leader approval."
-    return render_template("join_team.html", current_user = current_user)
+def request_join_team(team_id):
+    team = db.session.get(Team, team_id)
+    if not team:
+        return "Team not found"
+    existing_member = TeamMember.query.filter_by(team_id = team.id, user_id = session["user_id"]).first()
+    if existing_member:
+        return redirect(url_for("team_detail", team_id = team.id))
+    existing_request = TeamJoinRequest.query.filter_by(team_id = team.id, user_id = session["user_id"], status = "Pending").first()
+    if existing_request:
+        return "Request already sent"
+    if TeamMember.query.filter_by(team_id = team.id).count() >= team.max_members:
+        return "This team is already full"
+    join_request = TeamJoinRequest(team_id = team.id, user_id = session["user_id"], status = "Pending")
+    db.session.add(join_request)
+    db.session.commit()
+    return redirect(url_for("team_detail", team_id = team.id))
 
 @app.route("/team/<int:team_id>")
 @login_required
@@ -499,8 +497,15 @@ def team_detail(team_id):
     pending_requests = []
     if team.leader_id == session["user_id"]:
         pending_requests = TeamJoinRequest.query.filter_by(team_id = team.id, status = "Pending").all()
-    return render_template("team_detail.html", team = team, current_user = current_user, is_member = is_member, pending_requests = pending_requests)
-
+    invite_link = url_for("team_detail", team_id = team.id, _external = True)
+    qr = qrcode.make(invite_link)
+    buffer = io.BytesIO()
+    qr.save(buffer, format = "PNG")
+    qr_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    qr_code = f"data:image/png;base64, {qr_base64}"
+    existing_request = TeamJoinRequest.query.filter_by(team_id = team.id, user_id = session["user_id"], status = "Pending").first()
+    return render_template("team_detail.html", team = team, current_user = current_user, is_member = is_member, pending_requests = pending_requests, invite_link = invite_link, qr_code = qr_code, existing_request = existing_request)
+    
 @app.route("/team/request/<int:request_id>/approve", methods = ["POST"])
 @login_required
 def approve_join_request(request_id):

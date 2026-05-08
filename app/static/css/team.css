@@ -170,3 +170,17 @@ h2 {
         align-items: center;
     }
 }
+
+.qr-box {
+    margin-top: 12px;
+    text-align: center;
+}
+
+.team-qr {
+    width: 140px;
+    height: 140px;
+    border: 2px solid black;
+    border-radius: 10px;
+    background: white;
+    padding: 8px;
+}

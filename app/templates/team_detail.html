@@ -14,6 +14,20 @@
         <p><strong>Project Idea:</strong> {{ team.project_idea or "-" }}</p>
         <p><strong>Team Code:</strong> {{ team.team_code }}</p>
         <p><strong>Members:</strong> {{ team.members|length }} / {{ team.max_members }}</p>
+
+        {% if invite_link %}
+        <p>
+            <strong>Invite Link:</strong>
+            <a href="{{ invite_link }}">{{ invite_link }}</a>
+        </p>
+        {% endif %}
+
+        {% if qr_code %}
+        <div class="qr-box">
+            <p><strong>Scan to Open Team:</strong></p>
+            <img src="{{ qr_code }}" alt="Team QR Code" class="team-qr">
+        </div>
+        {% endif %}
     </div>
 
     <h2>Team Members</h2>
@@ -33,6 +47,7 @@
     {% endfor %}
 
     {% if team.leader_id == current_user.id %}
+
     <div class="team-actions">
         <a class="team-btn" href="{{ url_for('edit_team', team_id=team.id) }}">Edit Team</a>
         <a class="team-btn" href="{{ url_for('tasks', team_id=team.id) }}">Open Task</a>
@@ -45,8 +60,6 @@
     <h2>Change Leader</h2>
 
     <div class="detail-box">
-        {% set has_other_member = false %}
-
         <form method="POST" action="{{ url_for('change_leader', team_id=team.id) }}">
             <label>Choose New Leader</label>
 
@@ -63,7 +76,9 @@
             <button type="submit">Change Leader</button>
         </form>
 
-        <p class="small-text">Leader must transfer leadership before leaving the team.</p>
+        <p class="small-text">
+            Leader must transfer leadership before leaving the team.
+        </p>
     </div>
 
     <h2>Join Requests</h2>
@@ -92,6 +107,22 @@
         <form method="POST" action="{{ url_for('leave_team', team_id=team.id) }}">
             <button type="submit">Leave Team</button>
         </form>
+    </div>
+
+    {% else %}
+
+    <div class="team-actions">
+        {% if existing_request %}
+        <button disabled>Request Sent</button>
+
+        {% elif team.members|length >= team.max_members %}
+        <button disabled>Team Full</button>
+
+        {% else %}
+        <form method="POST" action="{{ url_for('request_join_team', team_id=team.id) }}">
+            <button type="submit">Request to Join</button>
+        </form>
+        {% endif %}
     </div>
 
     {% endif %}
