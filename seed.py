@@ -115,6 +115,7 @@ with app.app_context():
     team1 = Team(
         name="Team Alpha",
         event_id=event1.id,
+        leader_id = user1.id,
         team_code="ALPHA123",
         max_members=5
     )

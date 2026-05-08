@@ -1,0 +1,262 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f7fb;
+    margin: 0;
+    padding: 20px;
+    color: #111;
+}
+
+.container {
+    max-width: 1400px;
+    margin: auto;
+}
+
+/* Header */
+h1 {
+    font-size: 64px;
+    font-weight: bold;
+    margin: 0;
+    margin-bottom: 20px;
+}
+
+/* Layout */
+.task-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+/* Create Task Panel */
+.create-task-panel {
+    background: white;
+    border: 2px solid black;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+/* Form layout */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 14px;
+}
+
+label {
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+/* Inputs */
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid black;
+    border-radius: 10px;
+    font-size: 14px;
+    box-sizing: border-box;
+    background: white;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 70px;
+}
+
+/* Button */
+.create-btn {
+    width: 100%;
+    background: #a5b4fc;
+    border: 2px solid black;
+    color: black;
+    font-weight: bold;
+    padding: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+
+/* Right side */
+.task-main {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Filter bar */
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: white;
+    border: 2px solid black;
+    border-radius: 16px;
+    padding: 12px 16px;
+}
+
+.filter-link {
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: bold;
+    color: black;
+}
+
+.filter-link.active {
+    outline: 2px solid black;
+}
+
+/* Status colors */
+.filter-wishlist,
+.status-wishlist {
+    background: #d1d5db;
+}
+
+.filter-to-do,
+.status-to-do {
+    background: #c4b5fd;
+}
+
+.filter-in-progress,
+.status-in-progress {
+    background: #c7d2fe;
+}
+
+.filter-in-review,
+.status-in-review {
+    background: #fbcfe8;
+}
+
+.filter-complete,
+.status-complete {
+    background: #bbf7d0;
+}
+
+/* Scroll */
+.task-scroll-area {
+    max-height: 700px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+/* Cards */
+.task-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.task-card {
+    background: white;
+    border: 2px solid black;
+    border-radius: 16px;
+    padding: 20px;
+    transition: transform 0.15s ease;
+}
+
+.task-card:hover {
+    transform: translateY(-2px);
+}
+
+.task-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.task-card h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 22px;
+}
+
+.task-card p {
+    margin: 6px 0;
+    font-size: 14px;
+}
+
+/* Actions */
+.task-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.task-actions form {
+    flex: 1;
+}
+
+.task-actions button {
+    width: 100%;
+    padding: 6px;
+    border-radius: 10px;
+    border: 2px solid black;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+/* Badges */
+.badge,
+.status-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: black;
+}
+
+/* Priority */
+.high {
+    background: #fecaca;
+}
+
+.medium {
+    background: #fde68a;
+}
+
+.low {
+    background: #bbf7d0;
+}
+
+/* Overdue */
+.overdue-card {
+    border: 3px solid #dc2626;
+    background: #fee2e2;
+}
+
+.overdue-text {
+    color: #dc2626;
+    font-weight: bold;
+}
+
+/* Empty */
+.empty {
+    text-align: center;
+    color: #666;
+    padding: 25px;
+}
+
+/* Scrollbar */
+.task-scroll-area::-webkit-scrollbar {
+    width: 8px;
+}
+
+.task-scroll-area::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 10px;
+}
+
+.task-scroll-area::-webkit-scrollbar-thumb {
+    background: #fed7aa;
+    border-radius: 10px;
+    border: 1px solid black;
+}

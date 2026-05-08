@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="team-page">
+    <h1 class="team-title">Create Team</h1>
+
+    <form class="form-box" method="POST">
+        <label>Team Name</label>
+        <input type="text" name="name" required>
+
+        <label>Motto</label>
+        <input type="text" name="motto">
+
+        <label>Roles Needed</label>
+        <input type="text" name="roles">
+
+        <label>Project Idea</label>
+        <textarea name="project_idea"></textarea>
+
+        <label>Event</label>
+        <select name="event_id" required>
+            {% for event in events %}
+            <option value="{{ event.id }}">{{ event.title }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Max Members</label>
+        <input type="number" name="max_members" min="1" max="6" required>
+
+        <button type="submit">Create Team</button>
+    </form>
+
+    <a class="back-link" href="{{ url_for('teams') }}">Back</a>
+</div>
+{% endblock %}
