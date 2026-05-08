@@ -172,3 +172,13 @@ class Dashboard(db.Model):
 
     def __repr__(self):
         return f'<Dashboard {self.user_id} - {self.event_id}>'
+
+class Project(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False, unique=True)
+    title = db.Column(db.String(120), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    tech_stack = db.Column(db.String(300), nullable=True)
+    demo_link = db.Column(db.String(300), nullable=True)
+    github_link = db.Column(db.String(300), nullable=True)
+    team = db.relationship('Team', backref='project')

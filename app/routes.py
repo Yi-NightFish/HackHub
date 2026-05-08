@@ -737,3 +737,4 @@ def explore():
     if request.headers.get("HX-Request"):
         return render_template("partials/event_list.html", events = events, search_query = search_query, paginate = paginate or None)
     return render_template("explore.html", events = events, search_query = search_query, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]), sort_by = sort_by, paginate = paginate, history = session.get("search_history", []))
+# wy - project page -----------------------------------------------------------------------------------
