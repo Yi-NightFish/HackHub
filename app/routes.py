@@ -525,7 +525,9 @@ def request_join_team(team_id):
     db.session.add(join_request)
     db.session.commit()
     # return redirect(url_for("team_detail", team_id = team.id))
-    return "Request sent"
+    return """ <div class = "team-actions" id = "join-action">
+            <button disabled>Request Sent</button>
+            </div>"""
 
 @app.route("/team/<int:team_id>")
 @login_required
