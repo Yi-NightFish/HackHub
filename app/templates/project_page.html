@@ -85,32 +85,6 @@
             </section>
 
             <section class="card">
-                <h2>Screenshots / Demo Images</h2>
-
-                {% if can_edit %}
-                <textarea
-                    class="inline-textarea small"
-                    name="value"
-                    placeholder="Paste screenshot image links here, separated by comma"
-                    hx-post="{{ url_for('autosave_project', team_id=team.id) }}"
-                    hx-trigger="change"
-                    hx-vals='{"field":"screenshots"}'
-                    hx-swap="none"
-                >{{ project.screenshots or '' }}</textarea>
-                {% endif %}
-
-                {% if project.screenshots %}
-                <div class="gallery">
-                    {% for img in project.screenshots.split(',') %}
-                    <img src="{{ img.strip() }}" alt="Project screenshot">
-                    {% endfor %}
-                </div>
-                {% else %}
-                <p>No screenshots added yet.</p>
-                {% endif %}
-            </section>
-
-            <section class="card">
                 <h2>Work Division</h2>
 
                 {% if can_edit %}
@@ -119,7 +93,7 @@
                     name="value"
                     placeholder=
 "Example: User 1 - Team Formation System, Task Management system... 
-User 2 - User Authentication, User Profile..."
+         User 2 - User Authentication, User Profile..."
                     hx-post="{{ url_for('autosave_project', team_id=team.id) }}"
                     hx-trigger="change"
                     hx-vals='{"field":"contributions"}'
@@ -159,6 +133,18 @@ User 2 - User Authentication, User Profile..."
                     hx-vals='{"field":"demo_link"}'
                     hx-swap="none"
                 >
+
+                <input
+                    class="inline-input"
+                    name="value"
+                    value="{{ project.screenshots_link or '' }}"
+                    placeholder="Screenshots link"
+                    hx-post="{{ url_for('autosave_project', team_id=team.id) }}"
+                    hx-trigger="change"
+                    hx-vals='{"field":"screenshots_link"}'
+                    hx-swap="none"
+                >
+
                 {% endif %}
 
                 {% if project.github_link %}
@@ -170,6 +156,12 @@ User 2 - User Authentication, User Profile..."
                 {% if project.demo_link %}
                 <a href="{{ project.demo_link }}" target="_blank" class="link-btn">
                     Live Demo
+                </a>
+                {% endif %}
+
+                {% if project.screenshots_link %}
+                <a href="{{ project.screenshots_link }}" target="_blank" class="link-btn">
+                    Screenshots
                 </a>
                 {% endif %}
 

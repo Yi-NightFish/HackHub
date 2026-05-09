@@ -182,7 +182,7 @@ class Project(db.Model):
     tech_stack = db.Column(db.String(300), nullable=True)
     demo_link = db.Column(db.String(300), nullable=True)
     github_link = db.Column(db.String(300), nullable=True)
-    screenshots = db.Column(db.Text, nullable=True)
+    screenshots_link = db.Column(db.String(300), nullable=True)
     contributions = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
     team = db.relationship('Team', backref='project')

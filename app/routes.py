@@ -593,30 +593,6 @@ def change_leader(team_id):
     db.session.commit()
     return redirect(url_for("team_detail", team_id = team.id))
 
-@app.route("/team/<int:team_id>/edit", methods = ["GET", "POST"])
-@login_required
-def edit_team(team_id):
-    team = db.session.get(Team, team_id)
-    current_user = db.session.get(User, session["user_id"])
-    if not team:
-        return "Team not found"
-    if team.leader_id != session["user_id"]:
-        return "Only leader can edit this team"
-    if request.method == "POST":
-        team.name = request.form.get("name")
-        team.motto = request.form.get("motto")
-        team.roles = request.form.get("roles")
-        team.project_idea = request.form.get("project_idea")
-        max_members = int(request.form.get("max_members"))
-        if max_members < 1 or max_members > 6:
-            return "Team size must be between 1 and 6"
-        if max_members < len(team.members):
-            return "Max members cannot be less than current member count"
-        team.max_members = max_members
-        db.session.commit()
-        return redirect(url_for("team_detail", team_id = team.id))
-    return render_template("edit_team.html", team = team, current_user = current_user)
-
 @app.route("/team/<int:team_id>/leave", methods = ["POST"])
 @login_required
 def leave_team(team_id):
@@ -752,7 +728,7 @@ def explore():
         return render_template("partials/event_list.html", events = events, search_query = search_query, paginate = paginate or None)
     return render_template("explore.html", events = events, search_query = search_query, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]), sort_by = sort_by, paginate = paginate, history = session.get("search_history", []))
 # wy - project page -----------------------------------------------------------------------------------
-@app.route("/team/<int:team_id>/project", methods = ["GET", "POST"])
+@app.route("/team/<int:team_id>/project")
 @login_required
 def project_page(team_id):
     team = db.session.get(Team, team_id)
@@ -768,19 +744,6 @@ def project_page(team_id):
         project = Project(team_id = team.id, title = f"{team.name} Project")
         db.session.add(project)
         db.session.commit()
-    if request.method == "POST":
-        if not can_edit:
-            return "Only team members can edit project page"
-        project.title = request.form.get("title")
-        project.description = request.form.get("description")
-        project.tech_stack = request.form.get("tech_stack")
-        project.demo_link = request.form.get("demo_link")
-        project.github_link = request.form.get("github_link")
-        project.screenshots = request.form.get("screenshots")
-        project.contributions = request.form.get("contributions")
-        team.project_submitted = True
-        db.session.commit()
-        return redirect(url_for("project_page", team_id = team.id))
     return render_template("project_page.html",
                            team = team,
                            project = project,
@@ -814,8 +777,8 @@ def autosave_project(team_id):
         project.demo_link = value
     elif field == "github_link":
         project.github_link = value
-    elif field == "screenshots":
-        project.screenshots = value
+    elif field == "screenshots_link":
+        project.screenshots_link = value
     elif field == "contributions":
         project.contributions = value
     else:
