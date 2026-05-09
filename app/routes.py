@@ -491,12 +491,20 @@ def request_join_team(team_id):
                                                        user_id = session["user_id"],
                                                        status = "Pending").first()
     if existing_request:
+        if request.headers.get("HX-Request"):
+            return  """ <div class="team-actions" id="join-action"> 
+                    <button disabled>Request Sent</button>
+                    </div>"""
         return "Request already sent"
     if TeamMember.query.filter_by(team_id = team.id).count() >= team.max_members:
         return "This team is already full"
     join_request = TeamJoinRequest(team_id = team.id, user_id = session["user_id"], status = "Pending")
     db.session.add(join_request)
     db.session.commit()
+    if request.headers.get("HX-Request"):
+        return  """<div class="team-actions" id="join-action">
+                <button disabled>Request Sent</button>
+                </div>"""
     return redirect(url_for("team_detail", team_id = team.id))
 
 @app.route("/team/<int:team_id>")
@@ -545,6 +553,8 @@ def approve_join_request(request_id):
     join_request.status = "Approved"
     db.session.add(new_member)
     db.session.commit()
+    if request.headers.get("HX-Request"):
+        return ""
     return redirect(url_for("team_detail", team_id = team.id))
 
 @app.route("/team/request/<int:request_id>/reject", methods = ["POST"])
@@ -558,6 +568,8 @@ def reject_join_request(request_id):
         return "Only leader can reject requests"
     join_request.status = "Rejected"
     db.session.commit()
+    if request.headers.get("HX-Request"):
+        return ""
     return redirect(url_for("team_detail", team_id = team.id))
 
 @app.route("/team/<int:team_id>/change-leader", methods = ["POST"])
@@ -653,6 +665,8 @@ def remove_member(team_id, user_id):
     if member:
         db.session.delete(member)
         db.session.commit()
+    if request.headers.get("HX-Request"):
+        return ""
     return redirect(url_for("team_detail", team_id = team.id))
 
 @app.route("/team/<int:team_id>/autosave", methods = ["POST"])
