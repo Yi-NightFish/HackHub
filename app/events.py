@@ -22,7 +22,7 @@ def now():
 #------------------------------------------------------------------------------------------------------------
 
 VALID_STATUSES = ["open", "ongoing", "cancelled", "completed"]
-VALID_TABS = ["overview", "participants"]
+VALID_TABS = ["overview", "participants", "teams"]
 
 # Main
 @app.route("/explore")
@@ -91,13 +91,15 @@ def event_detail(event_id):
     if request.method == "GET":
         active_tab = request.args.get("tab") if request.args.get("tab") in VALID_TABS else "overview"
         event = db.session.get(Event, event_id)
+        current_user = get_current_user()
 
         def get_participants():
-            return map(lambda participant: participant.user, event.participants)
+            return list(map(lambda participant: participant.user, event.participants))
 
         participants = get_participants()
+        teams = [team for team in event.teams if Participation.query.filter_by(team_id = team.id).count() < team.max_members] if event else []
+
         if active_tab == "overview":
-            current_user = get_current_user()
             enrolled = False
             if current_user:
                 enrolled = current_user in participants
@@ -111,14 +113,22 @@ def event_detail(event_id):
                 enrolled = enrolled
             )
         elif active_tab == "participants":
-            if not get_current_user():
+            if not current_user:
                 return redirect(url_for("login", next = request.url))
             return render_template(
                 "event_detail.html", 
                 event = event, 
-                current_user = get_current_user(),
+                current_user = current_user,
                 active_tab = active_tab,
                 participants = participants
+            )
+        elif active_tab == "teams":
+            return render_template(
+                "event_detail.html",
+                event = event,
+                current_user = current_user,
+                active_tab = active_tab,
+                teams = teams
             )
     else:
         user_id = request.form.get("user-id")

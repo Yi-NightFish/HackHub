@@ -9,7 +9,7 @@
 {% block content %}
 <div class="event-detail">
   <div id="event-tab">
-    {% set tabs = ["overview", "participants"] %}
+    {% set tabs = ["overview", "participants", "teams"] %}
     {% for tab in tabs %}
       <a href="{{ url_for('event_detail', event_id=event.id, tab=tab) }}" class="{{ 'active' if active_tab == tab else '' }}">
         {{ tab.capitalize() }}
@@ -75,6 +75,21 @@
       {% endif %}
     {% else %}
       <p>Please <a href="{{ url_for('login', next = request.url) }}">log in</a> to view participant details.</p>
+    {% endif %}
+  {% elif active_tab == "teams" %}
+    {% if teams %}
+      <div class="event-teams">
+        {% for team in teams %}
+          <div class="team-card">
+            <h3><a href="{{ url_for('team_detail', team_id=team.id) }}">{{ team.name }}</a></h3>
+            <p><strong>Motto:</strong> {{ team.motto or "-" }}</p>
+            <p><strong>Members:</strong> {{ team.members|length }} / {{ team.max_members }}</p>
+            <p><strong>Project:</strong> {{ team.project_idea or "N/A" }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No teams have been created for this event yet.</p>
     {% endif %}
   {% endif %}
 </div>
