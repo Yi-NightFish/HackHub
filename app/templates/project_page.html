@@ -1,78 +1,176 @@
 {% extends "base.html" %}
 
 {% block css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/team.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/project.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="team-page">
-    <h1 class="team-title">Project Page</h1>
 
+<div class="project-container">
+
+    <!-- HEADER -->
+    <div class="project-header">
+
+        <div>
+            <h1 class="project-title">{{ project.title }}</h1>
+
+            <p class="project-subtitle">
+                Team: <strong>{{ team.name }}</strong>
+            </p>
+        </div>
+
+        {% if team.leader_id == current_user.id %}
+        <a class="edit-btn" href="#edit-section">Edit Project</a>
+        {% endif %}
+
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="project-grid">
+
+        <!-- LEFT SIDE -->
+        <div class="project-main">
+
+            <!-- DESCRIPTION -->
+            <section class="card">
+                <h2>Overview</h2>
+                <p>
+                    {{ project.description or "No description provided yet." }}
+                </p>
+            </section>
+
+            <!-- TECH STACK -->
+            <section class="card">
+                <h2>Tech Stack</h2>
+
+                {% if project.tech_stack %}
+                    <div class="tags">
+                        {% for tech in project.tech_stack.split(',') %}
+                            <span class="tag">{{ tech.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>-</p>
+                {% endif %}
+            </section>
+
+            <!-- SCREENSHOTS -->
+            <section class="card">
+                <h2>Screenshots</h2>
+
+                {% if project.screenshots %}
+                    <div class="gallery">
+                        {% for img in project.screenshots.split(',') %}
+                            <img src="{{ img.strip() }}" alt="screenshot">
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>No screenshots uploaded.</p>
+                {% endif %}
+            </section>
+
+            <!-- CONTRIBUTIONS -->
+            <section class="card">
+                <h2>Team Contributions</h2>
+
+                {% if project.contributions %}
+                    <pre class="contribution-box">
+{{ project.contributions }}
+                    </pre>
+                {% else %}
+                    <p>No contributions added yet.</p>
+                {% endif %}
+            </section>
+
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div class="project-side">
+
+            <!-- LINKS -->
+            <section class="card">
+                <h2>Links</h2>
+
+                {% if project.github_link %}
+                <a href="{{ project.github_link }}" target="_blank" class="link-btn">
+                    GitHub Repository
+                </a>
+                {% endif %}
+
+                {% if project.demo_link %}
+                <a href="{{ project.demo_link }}" target="_blank" class="link-btn">
+                    Live Demo
+                </a>
+                {% endif %}
+
+                {% if not project.github_link and not project.demo_link %}
+                <p>No links available.</p>
+                {% endif %}
+
+            </section>
+
+            <!-- TEAM -->
+            <section class="card">
+                <h2>Team Members</h2>
+
+                {% for member in team.members %}
+                <div class="member">
+                    <div>
+                        <p class="name">
+                            {{ member.user.name or member.user.email }}
+                        </p>
+                        <p class="role">
+                            {{ member.roles or "Member" }}
+                        </p>
+                    </div>
+                </div>
+                {% endfor %}
+
+            </section>
+
+        </div>
+
+    </div>
+
+    <!-- EDIT SECTION (ONLY FOR LEADER) -->
     {% if team.leader_id == current_user.id %}
-    <form class="form-box" method="POST">
-        <label>Project Title</label>
-        <input type="text" name="title" value="{{ project.title }}" required>
+    <section id="edit-section" class="card edit-card">
 
-        <label>Project Description</label>
-        <textarea name="description">{{ project.description or "" }}</textarea>
+        <h2>Edit Project</h2>
 
-        <label>Tech Stack Used</label>
-        <input type="text" name="tech_stack" value="{{ project.tech_stack or '' }}">
+        <form method="POST">
 
-        <label>Demo Link / Screenshot Link</label>
-        <input type="text" name="demo_link" value="{{ project.demo_link or '' }}">
+            <input type="text" name="title"
+                   value="{{ project.title }}"
+                   placeholder="Project Title">
 
-        <label>GitHub Repository Link</label>
-        <input type="text" name="github_link" value="{{ project.github_link or '' }}">
+            <textarea name="description"
+                      placeholder="Project Description">{{ project.description }}</textarea>
 
-        <button type="submit">Save Project Page</button>
-    </form>
+            <input type="text" name="tech_stack"
+                   value="{{ project.tech_stack }}"
+                   placeholder="React, Flask, MySQL">
+
+            <input type="text" name="demo_link"
+                   value="{{ project.demo_link }}"
+                   placeholder="Demo Link">
+
+            <input type="text" name="github_link"
+                   value="{{ project.github_link }}"
+                   placeholder="GitHub Link">
+
+            <button type="submit">Save Changes</button>
+
+        </form>
+
+    </section>
     {% endif %}
 
-    <div class="detail-box">
-        <h2>{{ project.title }}</h2>
+    <a href="{{ url_for('team_detail', team_id=team.id) }}"
+       class="back-link">
+        ← Back to Team
+    </a>
 
-        <p><strong>Description:</strong> {{ project.description or "-" }}</p>
-        <p><strong>Tech Stack:</strong> {{ project.tech_stack or "-" }}</p>
-
-        <p>
-            <strong>Demo / Screenshots:</strong>
-            {% if project.demo_link %}
-            <a href="{{ project.demo_link }}" target="_blank">{{ project.demo_link }}</a>
-            {% else %}
-            -
-            {% endif %}
-        </p>
-
-        <p>
-            <strong>GitHub Repository:</strong>
-            {% if project.github_link %}
-            <a href="{{ project.github_link }}" target="_blank">{{ project.github_link }}</a>
-            {% else %}
-            -
-            {% endif %}
-        </p>
-    </div>
-
-    <h2>Team Members</h2>
-
-    {% for member in team.members %}
-    <div class="member-row">
-        {{ member.user.name or member.user.email }} - {{ member.roles or "Member" }}
-    </div>
-    {% endfor %}
-
-    <h2>Individual Contributions</h2>
-
-    <div class="detail-box">
-        {% for member in team.members %}
-        <p>
-            <strong>{{ member.user.name or member.user.email }}:</strong>
-            {{ member.roles or "Member" }}
-        </p>
-        {% endfor %}
-    </div>
-
-    <a class="back-link" href="{{ url_for('team_detail', team_id=team.id) }}">Back to Team</a>
 </div>
+
 {% endblock %}

@@ -1,132 +1,100 @@
-body {
-    background: #f7f7fb;
-    font-family: Arial, sans-serif;
-    color: #111;
-}
-
-.project-page {
-    padding: 24px 40px;
+.project-container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+    font-family: Arial;
 }
 
 .project-header {
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 14px;
-    padding: 28px;
-    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-.project-header h1 {
-    font-size: 42px;
-    margin: 0 0 10px;
+.project-title {
+    font-size: 32px;
+    margin: 0;
 }
 
-.project-header p {
-    font-size: 18px;
-    max-width: 800px;
-    line-height: 1.5;
+.project-subtitle {
+    color: gray;
 }
 
-.project-layout {
+.edit-btn {
+    background: black;
+    color: white;
+    padding: 8px 14px;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.project-grid {
     display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 28px;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
 }
 
-.project-sidebar {
+.card {
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.tags {
     display: flex;
-    flex-direction: column;
-    gap: 18px;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
-.side-card,
-.project-section {
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 14px;
-    padding: 20px;
+.tag {
+    background: #eee;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
 }
 
-.side-card h2,
-.project-section h2 {
-    margin-top: 0;
-    color: #5b4bb7;
-}
-
-.side-card a {
-    display: block;
-    background: #4b2bb3;
-    color: white;
-    text-decoration: none;
-    padding: 10px;
+/* .gallery img {
+    width: 100%;
+    margin-bottom: 10px;
     border-radius: 8px;
-    margin: 8px 0;
-    text-align: center;
-    font-weight: bold;
-}
+} */
 
-.team-member {
-    margin-bottom: 12px;
-}
-
-.team-member span {
+.link-btn {
     display: block;
-    color: #777;
-    font-size: 14px;
+    margin-bottom: 10px;
+    color: blue;
 }
 
-.project-main {
+.member {
     display: flex;
-    flex-direction: column;
-    gap: 22px;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
-input,
-textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 6px 0 14px;
-    border: 1px solid #bbb;
-    border-radius: 8px;
+.avatar {
+    width: 35px;
+    height: 35px;
+    background: #ddd;
+    border-radius: 50%;
 }
 
-textarea {
-    min-height: 100px;
-}
-
-button {
-    background: #4b2bb3;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 18px;
+.name {
     font-weight: bold;
+    margin: 0;
 }
 
-table {
+.role {
+    font-size: 12px;
+    color: gray;
+    margin: 0;
+}
+
+.edit-card input,
+.edit-card textarea {
     width: 100%;
-    border-collapse: collapse;
-}
-
-th,
-td {
-    border-bottom: 1px solid #ddd;
-    padding: 12px;
-    text-align: left;
-}
-
-.milestone,
-.task-item,
-.activity-item {
-    border-bottom: 1px solid #eee;
-    padding: 12px 0;
-}
-
-.back-link {
-    display: block;
-    margin-top: 24px;
-    text-align: center;
-    font-weight: bold;
-    color: #4b2bb3;
-    text-decoration: none;
+    margin-bottom: 10px;
+    padding: 8px;
 }

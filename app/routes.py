@@ -744,27 +744,32 @@ def project_page(team_id):
     team = db.session.get(Team, team_id)
     if not team:
         return "Team not found"
+    event = db.session.get(Event, team.event_id)
     current_user = db.session.get(User, session["user_id"])
-    is_member = TeamMember.query.filter_by(team_id = team.id, 
+    is_member = TeamMember.query.filter_by(team_id = team.id,
                                            user_id = session["user_id"]).first() is not None
-    if not is_member:
-        return "Only team members can view project page"
-    project = Project.query.filter_by(team_id=team.id).first()
+    can_edit = (is_member and team.leader_id == session["user_id"])
+    project = Project.query.filter_by(team_id = team.id).first()
     if not project:
         project = Project(team_id = team.id, title = f"{team.name} Project")
         db.session.add(project)
         db.session.commit()
     if request.method == "POST":
-        if team.leader_id != session["user_id"]:
+        if not can_edit:
             return "Only leader can edit project page"
         project.title = request.form.get("title")
         project.description = request.form.get("description")
         project.tech_stack = request.form.get("tech_stack")
         project.demo_link = request.form.get("demo_link")
         project.github_link = request.form.get("github_link")
+        project.screenshots = request.form.get("screenshots")
+        project.contributions = request.form.get("contributions")
+        team.project_submitted = True
         db.session.commit()
         return redirect(url_for("project_page", team_id = team.id))
-    return render_template("project_page.html", 
+    return render_template("project_page.html",
                            team = team,
                            project = project,
-                           current_user = current_user)
+                           current_user = current_user, 
+                           can_edit = can_edit,
+                           event = event)

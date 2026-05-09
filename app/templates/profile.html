@@ -1,58 +1,81 @@
 {% extends "base.html" %}
 
 {% block css %}
-<link rel = "stylesheet" href = "{{url_for('static', filename = 'css/profile.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename = 'css/profile.css')}}">
 {% endblock %}
 
 {% block content %}
 <div>
     <h1>Profile</h1>
 
-    <form action = "" method = "POST">
+    <form action="" method="POST">
         {{form.hidden_tag()}}
         {% set hide = (user.id != current_user.id) %}
-        <div id = "username">
+        <div id="username">
             <p>{{form.username.label}}</p>
             {{form.username(size = 32, class = "profileInput", readOnly = hide, value = user.name)}}
         </div>
 
-        <div id = email>
+        <div id=email>
             <p>{{form.email.label}}</p>
             {{form.email(size = 32, class = "profileInput", readOnly = hide, value = user.email, type = "email")}}
         </div>
 
-        <div id = university>
+        <div id=university>
             <p>{{form.university.label}}</p>
             {{form.university(size = 32, class = "profileInput", readOnly = hide, value = user.university)}}
         </div>
 
-        <div id = skills>
+        <div id=skills>
             <p>{{form.skills.label}}</p>
             {{form.skills(size = 32, class = "profileInput", readOnly = hide, value = user.skills)}}
         </div>
 
-        <div id = github_link>
+        <div id=github_link>
             <p>{{form.github_link.label}}</p>
             {{form.github_link(size = 32, class = "profileInput", readOnly = hide, value = user.github_link)}}
         </div>
 
         {{form.submit(id = 'submitButton', hidden = hide)}}
-        <a href = '{{url_for("reset_pwd")}}' {{'hidden' if hide else ''}}>Reset Password</a>
+        <a href='{{url_for("reset_pwd")}}' {{'hidden' if hide else '' }}>Reset Password</a>
     </form>
 
     {% if events %}
-        <div id = "history">
-            <h2>History</h2>
-            {% for event in events %}
-                <div class = "event">
-                    <h3>{{event.title}} ({{event.date.date()}})</h3>
-                    <hr>
-                    <p id = "history-description">{{event.description}}</p>
-                </div>
-            {% endfor %}
+    <div id="history">
+        <h2>History</h2>
+        {% for event in events %}
+        <div class="event">
+            <h3>{{event.title}} ({{event.date.date()}})</h3>
+            <hr>
+            <p id="history-description">{{event.description}}</p>
         </div>
+        {% endfor %}
+    </div>
     {% else %}
-        <p>No Event Joined</p>
+    <p>No Event Joined</p>
     {% endif %}
+
+    <div id="projects">
+        <h2>Projects</h2>
+        {% for membership in user.team_memberships %}
+        {% if membership.team.project %}
+        <div class="event">
+            <h3>
+                {{ membership.team.project.title }}
+            </h3>
+            <p>
+                Team: {{ membership.team.name }}
+            </p>
+            <a href="{{ url_for('project_page', team_id = membership.team.id) }}">
+                View Project
+            </a>
+            {% else %}
+            <p>No project</p>
+        </div>
+
+        {% endif %}
+        {% endfor %}
+    </div>
+
 </div>
 {% endblock %}
