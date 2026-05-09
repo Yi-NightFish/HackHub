@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import random
 
 from app import app, db
-from app.models import User, Event, Team, TeamMember, Task, Announcement, Message, Dashboard
+from app.models import User, Event, Team, Task, Announcement, Message, Dashboard
 from werkzeug.security import generate_password_hash
 
 with app.app_context():
@@ -60,53 +60,44 @@ with app.app_context():
     # Create events with varied statuses for UI testing
     event1 = Event(
         title="HackHub Launch Hackathon",
-        date=datetime.now(),
         start_time=datetime.now(),
         end_time=datetime.now() + timedelta(hours=2),
         deadline=datetime.now() - timedelta(days=7),
         description="A beginner-friendly hackathon to celebrate the HackHub launch.",
         organizer_id=user3.id,
-        # status="open"
     )
     event2 = Event(
         title="Spring Innovation Challenge",
-        date=datetime.now(),
         start_time=datetime.now(),
         end_time=datetime.now() - timedelta(hours=3),
         deadline=datetime.now() - timedelta(days=10),
         description="A team-based event for solving real-world problems.",
         organizer_id=user1.id,
-        # status="completed"
     )
     event3 = Event(
         title="AI Workshop Weekend",
-        date=datetime.now(),
         start_time=datetime.now(),
         end_time=datetime.now() + timedelta(hours=4),
         deadline=datetime.now() - timedelta(days=5),
         description="An educational event with workshops and demos.",
         organizer_id=user1.id,
-        # status="cancelled"
     )
     event4 = Event(
         title="Summer Sprint Hack",
-        date=datetime.now(),
         start_time=datetime.now(),
         end_time=datetime.now() + timedelta(hours=1),
         deadline=datetime.now() - timedelta(days=3),
         description="A fast-paced event for prototyping new apps.",
         organizer_id=user4.id,
-        # status="completed"
     )
     event5 = Event(
         title="Open Source Collaboration Day",
-        date=datetime.now(),
         start_time=datetime.now(),
         end_time=datetime.now() + timedelta(hours=5),
         deadline=datetime.now() - timedelta(days=14),
         description="A community event for contributing to open source projects.",
         organizer_id=user5.id,
-        # status="open"
+        cancelled = True
     )
     db.session.add_all([event1, event2, event3, event4, event5])
     db.session.commit()
@@ -147,15 +138,15 @@ with app.app_context():
     db.session.commit()
 
     # Simulate users joining multiple events via team memberships
-    membership1 = TeamMember(team_id=team1.id, user_id=user3.id)
-    membership2 = TeamMember(team_id=team2.id, user_id=user3.id)
-    membership3 = TeamMember(team_id=team3.id, user_id=user3.id)
-    membership4 = TeamMember(team_id=team2.id, user_id=user1.id)
-    membership5 = TeamMember(team_id=team1.id, user_id=user2.id)
-    membership6 = TeamMember(team_id=team4.id, user_id=user4.id)
-    membership7 = TeamMember(team_id=team5.id, user_id=user5.id)
-    db.session.add_all([membership1, membership2, membership3, membership4, membership5, membership6, membership7])
-    db.session.commit()
+    # membership1 = TeamMember(team_id=team1.id, user_id=user3.id)
+    # membership2 = TeamMember(team_id=team2.id, user_id=user3.id)
+    # membership3 = TeamMember(team_id=team3.id, user_id=user3.id)
+    # membership4 = TeamMember(team_id=team2.id, user_id=user1.id)
+    # membership5 = TeamMember(team_id=team1.id, user_id=user2.id)
+    # membership6 = TeamMember(team_id=team4.id, user_id=user4.id)
+    # membership7 = TeamMember(team_id=team5.id, user_id=user5.id)
+    # db.session.add_all([membership1, membership2, membership3, membership4, membership5, membership6, membership7])
+    # db.session.commit()
 
     # Add 10 more users (Users 6-15)
     for i in range(6, 16):
@@ -178,13 +169,11 @@ with app.app_context():
     for i in range(6, 16):
         event = Event(
             title=f"Event {i}",
-            date=datetime.now() + timedelta(days=i),
             start_time=datetime.now() + timedelta(days=i),
             end_time=datetime.now() + timedelta(days=i, hours=2),
             deadline=datetime.now() + timedelta(days=i-7),
             description=f"Description for Event {i}",
             organizer_id=random.choice(all_users).id,
-            # status=random.choice(["open", "ongoing", "completed", "cancelled"])
         )
         db.session.add(event)
     db.session.commit()
@@ -207,19 +196,19 @@ with app.app_context():
     all_teams = Team.query.all()
 
     # Add 10 more team members (Memberships 8-17) - ensure unique (team_id, user_id) pairs
-    existing_memberships = {(tm.team_id, tm.user_id) for tm in TeamMember.query.all()}
-    new_memberships = set()
-    while len(new_memberships) < 10:
-        team_id = random.choice(all_teams).id
-        user_id = random.choice(all_users).id
-        pair = (team_id, user_id)
-        if pair not in existing_memberships and pair not in new_memberships:
-            new_memberships.add(pair)
+    # existing_memberships = {(tm.team_id, tm.user_id) for tm in TeamMember.query.all()}
+    # new_memberships = set()
+    # while len(new_memberships) < 10:
+    #     team_id = random.choice(all_teams).id
+    #     user_id = random.choice(all_users).id
+    #     pair = (team_id, user_id)
+    #     if pair not in existing_memberships and pair not in new_memberships:
+    #         new_memberships.add(pair)
     
-    for team_id, user_id in new_memberships:
-        team_member = TeamMember(team_id=team_id, user_id=user_id)
-        db.session.add(team_member)
-    db.session.commit()
+    # for team_id, user_id in new_memberships:
+    #     team_member = TeamMember(team_id=team_id, user_id=user_id)
+    #     db.session.add(team_member)
+    # db.session.commit()
 
     # Add 10 tasks
     for i in range(1, 11):

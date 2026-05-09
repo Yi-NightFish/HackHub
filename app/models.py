@@ -15,7 +15,7 @@ class User(db.Model):
     messages_received = db.relationship('Message', foreign_keys='Message.receiver_id', backref='receiver', lazy=True)
     organized_events = db.relationship('Event', backref='organizer', lazy=True)
     assigned_tasks = db.relationship('Task', foreign_keys='Task.assigned_to', backref='assigned_user', lazy=True)
-    team_memberships = db.relationship('TeamMember', backref='user', lazy=True)
+    team_memberships = db.relationship('Participation', backref='user', lazy=True)
     announcements = db.relationship('Announcement', backref='creator', lazy=True)
 
     def __repr__(self):
@@ -32,36 +32,30 @@ class OTP(db.Model):
         return f'<OTP {self.email}>'
 
 class Event(db.Model):
-    STATUS = ["open", "cancelled", "completed", "ongoing"]
-
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120), nullable=False)
-    date = db.Column(db.DateTime, default=lambda : datetime.datetime.now(datetime.UTC))
     description = db.Column(db.Text, nullable=False)
     organizer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     start_time = db.Column(db.DateTime, nullable = False)
     end_time = db.Column(db.DateTime, nullable = False)
     deadline = db.Column(db.DateTime, nullable = False)
-    status = db.Column(db.String(20), nullable = True, default = "open")
+    cancelled = db.Column(db.Boolean, nullable = True, default = False)
     teams = db.relationship('Team', backref='event', lazy=True)
     announcements = db.relationship('Announcement', backref='event', lazy=True)
-    __table_args__ = (
-        db.CheckConstraint(f"status IN ('open', 'cancelled', 'completed', 'ongoing')", name = "check_status"),
-    )
-
-    def get_status(self):
-        now = datetime.datetime.now()
-        if getattr(self, 'status', None) == "cancelled":
-            return "cancelled"
-        if now < self.start_time:
-            return "open"
-        if self.start_time <= now < self.end_time:
-            return "ongoing"
-        if now >= self.end_time:
-            return "completed"
 
     def __repr__(self):
         return f'<Event {self.title}>'
+    
+    @property
+    def status(self):
+        if self.cancelled:
+            return "cancelled"
+        now = datetime.datetime.now()
+        if now < self.start_time:
+            return "open"
+        if now > self.end_time:
+            return "closed"
+        return "ongoing"
     
 class Team(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -76,21 +70,24 @@ class Team(db.Model):
     created_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now())
     project_submitted = db.Column(db.Boolean, default=False)
     tasks = db.relationship('Task', backref='team', lazy=True)
-    members = db.relationship('TeamMember', backref='team', lazy=True)
+    members = db.relationship('Participation', backref='team', lazy=True)
 
     def __repr__(self):
         return f'<Team {self.name}>'
     
-class TeamMember(db.Model):
+class Participation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    # Nullable team_id allows for solo participants
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=True)
+    joined_at = db.Column(db.DateTime, default=datetime.datetime.now)
+    event = db.relationship("Event", backref='participants', lazy=True)
     roles = db.Column(db.String(300), nullable=True)
-    joined_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now())
-    __table_args__ = (db.UniqueConstraint('team_id', 'user_id'),)
+    __table_args__ = (db.UniqueConstraint('team_id', 'user_id', name = "uq_team_user"),)
 
     def __repr__(self):
-        return f'<TeamMember {self.team_id} - {self.user_id}>'
+        return f'<Participation User:{self.user_id} Event:{self.event_id} Team:{self.team_id}>'
 
 class TeamJoinRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)

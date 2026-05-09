@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 
+{% block title %}Profile | Hackhub{% endblock %}
+
 {% block css %}
 <link rel="stylesheet" href="{{url_for('static', filename = 'css/profile.css')}}">
 {% endblock %}
 
 {% block content %}
-<div>
+<div id = "profile-container">
     <h1>Profile</h1>
 
     <form action="" method="POST">
@@ -41,13 +43,15 @@
     </form>
 
     {% if events %}
-    <div id="history">
-        <h2>History</h2>
-        {% for event in events %}
-        <div class="event">
-            <h3>{{event.title}} ({{event.date.date()}})</h3>
-            <hr>
-            <p id="history-description">{{event.description}}</p>
+        <div id = "history">
+            <h2>History</h2>
+            {% for event in events %}
+                <div class = "event">
+                    <h3>{{event.title}} ({{event.start_time.date()}})</h3>
+                    <hr>
+                    <p id = "history-description">{{event.description}}</p>
+                </div>
+            {% endfor %}
         </div>
         {% endfor %}
     </div>

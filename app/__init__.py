@@ -9,7 +9,7 @@ app = Flask(__name__)
 from config import Config
 app.config.from_object(Config)
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, render_as_batch = True)
 mail = Mail(app)
 
-from app import routes, models
+from app import routes, models, events
