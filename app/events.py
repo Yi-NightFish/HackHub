@@ -4,6 +4,7 @@ from flask import render_template, session, request, redirect, url_for
 from sqlalchemy import select
 from functools import reduce
 from app.routes import login_required
+import datetime as dt
 
 # Helper function
 def get_user_by_id(user_id):
@@ -20,34 +21,69 @@ def now():
 
 #------------------------------------------------------------------------------------------------------------
 
-VALID_STATUSES = ["open", "ongoing", "cancelled", "closed"]
+VALID_STATUSES = ["open", "ongoing", "cancelled", "completed"]
 VALID_TABS = ["overview", "participants"]
 
 # Main
-@app.route("/events")
-def events():
-    status = request.args.get("status")
-    name = request.args.get("name").strip(" ")
-    status = status if status in VALID_STATUSES else "all"
-    if status == "open":
-        events = db.session.scalars(select(Event).where(Event.start_time > now()).where(Event.cancelled == False)).all()
-    elif status == "all":
-        events = db.session.scalars(select(Event)).all()
-    elif status == "cancelled":
-        events = db.session.scalars(select(Event).where(Event.cancelled == True)).all()
-    elif status == "closed":
-        events = db.session.scalars(select(Event).where(Event.end_time < now()).where(Event.cancelled == False)).all()
+@app.route("/explore")
+def explore():
+    search_query = request.args.get("search", "").strip()
+    status_filter = request.args.get("status", "all")
+    sort_by = request.args.get("sort", "newest")
+    start_date = request.args.get("start_date", "")
+    end_date = request.args.get("end_date", "")
+    deadline = request.args.get("deadline", "")
+    page = request.args.get("page", 1, type=int)
+
+    if search_query:
+        history = session.get("search_history", [])
+        if search_query in history:
+            history.remove(search_query) #remove old one
+        history.insert(0, search_query) #add to front
+        session["search_history"] = history[:5]  # Keep only last 5 unique searches
+        session.modified = True # tell flask is updated
+
+    query = Event.query.join(User, Event.organizer_id == User.id)
+
+    if search_query:
+        query = query.filter(Event.title.ilike(f"%{search_query}%") | Event.description.ilike(f"%{search_query}%") | User.name.ilike(f"%{search_query}%"))
+    if status_filter != "all":
+        if status_filter == 'completed':
+            query = query.filter((Event.end_time < dt.datetime.now()) & (Event.cancelled != True))
+        elif status_filter == 'ongoing':
+            query = query.filter(((Event.deadline <= dt.datetime.now()) & (Event.end_time >= dt.datetime.now()) & (Event.cancelled != True)))
+        elif status_filter == 'open':
+            query = query.filter((Event.deadline > dt.datetime.now()) & (Event.cancelled != True))
+        elif status_filter == 'cancelled':
+            query = query.filter((Event.cancelled == True))
+    if start_date:
+        query = query.filter(Event.start_time >= start_date)
+    if end_date:
+        query = query.filter(Event.end_time <= end_date)
+    if deadline :
+        query = query.filter(Event.deadline <= deadline)
+    if sort_by == "newest":
+        query = query.order_by(Event.start_time.desc())
+    elif sort_by == "oldest":
+        query = query.order_by(Event.end_time.asc())
+    elif sort_by == "title_asc":
+        query = query.order_by(Event.title.asc())
     else:
-        events = db.session.scalars(select(Event).where(Event.start_time < now()).where(Event.end_time > now()).where(Event.cancelled == False)).all()
-    events = filter(
-        lambda event: name.lower() in event.title.lower(),
-        events
-    )
-    return render_template("events.html", 
-                           events = events, 
-                           current_user = get_current_user(), 
-                           current_time = now(),
-                           selected_status = status
+        query = query.order_by(Event.date.asc())
+
+    paginate = query.paginate(page=page, per_page=12, error_out=False)
+    events = paginate.items
+    if request.headers.get("HX-Request"):
+        return render_template("partials/event_list.html", events = events, search_query = search_query, paginate = paginate or None)
+    return render_template(
+                        "explore.html", 
+                        events = events, 
+                        search_query = search_query, 
+                        status_filter = status_filter, 
+                        # current_user = db.session.get(User, session["user_id"]), 
+                        sort_by = sort_by, 
+                        paginate = paginate, 
+                        history = session.get("search_history", [])
     )
 
 @app.route("/event/<event_id>", methods = ["GET", "POST"])

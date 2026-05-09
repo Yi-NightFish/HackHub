@@ -101,14 +101,14 @@
 }
 
 .event-status-cancelled span{
-    background-color: rgb(78, 78, 78);
+    background-color: #dc3545;
     color: white;
     border-radius: 20px;
     padding: 5px 10px;
 }
 
-.event-status-closed span{
-    background-color: rgb(190, 0, 0);
+.event-status-completed span{
+    background-color: #6c757d;
     color: white;
     border-radius: 20px;
     padding: 5px 10px;
