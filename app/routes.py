@@ -538,6 +538,7 @@ def team_detail(team_id):
     current_user = db.session.get(User, session["user_id"])
     is_member = Participation.query.filter_by(team_id = team.id,
                                            user_id = session["user_id"]).first() is not None
+    member_of_other_team = Participation.query.filter_by(user_id = session["user_id"]).first().team_id is not None
     pending_requests = []
     if team.leader_id == session["user_id"]:
         pending_requests = TeamJoinRequest.query.filter_by(team_id = team.id, status = "Pending").all()
@@ -550,14 +551,17 @@ def team_detail(team_id):
     existing_request = TeamJoinRequest.query.filter_by(team_id = team.id,
                                                        user_id = session["user_id"],
                                                        status = "Pending").first()
-    return render_template("team_detail.html",
-                           team = team,
-                           current_user = current_user,
-                           is_member = is_member,
-                           pending_requests = pending_requests,
-                           invite_link = invite_link,
-                           qr_code = qr_code,
-                           existing_request = existing_request)
+    return render_template(
+                        "team_detail.html",
+                        team = team,
+                        current_user = current_user,
+                        is_member = is_member,
+                        pending_requests = pending_requests,
+                        invite_link = invite_link,
+                        qr_code = qr_code,
+                        existing_request = existing_request,
+                        member_of_other_team = member_of_other_team
+    )
     
 @app.route("/team/request/<int:request_id>/approve", methods = ["POST"])
 @login_required
@@ -575,6 +579,8 @@ def approve_join_request(request_id):
     # new_member = TeamMember(team_id = team.id, user_id = join_request.user_id, roles = "Member")
     print(request_id, join_request.user_id, team.event_id)
     participation = Participation.query.filter_by(user_id = join_request.user_id, event_id = team.event_id).first()
+    if participation.team_id is not None:
+        return "User already in a team"
     participation.team_id = team.id 
     join_request.status = "Approved"
     # db.session.add(new_member)
