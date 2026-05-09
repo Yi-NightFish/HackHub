@@ -446,7 +446,10 @@ def teams():
 @login_required
 def create_team():
     current_user = db.session.get(User, session["user_id"])
-    events = Event.query.all()
+    current_user_id = session["user_id"]
+    events = (Event.query.join(Team, Team.event_id == Event.id)
+              .join(TeamMember, TeamMember.team_id == Team.id)
+              .filter(TeamMember.user_id == current_user_id).all())
     if request.method == "POST":
         name = request.form.get("name")
         roles = request.form.get("roles")
@@ -462,15 +465,15 @@ def create_team():
             motto = motto,
             project_idea = project_idea,
             event_id = event_id,
-            leader_id = session["user_id"],
+            leader_id = current_user_id,
             team_code = generate_team_code(),
             max_members = max_members
         )
         db.session.add(new_team)
-        db.session.commit()
+        db.session.flush()
         leader = TeamMember(
             team_id = new_team.id,
-            user_id = session["user_id"],
+            user_id = current_user_id,
             roles = "Leader"
         )
         db.session.add(leader)
