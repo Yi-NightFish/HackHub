@@ -1,8 +1,8 @@
-"""initial
+"""initial schema
 
-Revision ID: 718625f9bfc4
+Revision ID: a32f4a501e75
 Revises: 
-Create Date: 2026-05-07 15:57:12.691790
+Create Date: 2026-05-09 11:08:28.218485
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '718625f9bfc4'
+revision = 'a32f4a501e75'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -86,12 +86,33 @@ def upgrade():
     op.create_table('team',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=120), nullable=False),
+    sa.Column('motto', sa.String(length=200), nullable=True),
+    sa.Column('roles', sa.String(length=300), nullable=True),
+    sa.Column('project_idea', sa.Text(), nullable=True),
     sa.Column('event_id', sa.Integer(), nullable=False),
+    sa.Column('leader_id', sa.Integer(), nullable=True),
     sa.Column('team_code', sa.String(length=20), nullable=False),
     sa.Column('max_members', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
+    sa.ForeignKeyConstraint(['leader_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('team_code')
+    )
+    op.create_table('project',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('team_id', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(length=120), nullable=False),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('tech_stack', sa.String(length=300), nullable=True),
+    sa.Column('demo_link', sa.String(length=300), nullable=True),
+    sa.Column('github_link', sa.String(length=300), nullable=True),
+    sa.Column('screenshots', sa.Text(), nullable=True),
+    sa.Column('contributions', sa.Text(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['team_id'], ['team.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('team_id')
     )
     op.create_table('task',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -99,9 +120,9 @@ def upgrade():
     sa.Column('team_id', sa.Integer(), nullable=False),
     sa.Column('assigned_to', sa.Integer(), nullable=False),
     sa.Column('priority', sa.String(length=20), nullable=True),
-    sa.Column('description', sa.Text(), nullable=False),
+    sa.Column('description', sa.Text(), nullable=True),
     sa.Column('deadline', sa.DateTime(), nullable=False),
-    sa.Column('status', sa.String(length=20), nullable=False),
+    sa.Column('status', sa.String(length=30), nullable=False),
     sa.Column('is_done', sa.Boolean(), nullable=True),
     sa.Column('dashboard_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['assigned_to'], ['user.id'], ),
@@ -109,22 +130,62 @@ def upgrade():
     sa.ForeignKeyConstraint(['team_id'], ['team.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('team_join_request',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('team_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('status', sa.String(length=20), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['team_id'], ['team.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('team_member',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('team_id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('roles', sa.String(length=300), nullable=True),
+    sa.Column('joined_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['team_id'], ['team.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('team_id', 'user_id')
+    )
+    op.create_table('subtask',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('task_id', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(length=120), nullable=False),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('assigned_to', sa.Integer(), nullable=True),
+    sa.Column('priority', sa.String(length=20), nullable=True),
+    sa.Column('deadline', sa.DateTime(), nullable=True),
+    sa.Column('status', sa.String(length=30), nullable=False),
+    sa.Column('is_done', sa.Boolean(), nullable=True),
+    sa.ForeignKeyConstraint(['assigned_to'], ['user.id'], ),
+    sa.ForeignKeyConstraint(['task_id'], ['task.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('task_activity',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('task_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('action', sa.String(length=200), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['task_id'], ['task.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
 
 
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
+    op.drop_table('task_activity')
+    op.drop_table('subtask')
     op.drop_table('team_member')
+    op.drop_table('team_join_request')
     op.drop_table('task')
+    op.drop_table('project')
     op.drop_table('team')
     op.drop_table('dashboard')
     op.drop_table('announcement')

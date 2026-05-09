@@ -738,3 +738,33 @@ def explore():
         return render_template("partials/event_list.html", events = events, search_query = search_query, paginate = paginate or None)
     return render_template("explore.html", events = events, search_query = search_query, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]), sort_by = sort_by, paginate = paginate, history = session.get("search_history", []))
 # wy - project page -----------------------------------------------------------------------------------
+@app.route("/team/<int:team_id>/project", methods = ["GET", "POST"])
+@login_required
+def project_page(team_id):
+    team = db.session.get(Team, team_id)
+    if not team:
+        return "Team not found"
+    current_user = db.session.get(User, session["user_id"])
+    is_member = TeamMember.query.filter_by(team_id = team.id, 
+                                           user_id = session["user_id"]).first() is not None
+    if not is_member:
+        return "Only team members can view project page"
+    project = Project.query.filter_by(team_id=team.id).first()
+    if not project:
+        project = Project(team_id = team.id, title = f"{team.name} Project")
+        db.session.add(project)
+        db.session.commit()
+    if request.method == "POST":
+        if team.leader_id != session["user_id"]:
+            return "Only leader can edit project page"
+        project.title = request.form.get("title")
+        project.description = request.form.get("description")
+        project.tech_stack = request.form.get("tech_stack")
+        project.demo_link = request.form.get("demo_link")
+        project.github_link = request.form.get("github_link")
+        db.session.commit()
+        return redirect(url_for("project_page", team_id = team.id))
+    return render_template("project_page.html", 
+                           team = team,
+                           project = project,
+                           current_user = current_user)

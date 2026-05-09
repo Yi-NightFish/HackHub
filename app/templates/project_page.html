@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="team-page">
+    <h1 class="team-title">Project Page</h1>
+
+    {% if team.leader_id == current_user.id %}
+    <form class="form-box" method="POST">
+        <label>Project Title</label>
+        <input type="text" name="title" value="{{ project.title }}" required>
+
+        <label>Project Description</label>
+        <textarea name="description">{{ project.description or "" }}</textarea>
+
+        <label>Tech Stack Used</label>
+        <input type="text" name="tech_stack" value="{{ project.tech_stack or '' }}">
+
+        <label>Demo Link / Screenshot Link</label>
+        <input type="text" name="demo_link" value="{{ project.demo_link or '' }}">
+
+        <label>GitHub Repository Link</label>
+        <input type="text" name="github_link" value="{{ project.github_link or '' }}">
+
+        <button type="submit">Save Project Page</button>
+    </form>
+    {% endif %}
+
+    <div class="detail-box">
+        <h2>{{ project.title }}</h2>
+
+        <p><strong>Description:</strong> {{ project.description or "-" }}</p>
+        <p><strong>Tech Stack:</strong> {{ project.tech_stack or "-" }}</p>
+
+        <p>
+            <strong>Demo / Screenshots:</strong>
+            {% if project.demo_link %}
+            <a href="{{ project.demo_link }}" target="_blank">{{ project.demo_link }}</a>
+            {% else %}
+            -
+            {% endif %}
+        </p>
+
+        <p>
+            <strong>GitHub Repository:</strong>
+            {% if project.github_link %}
+            <a href="{{ project.github_link }}" target="_blank">{{ project.github_link }}</a>
+            {% else %}
+            -
+            {% endif %}
+        </p>
+    </div>
+
+    <h2>Team Members</h2>
+
+    {% for member in team.members %}
+    <div class="member-row">
+        {{ member.user.name or member.user.email }} - {{ member.roles or "Member" }}
+    </div>
+    {% endfor %}
+
+    <h2>Individual Contributions</h2>
+
+    <div class="detail-box">
+        {% for member in team.members %}
+        <p>
+            <strong>{{ member.user.name or member.user.email }}:</strong>
+            {{ member.roles or "Member" }}
+        </p>
+        {% endfor %}
+    </div>
+
+    <a class="back-link" href="{{ url_for('team_detail', team_id=team.id) }}">Back to Team</a>
+</div>
+{% endblock %}

@@ -74,6 +74,7 @@ class Team(db.Model):
     team_code = db.Column(db.String(20), unique=True, nullable=False)
     max_members = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now())
+    project_submitted = db.Column(db.Boolean, default=False)
     tasks = db.relationship('Task', backref='team', lazy=True)
     members = db.relationship('TeamMember', backref='team', lazy=True)
 
@@ -181,4 +182,10 @@ class Project(db.Model):
     tech_stack = db.Column(db.String(300), nullable=True)
     demo_link = db.Column(db.String(300), nullable=True)
     github_link = db.Column(db.String(300), nullable=True)
+    screenshots = db.Column(db.Text, nullable=True)
+    contributions = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
     team = db.relationship('Team', backref='project')
+    
+    def __repr__(self):
+        return f'<Project {self.title}>'
