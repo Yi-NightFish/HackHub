@@ -762,7 +762,7 @@ def project_page(team_id):
     current_user = db.session.get(User, session["user_id"])
     is_member = TeamMember.query.filter_by(team_id = team.id,
                                            user_id = session["user_id"]).first() is not None
-    can_edit = (is_member and team.leader_id == session["user_id"])
+    can_edit = is_member
     project = Project.query.filter_by(team_id = team.id).first()
     if not project:
         project = Project(team_id = team.id, title = f"{team.name} Project")
@@ -770,7 +770,7 @@ def project_page(team_id):
         db.session.commit()
     if request.method == "POST":
         if not can_edit:
-            return "Only leader can edit project page"
+            return "Only team members can edit project page"
         project.title = request.form.get("title")
         project.description = request.form.get("description")
         project.tech_stack = request.form.get("tech_stack")
@@ -787,3 +787,38 @@ def project_page(team_id):
                            current_user = current_user, 
                            can_edit = can_edit,
                            event = event)
+    
+@app.route("/team/<int:team_id>/project/autosave", methods = ["POST"])
+@login_required
+def autosave_project(team_id):
+    team = db.session.get(Team, team_id)
+    if not team:
+        return "Team not found"
+    is_member = TeamMember.query.filter_by(team_id = team.id, user_id = session["user_id"]).first()
+    if not is_member:
+        return "Unauthorized"
+    project = Project.query.filter_by(team_id = team.id).first()
+    if not project:
+        project = Project(team_id = team.id, title = f"{team.name} Project")
+        db.session.add(project)
+        db.session.commit()
+    field = request.form.get("field")
+    value = request.form.get("value")
+    if field == "title":
+        project.title = value
+    elif field == "description":
+        project.description = value
+    elif field == "tech_stack":
+        project.tech_stack = value
+    elif field == "demo_link":
+        project.demo_link = value
+    elif field == "github_link":
+        project.github_link = value
+    elif field == "screenshots":
+        project.screenshots = value
+    elif field == "contributions":
+        project.contributions = value
+    else:
+        return "Invalid field"
+    db.session.commit()
+    return "Saved"
