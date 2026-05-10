@@ -250,7 +250,7 @@
             Team Full
         </button>
 
-        {% else %}
+        {% elif not member_of_other_team %}
 
         <form
             hx-post="{{ url_for('request_join_team', team_id=team.id) }}"

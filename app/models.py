@@ -59,10 +59,10 @@ class Event(db.Model):
         if self.cancelled:
             return "cancelled"
         now = datetime.datetime.now()
-        if now < self.start_time:
+        if now < self.deadline:
             return "open"
         if now > self.end_time:
-            return "closed"
+            return "completed"
         return "ongoing"
     
 class Team(db.Model):
