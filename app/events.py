@@ -22,7 +22,7 @@ def now():
 #------------------------------------------------------------------------------------------------------------
 
 VALID_STATUSES = ["open", "ongoing", "cancelled", "completed"]
-VALID_TABS = ["overview", "participants", "teams"]
+VALID_TABS = ["overview", "participants", "teams", "solo"]
 
 # Main
 @app.route("/explore")
@@ -34,6 +34,7 @@ def explore():
     end_date = request.args.get("end_date", "")
     deadline = request.args.get("deadline", "")
     page = request.args.get("page", 1, type=int)
+    current_user = get_current_user()
 
     if search_query:
         history = session.get("search_history", [])
@@ -80,7 +81,7 @@ def explore():
                         events = events, 
                         search_query = search_query, 
                         status_filter = status_filter, 
-                        # current_user = db.session.get(User, session["user_id"]), 
+                        current_user = current_user, 
                         sort_by = sort_by, 
                         paginate = paginate, 
                         history = session.get("search_history", [])
@@ -98,6 +99,9 @@ def event_detail(event_id):
 
         participants = get_participants()
         teams = [team for team in event.teams if Participation.query.filter_by(team_id = team.id).count() < team.max_members] if event else []
+        
+        # Get soloists (participants without a team)
+        soloists = [p.user for p in Participation.query.filter_by(event_id=event_id, team_id=None).all()] if event else []
 
         if active_tab == "overview":
             enrolled = False
@@ -130,6 +134,25 @@ def event_detail(event_id):
                 active_tab = active_tab,
                 teams = teams
             )
+        elif active_tab == "solo":
+            leader_team = None
+            leader_team_member_count = 0
+            leader_team_full = False
+            if current_user:
+                leader_team = Team.query.filter_by(event_id = event_id, leader_id = current_user.id).first()
+                if leader_team:
+                    leader_team_member_count = Participation.query.filter_by(team_id = leader_team.id).count()
+                    leader_team_full = leader_team_member_count >= leader_team.max_members
+            return render_template(
+                "event_detail.html",
+                event = event,
+                current_user = current_user,
+                active_tab = active_tab,
+                soloists = soloists,
+                leader_team = leader_team,
+                leader_team_member_count = leader_team_member_count,
+                leader_team_full = leader_team_full
+            )
     else:
         user_id = request.form.get("user-id")
         participation = Participation(
@@ -141,6 +164,40 @@ def event_detail(event_id):
         db.session.commit()
         return redirect(request.url)
     
+@app.route("/event/<event_id>/invite-soloists", methods=["POST"])
+@login_required
+def invite_soloists(event_id):
+    current_user = get_current_user()
+    team = Team.query.filter_by(event_id = event_id, leader_id = current_user.id).first()
+    if not team:
+        return "Only team leaders can invite soloists"
+
+    if Participation.query.filter_by(team_id = team.id).count() >= team.max_members:
+        return "Your team is already full"
+
+    selected_ids = request.form.getlist("soloist_ids")
+    if not selected_ids:
+        return "Select at least one soloist to invite"
+
+    invited_any = False
+    for user_id in selected_ids:
+        participation = Participation.query.filter_by(event_id = event_id, user_id = user_id, team_id = None).first()
+        if not participation:
+            continue
+        existing_request = TeamJoinRequest.query.filter_by(team_id = team.id, user_id = user_id, status = "Pending").first()
+        if existing_request:
+            continue
+        if Participation.query.filter_by(team_id = team.id).count() >= team.max_members:
+            break
+        join_request = TeamJoinRequest(team_id = team.id, user_id = user_id, status = "Pending")
+        db.session.add(join_request)
+        invited_any = True
+
+    if invited_any:
+        db.session.commit()
+
+    return redirect(url_for("event_detail", event_id = event_id, tab = "solo"))
+
 @app.route("/unroll/<event_id>")
 @login_required
 def unroll(event_id):

@@ -9,7 +9,7 @@
 {% block content %}
 <div class="event-detail">
   <div id="event-tab">
-    {% set tabs = ["overview", "participants", "teams"] %}
+    {% set tabs = ["overview", "participants", "teams", "solo"] %}
     {% for tab in tabs %}
       <a href="{{ url_for('event_detail', event_id=event.id, tab=tab) }}" class="{{ 'active' if active_tab == tab else '' }}">
         {{ tab.capitalize() }}
@@ -90,6 +90,64 @@
       </div>
     {% else %}
       <p>No teams have been created for this event yet.</p>
+    {% endif %}
+  {% elif active_tab == "solo" %}
+    <div style="margin-bottom: 15px; color: #666; font-size: 0.9em;">
+      Showing <strong>{{ soloists|length }}</strong> {% if soloists|length == 1 %}soloist{% else %}soloists{% endif %} looking for a team
+    </div>
+
+    {% if soloists %}
+      {% if leader_team %}
+        <form method="POST" action="{{ url_for('invite_soloists', event_id=event.id) }}">
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
+            <label style="font-weight:600;">
+              <input type="checkbox" id="select-all-soloists" onclick="document.querySelectorAll('.solo-checkbox').forEach(cb => cb.checked = this.checked)">
+              Select all
+            </label>
+            <button type="submit" style="padding:8px 14px; border:none; background:#2a7ae2; color:#fff; border-radius:6px; cursor:pointer;" {% if leader_team_full %}disabled{% endif %}>
+              Invite selected soloists
+            </button>
+          </div>
+          <p style="color:#444; font-size:0.9em; margin-bottom:18px;">
+            {% if leader_team_full %}<strong>Your team is full and cannot accept more soloists.</strong>
+            {% else %}Invites will be sent for your team "{{ leader_team.name }}" ({{ leader_team_member_count }}/{{ leader_team.max_members }}).
+            {% endif %}
+          </p>
+          <div class="soloists-grid">
+            {% for soloist in soloists %}
+              <div class="soloist-card">
+                <label style="display:block; margin-bottom:8px; font-size:0.85em;">
+                  <input type="checkbox" name="soloist_ids" value="{{ soloist.id }}" class="solo-checkbox">
+                  Invite this soloist
+                </label>
+                <h3><a href="{{ url_for('profile', user_id=soloist.id) }}">{{ soloist.name }}</a></h3>
+                <p><strong>Skills:</strong> {{ soloist.skills or "Not specified" }}</p>
+                <p><strong>University:</strong> {{ soloist.university or "Not specified" }}</p>
+                {% if soloist.github_link %}
+                  <p><strong>GitHub:</strong> <a href="{{ soloist.github_link }}" target="_blank">Profile</a></p>
+                {% endif %}
+                <a href="{{ url_for('profile', user_id=soloist.id) }}" class="view-profile-btn">View Profile</a>
+              </div>
+            {% endfor %}
+          </div>
+        </form>
+      {% else %}
+        <div class="soloists-grid">
+          {% for soloist in soloists %}
+            <div class="soloist-card">
+              <h3><a href="{{ url_for('profile', user_id=soloist.id) }}">{{ soloist.name }}</a></h3>
+              <p><strong>Skills:</strong> {{ soloist.skills or "Not specified" }}</p>
+              <p><strong>University:</strong> {{ soloist.university or "Not specified" }}</p>
+              {% if soloist.github_link %}
+                <p><strong>GitHub:</strong> <a href="{{ soloist.github_link }}" target="_blank">Profile</a></p>
+              {% endif %}
+              <a href="{{ url_for('profile', user_id=soloist.id) }}" class="view-profile-btn">View Profile</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% else %}
+      <p>No soloists are currently looking for teams in this event.</p>
     {% endif %}
   {% endif %}
 </div>
