@@ -5,7 +5,6 @@ from app import app, db
 from app.models import User, Event, Team, Task, Announcement, Message, Dashboard
 from werkzeug.security import generate_password_hash
 
-# app = create_app()
 with app.app_context():
     # Clear existing data (optional - comment out if you want to preserve data)
     db.drop_all()
