@@ -29,16 +29,11 @@
         </span> {{ msg.message }}
         <!-- hamburger -->
         <details style="position:absolute; top:5px; right:5px;">
-            <summary style="cursor:pointer; list-style:none;">
-                ⋮
-            </summary>
-
+            <summary style="cursor:pointer; list-style:none;"> ⋮ </summary>
             <div style="background:white; border:1px solid #ccc; border-radius:8px; padding:5px; position:absolute; right:0; min-width:100px; z-index:100;">
-
-            <a href="/delete_message/{{ msg.id }}" style=" color:red; text-decoration:none; display:block; padding:5px;">
-                Delete
-            </a>
-
+                <a href="/delete_message/{{ msg.id }}" style=" color:red; text-decoration:none; display:block; padding:5px;">
+                    Delete
+                </a>
             </div>
         </details>
     </div>
