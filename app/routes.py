@@ -284,15 +284,27 @@ def tasks(team_id):
         db.session.commit()
         return redirect(url_for("tasks", team_id = team.id))
     status_filter = request.args.get("status", "all")
+    # nx
+    search_query = request.args.get("searchtasks", "").strip()
+    # wy
     now = dt.datetime.now()
     query = Task.query.filter_by(team_id = team.id)
     if status_filter != "all":
         query = query.filter(Task.status == status_filter)
+    # nx
+    if search_query:
+        query = query.filter(Task.title.ilike(f"%{search_query}%") | Task.description.ilike(f"%{search_query}%"))
+    # wy
     status_order = case(((Task.is_done == False) & (Task.deadline < now) & (Task.status.in_(["To Do", "In Progress"])), 0), (Task.status == "Wishlist", 1), (Task.status == "To Do", 2), (Task.status == "In Progress", 3), (Task.status == "In Review", 4), (Task.status == "Complete", 5), else_=6)   
     priority_order = case((Task.priority.in_(["High","high"]), 0), (Task.priority.in_(["Medium","medium"]), 1), (Task.priority.in_(["Low","low"]), 2), else_=3)
     query = query.order_by(status_order, priority_order, Task.deadline.asc())
-    tasks = query.all()
-    return render_template("tasks.html", form = form, tasks = tasks, datetime = dt, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]), team = team)
+    # tasks = query.all()
+        # nx
+    tasks_results = query.all()
+    if request.headers.get("HX-Request"):
+        return render_template("partials/task_list.html", tasks = tasks_results, datetime = dt)
+    # wy
+    return render_template("tasks.html", form = form, tasks = tasks_results, datetime = dt, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]), team = team)
 
 @app.route("/task/<int:id>/toggle", methods = ["POST"])
 @login_required
