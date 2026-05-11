@@ -751,6 +751,28 @@ def autosave_team(team_id):
     db.session.commit()
     return "Saved"
 #------------------------------------------------------------------------------------------------------
+# nx - chat system
+@app.route("/chat_home")
+@login_required
+def chat_home():
+
+    users = User.query.all()
+
+    return render_template(
+        "chat_home.html",
+        users=users
+    )
+
+@app.route("/chat/<int:user_id>")
+def chat(user_id):
+
+    other_user = User.query.get(user_id)
+
+    return render_template(
+        "chat.html",
+        other_user=other_user,
+        current_user_id=user_id
+    )
 
 @app.route("/chat")
 @login_required
