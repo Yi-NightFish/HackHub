@@ -19,6 +19,14 @@
 
   <h1>{{ event.title }}</h1>
 
+  {% if current_user and event.organizer_id == current_user.id %}
+    <div style="margin-bottom: 15px;">
+      <a href="{{ url_for('edit_event', event_id=event.id) }}" class="edit-event-btn" style="display: inline-block; padding: 8px 16px; background: #2a7ae2; color: white; text-decoration: none; border-radius: 5px; font-size: 0.9em;">
+        Edit Event
+      </a>
+    </div>
+  {% endif %}
+
   {% if active_tab == "overview" %}
     <div class="event-meta">
       <p><strong>Date:</strong> {{ event.start_time.strftime('%b %d, %Y') }}</p>

@@ -5,6 +5,7 @@ from sqlalchemy import select
 from functools import reduce
 from app.routes import login_required
 import datetime as dt
+from forms import EventForm
 
 # Helper function
 def get_user_by_id(user_id):
@@ -206,3 +207,49 @@ def unroll(event_id):
     db.session.delete(participation)
     db.session.commit()
     return redirect(url_for("event_detail", event_id = event_id))
+
+@app.route("/event/<event_id>/edit", methods=["GET", "POST"])
+@login_required
+def edit_event(event_id):
+    event = db.session.get(Event, event_id)
+    current_user = get_current_user()
+    
+    if not event:
+        return "Event not found", 404
+    
+    # Check if current user is the organizer
+    if event.organizer_id != session["user_id"]:
+        return "Unauthorized: Only the event organizer can edit this event", 403
+    
+    form = EventForm()
+    
+    if request.method == "GET":
+        # Populate form with existing event data
+        form.title.data = event.title
+        form.description.data = event.description
+        form.start_time.data = event.start_time
+        form.end_time.data = event.end_time
+        form.deadline.data = event.deadline
+    
+    if form.validate_on_submit():
+        # Validate that end_time is after start_time
+        if form.end_time.data <= form.start_time.data:
+            form.end_time.errors = ["End time must be after start time"]
+            return render_template("edit_event.html", form=form, event=event, current_user=current_user)
+        
+        # Validate that deadline is before start_time
+        if form.deadline.data >= form.start_time.data:
+            form.deadline.errors = ["Deadline must be before start time"]
+            return render_template("edit_event.html", form=form, event=event, current_user=current_user)
+        
+        # Update event details
+        event.title = form.title.data
+        event.description = form.description.data
+        event.start_time = form.start_time.data
+        event.end_time = form.end_time.data
+        event.deadline = form.deadline.data
+        
+        db.session.commit()
+        return redirect(url_for("event_detail", event_id=event.id))
+    
+    return render_template("edit_event.html", form=form, event=event, current_user=current_user)
