@@ -755,8 +755,8 @@ def autosave_team(team_id):
 @app.route("/chat_home")
 @login_required
 def chat_home():
-
-    users = User.query.all()
+    current_user_id = session.get("user_id")
+    users = User.query.filter(User.id != current_user_id).all()
 
     return render_template(
         "chat_home.html",
