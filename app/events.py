@@ -4,6 +4,7 @@ from flask import render_template, session, request, redirect, url_for
 from sqlalchemy import select
 from functools import reduce
 from app.routes import login_required
+from app.forms import EventForm
 import datetime as dt
 
 # Helper function
@@ -86,6 +87,49 @@ def explore():
                         paginate = paginate, 
                         history = session.get("search_history", [])
     )
+
+@app.route("/event/create", methods=["GET", "POST"])
+@login_required
+def create_event():
+    form = EventForm()
+    current_user = get_current_user()
+    
+    if request.method == "POST":
+        if form.validate_on_submit():
+            # Validate that end_time is after start_time
+            if form.end_time.data <= form.start_time.data:
+                form.end_time.errors = ["End time must be after start time"]
+                return render_template("create_event.html", form=form, current_user=current_user)
+            
+            # Validate that deadline is before start_time
+            if form.deadline.data >= form.start_time.data:
+                form.deadline.errors = ["Deadline must be before start time"]
+                return render_template("create_event.html", form=form, current_user=current_user)
+            
+            new_event = Event(
+                title=form.title.data,
+                description=form.description.data,
+                organizer_id=session["user_id"],
+                start_time=form.start_time.data,
+                end_time=form.end_time.data,
+                deadline=form.deadline.data,
+                cancelled=False
+            )
+            db.session.add(new_event)
+            db.session.commit()
+            
+            # Add the organizer as a participant
+            participation = Participation(
+                user_id=session["user_id"],
+                event_id=new_event.id,
+                team_id=None
+            )
+            db.session.add(participation)
+            db.session.commit()
+            
+            return redirect(url_for("event_detail", event_id=new_event.id))
+    
+    return render_template("create_event.html", form=form, current_user=current_user)
 
 @app.route("/event/<event_id>", methods = ["GET", "POST"])
 def event_detail(event_id):

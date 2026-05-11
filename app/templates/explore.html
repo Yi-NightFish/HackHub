@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 <div style="max-width: 1000px; margin: 0 auto; padding: 20px;">
-  <h2>Explore Events</h2>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2>Explore Events</h2>
+    {% if current_user %}
+    <a href="{{ url_for('create_event') }}" style="background: #007bff; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">Create Event</a>
+    {% endif %}
+  </div>
   <div style="background: #f4f4f4; padding: 20px; border-radius: 8px; margin-bottom: 30px; display: flex; gap: 15px;">
     <input type="text" name="search" placeholder="Search events..." value="{{ search_query }}" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" hx-get="/explore" hx-trigger="keyup changed delay:500ms" hx-target="#event-list" hx-include="[name='status'], [name='sort']" hx-swap="innerHTML" list = "search-history">
     
