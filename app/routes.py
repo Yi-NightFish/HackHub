@@ -804,12 +804,12 @@ def send_message():
     messages = Message.query.filter(((Message.sender_id == sender_id) & (Message.receiver_id == receiver_id) & (Message.deleted_by_sender == False)) | ((Message.sender_id == receiver_id) & (Message.receiver_id == sender_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
     return render_template("message.html", messages = messages, current_user_id = sender_id, other_user = other_user) #只返回新消息，前端htmx负责更新页面
     
-@app.route("/clear")
+@app.route("/clear/<int:user_id>")
 @login_required
-def clear_messages():
+def clear_messages(user_id):
     current_user_id = session.get("user_id")
     # find all my msg and 标记为deleted for sender/receiver depend on my身份，真正删除在数据库里保留但不展示(soft delete)
-    messages = Message.query.filter((Message.sender_id == current_user_id) | (Message.receiver_id == current_user_id)).all()
+    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == user_id)) | ((Message.sender_id == user_id) & (Message.receiver_id == current_user_id))).all()
     for message in messages:
         if message.sender_id == current_user_id:
             message.deleted_by_sender = True
@@ -818,16 +818,16 @@ def clear_messages():
         if message.deleted_by_sender and message.deleted_by_receiver:
             db.session.delete(message) #双方都删除了才真正从数据库删除
     db.session.commit()
-    return redirect(url_for("chat"))
+    return redirect(url_for("chat", user_id=user_id))
     
 @app.route("/message")
 @login_required
 def get_message():
     current_user_id = session.get("user_id")
     other_user_id = request.args.get("user_id")
-    # user = db.session.get(User, current_user_id)
-    # if user:
-    #     user.last_seen = dt.datetime.now(dt.UTC).replace(tzinfo=None)
+    user = db.session.get(User, current_user_id)
+    if user:
+        user.last_seen = dt.datetime.now(dt.UTC).replace(tzinfo=None)
     # find unread msg
     unread_messages = Message.query.filter_by(receiver_id = current_user_id, sender_id = other_user_id, is_read = False).all()
     for message in unread_messages:

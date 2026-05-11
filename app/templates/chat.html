@@ -21,19 +21,18 @@
         <div><strong>User: {{ current_user.name if current_user else "User" ~ current_user_id }}</strong></div>
     </div>
     <div style="font-size: 0.9em;">
-        <a href="/profile/{{ current_user.id }}">My Profile</a> | 
-        <a href="/logout">Logout</a> |
-        <a href = "/clear"> Clear Chat </a> |
+        <a href="/chat_home">Chat Home</a> | 
+        <a href = "/clear/{{ other_user.id }}"> Clear Chat </a> |
     </div>
 <!-- // hx-get=requst for/message route to get msg list, hx-trigger=load and every 3s, hx-target=renew chatbox, hx-swap=change content, hx-on::after-request=scrollToBottom() to scroll to bottom after update -->
-<div id="chatbox" style="border: 1px solid #ccc; padding: 15px; height: 60vh; overflow-y: scroll; background-color: #f9f9f9;" hx-get="/message?user_id={{ current_user_id }}" hx-trigger="load, every 3s" hx-target="#chatbox" hx-swap="innerHTML" hx-on::after-request="scrollToBottom()">
+<div id="chatbox" style="border: 1px solid #ccc; padding: 15px; height: 60vh; overflow-y: scroll; background-color: #f9f9f9;" hx-get="/message?user_id={{ other_user.id }}" hx-trigger="load, every 3s" hx-target="#chatbox" hx-swap="innerHTML" hx-on::after-request="scrollToBottom()">
     {% include 'message.html' %}
 </div>
 
 <!-- //post msg to /send_message, target chatbox to update, swap message.html, after request reset form and scroll to bottom -->
 <form hx-post="/send_message" hx-target="#chatbox" hx-swap="innerHTML" hx-on:htmx:after-request="this.reset(); scrollToBottom();">
         <input type = "text" name = "message" placeholder = "Type message" style="width: 80%; padding: 10px;" required>
-        <input type = "hidden" name = "user_id" value = "{{ other_user_id }}">
+        <input type = "hidden" name = "user_id" value = "{{ other_user.id }}">
         <button type = "submit"> Send </button>
 </form>
 </body>
