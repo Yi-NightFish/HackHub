@@ -2,7 +2,6 @@
 <html>
 <head>
     <title> Chat </title>
-    <!-- <meta http-equiv="refresh" content="30"> -->
      <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
 <body>
@@ -34,7 +33,7 @@
 <!-- //post msg to /send_message, target chatbox to update, swap message.html, after request reset form and scroll to bottom -->
 <form hx-post="/send_message" hx-target="#chatbox" hx-swap="innerHTML" hx-on:htmx:after-request="this.reset(); scrollToBottom();">
         <input type = "text" name = "message" placeholder = "Type message" style="width: 80%; padding: 10px;" required>
-        <input type = "hidden" name = "user_id" value = "{{ current_user_id }}">
+        <input type = "hidden" name = "user_id" value = "{{ other_user_id }}">
         <button type = "submit"> Send </button>
 </form>
 </body>
