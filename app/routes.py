@@ -9,7 +9,7 @@ import qrcode
 import io
 import base64
 
-from app import db, mail
+from app import app, db, mail
 from app.models import *
 from app.forms import ProfileForm, TaskForm
 from sqlalchemy import select, case, update
