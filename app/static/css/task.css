@@ -10,7 +10,30 @@ body {
     max-width: 1400px;
     margin: auto;
 }
-
+/* nx */
+.task-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
+}
+.task-page-header h1 {
+    margin: 0;
+    font-size: 42px;
+    font-weight: 900;
+}
+.task-search-box {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px 14px;
+    border: 2px solid black;
+    border-radius: 12px;
+    font-size: 14px;
+    outline: none;
+    margin: 0;
+}
+/* wy */
 /* Header */
 h1 {
     font-size: 64px;
