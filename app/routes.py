@@ -764,27 +764,28 @@ def chat_home():
     )
 
 @app.route("/chat/<int:user_id>")
-def chat(user_id):
-
-    other_user = User.query.get(user_id)
-
-    return render_template(
-        "chat.html",
-        other_user=other_user,
-        current_user_id=user_id
-    )
-
-@app.route("/chat")
 @login_required
-def chat():
-    # get user_id
-    user_id = session.get("user_id")
-    current_user = db.session.get(User, user_id)
-    receiver_id = 2 if user_id == 1 else 1
-    other_user = db.session.get(User, receiver_id)
-    # search msg i send or receive and not deleted with 时间顺序
-    messages = Message.query.filter(((Message.sender_id == user_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
-    return render_template("chat.html", messages = messages, current_user_id = user_id, current_user = current_user, other_user = other_user)
+def chat(user_id):
+    current_user_id = session.get("user_id")
+    current_user = db.session.get(User, current_user_id)
+    other_user = db.session.get(User, user_id)
+    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == user_id) & (Message.deleted_by_sender == False)) | 
+                                    ((Message.sender_id == user_id) & (Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False))
+    ).order_by(Message.timestamp.asc()).all()
+
+    return render_template("chat.html",messages = messages, other_user = other_user, current_user_id=current_user_id, current_user = current_user)
+
+# @app.route("/chat")
+# @login_required
+# def chat():
+#     # get user_id
+#     user_id = session.get("user_id")
+#     current_user = db.session.get(User, user_id)
+#     receiver_id = 2 if user_id == 1 else 1
+#     other_user = db.session.get(User, receiver_id)
+#     # search msg i send or receive and not deleted with 时间顺序
+#     messages = Message.query.filter(((Message.sender_id == user_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
+#     return render_template("chat.html", messages = messages, current_user_id = user_id, current_user = current_user, other_user = other_user)
     
 @app.route("/send_message", methods=["POST"])
 @login_required
@@ -792,13 +793,16 @@ def send_message():
     # get msg and sender_id
     content = request.form["message"]
     sender_id = session.get("user_id")
-    receiver_id = 2 if sender_id == 1 else 1  #user1/2互发消息
+    receiver_id = request.form["user_id"]
+    other_user = db.session.get(User, receiver_id)
+    # receiver_id = 2 if sender_id == 1 else 1  #user1/2互发消息
     new_message = Message(message = content, sender_id = sender_id, receiver_id = receiver_id) #timestamp会自动生成/存数据库
     db.session.add(new_message)
     db.session.commit()
     # return redirect(url_for("chat", user_id=sender_id)) #发完消息回聊天界面，user_id不变
-    messages = Message.query.filter(((Message.sender_id == sender_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == sender_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
-    return render_template("message.html", messages = messages, current_user_id = sender_id) #只返回新消息，前端htmx负责更新页面
+    # messages = Message.query.filter(((Message.sender_id == sender_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == sender_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
+    messages = Message.query.filter(((Message.sender_id == sender_id) & (Message.receiver_id == receiver_id) & (Message.deleted_by_sender == False)) | ((Message.sender_id == receiver_id) & (Message.receiver_id == sender_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
+    return render_template("message.html", messages = messages, current_user_id = sender_id, other_user = other_user) #只返回新消息，前端htmx负责更新页面
     
 @app.route("/clear")
 @login_required
@@ -817,18 +821,20 @@ def clear_messages():
     return redirect(url_for("chat"))
     
 @app.route("/message")
+@login_required
 def get_message():
     current_user_id = session.get("user_id")
-    user = db.session.get(User, current_user_id)
-    if user:
-        user.last_seen = dt.datetime.now(dt.UTC).replace(tzinfo=None)
+    other_user_id = request.args.get("user_id")
+    # user = db.session.get(User, current_user_id)
+    # if user:
+    #     user.last_seen = dt.datetime.now(dt.UTC).replace(tzinfo=None)
     # find unread msg
-    unread_messages = Message.query.filter_by(receiver_id=current_user_id, is_read=False).all()
+    unread_messages = Message.query.filter_by(receiver_id = current_user_id, sender_id = other_user_id, is_read = False).all()
     for message in unread_messages:
         # seen
         message.is_read = True
     db.session.commit()
-    receiver_id = 2 if current_user_id == 1 else 1
-    other_user = db.session.get(User, receiver_id)
-    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
+    # receiver_id = 2 if current_user_id == 1 else 1
+    other_user = db.session.get(User, other_user_id)
+    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == other_user_id) & (Message.deleted_by_sender == False)) | ((Message.sender_id == other_user_id) & (Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
     return render_template("message.html", messages = messages, current_user_id = current_user_id, other_user = other_user)
