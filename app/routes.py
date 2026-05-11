@@ -838,3 +838,24 @@ def get_message():
     other_user = db.session.get(User, other_user_id)
     messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == other_user_id) & (Message.deleted_by_sender == False)) | ((Message.sender_id == other_user_id) & (Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
     return render_template("message.html", messages = messages, current_user_id = current_user_id, other_user = other_user)
+
+@app.route("/delete_message/<int:message_id>")
+@login_required
+def delete_message(message_id):
+
+    current_user_id = session.get("user_id")
+    message = db.session.get(Message, message_id)
+
+    if not message:
+        return redirect(request.referrer)
+
+    if message.sender_id == current_user_id:
+        message.deleted_by_sender = True
+    if message.receiver_id == current_user_id:
+        message.deleted_by_receiver = True
+    if message.deleted_by_sender and message.deleted_by_receiver:
+        db.session.delete(message)
+
+    db.session.commit()
+
+    return redirect(request.referrer)

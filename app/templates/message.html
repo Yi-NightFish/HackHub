@@ -13,11 +13,13 @@
 
 {% for msg in messages %}
 <div style="display: flex; flex-direction: column; margin-bottom: 12px; align-items: {% if msg.sender_id == current_user_id %} flex-end {% else %} flex-start {% endif %};">
-    <div style="padding: 10px 15px; border-radius: 12px; border: 1px solid #ddd; max-width: 80%; background-color: {% if msg.sender_id == current_user_id %} white {% else %} #f9f9f9 {% endif %};">
+    <div style="padding: 10px 15px; border-radius: 12px; border: 1px solid #ddd; max-width: 80%; background-color: {% if msg.sender_id == current_user_id %} white {% else %} #f9f9f9 {% endif %}; position: relative;">
+        <!-- timestamp -->
         <span style="color: #888; font-size: 0.8em;">
             {{ msg.timestamp.strftime('%Y-%m-%d %H:%M') }}
         </span>
         <br>
+        <!-- sender -->
         <span style="font-weight: bold;">
             {% if msg.sender_id == current_user_id %}
                 You:
@@ -25,6 +27,20 @@
                 {{ msg.sender.name if msg.sender else "User" ~ msg.sender_id }}:
             {% endif %}
         </span> {{ msg.message }}
+        <!-- hamburger -->
+        <details style="position:absolute; top:5px; right:5px;">
+            <summary style="cursor:pointer; list-style:none;">
+                ⋮
+            </summary>
+
+            <div style="background:white; border:1px solid #ccc; border-radius:8px; padding:5px; position:absolute; right:0; min-width:100px; z-index:100;">
+
+            <a href="/delete_message/{{ msg.id }}" style=" color:red; text-decoration:none; display:block; padding:5px;">
+                Delete
+            </a>
+
+            </div>
+        </details>
     </div>
     {% if msg.sender_id == current_user_id %}
         <div style="font-size: 0.7em; color: #888; margin-top: 2px; padding: 0 5px;">
