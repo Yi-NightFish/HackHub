@@ -10,11 +10,31 @@ body {
     padding: 20px 28px;
 }
 
+.team-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
 /* Main title */
 .team-title {
     font-size: 42px;
     font-weight: 900;
-    margin: 0 0 18px 0;
+    margin: 0;
+}
+
+/* team search */
+.search-box {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px 14px;
+    margin: 0;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    background: white;
+    box-sizing: border-box;
 }
 
 /* Team dashboard grid */

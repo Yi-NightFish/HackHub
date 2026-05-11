@@ -438,12 +438,24 @@ def toggle_subtask(id):
 @app.route("/teams")
 @login_required
 def teams():
-    all_teams = Team.query.all()
+    # nx
+    searchteams = request.args.get("searchteams", "").strip()
+
+    # all_teams = Team.query.all()
+    query = Team.query
+    if searchteams:
+        query = query.filter(Team.name.ilike(f"%{searchteams}%"))
+    all_teams = query.all()
+    # wy
     current_user = db.session.get(User, session["user_id"])
     # joined_team_ids = [
     #     member.team_id
     #     for member in TeamMember.query.filter_by(user_id = session["user_id"]).all()]
     joined_team_ids = [participation.team_id for participation in Participation.query.filter_by(user_id = session["user_id"]).filter(Participation.team_id != None).all()]
+    # nx
+    if request.headers.get("HX-Request"):
+        return render_template("/partials/team_list.html", teams = all_teams, current_user = current_user, joined_team_ids = joined_team_ids)
+    # wy
     return render_template("teams.html",
                            teams = all_teams,
                            current_user = current_user,
