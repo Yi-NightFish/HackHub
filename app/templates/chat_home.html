@@ -6,7 +6,7 @@
 
     {% for user in users %}
 
-    <a href="/chat/{{ user.id }}"
+    <a href="{{ url_for('chat', user_id=user.id) }}"
        style="
        text-decoration:none;
        color:black;
