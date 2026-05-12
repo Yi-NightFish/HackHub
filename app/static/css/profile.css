@@ -1,77 +1,213 @@
+/* General Layout */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 20px;
+    background-color: #ffffff;
+    color: #333;
 }
 
 #profile-container {
-    width: 60%;
-    margin: 20px auto;
-    padding: 20px;
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
     background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Header & Icon Alignment */
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+
+.chat-btn-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.chat-btn-wrapper span{
+    color: #f0f0f0;
+}
+
+.chat-btn-wrapper:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+}
+
+.chat-icon {
+    height: 20px; /* Smaller, controlled size */
+}
+
+.chat-link img {
+    height: 32px;
+    width: auto;
+    transition: transform 0.2s ease;
+}
+
+.chat-link img:hover {
+    transform: scale(1.1);
+}
+
+/* Profile Card Area */
+.profile-card {
+    border-bottom: 2px solid #eee;
+    padding-bottom: 30px;
+    margin-bottom: 30px;
+}
+
+/* Form Styling (Edit Mode) */
+.profile-form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    align-items: center;
+    gap: 20px;
 }
 
-form div, form {
-    width: 100%;
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.profileInput, form div input {
+.field-group label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #555;
+}
+
+.profileInput {
     width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
     font-size: 16px;
+    transition: border-color 0.2s;
 }
 
-#submitButton {
+.profileInput:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+/* Detail Display (View Mode) */
+.profile-details {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    border-bottom: 1px inset #f9f9f9;
+}
+
+.detail-item .label {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 4px;
+}
+
+.detail-item .value {
+    font-size: 18px;
+    color: #222;
+}
+
+/* Action Buttons */
+.profile-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.btn-primary {
     border: none;
-    border-radius: 4px;
-    padding: 10px 20px;
+    border-radius: 6px;
+    padding: 12px 24px;
     background-color: #007bff;
     color: #fff;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-    margin: 20px auto;
+    transition: background-color 0.2s;
 }
 
-#submitButton:hover, #submitButton:focus {
+.btn-primary:hover {
     background-color: #0056d6;
 }
 
-h1 {
-    text-align: center;
+.btn-secondary {
     color: #007bff;
-    margin-bottom: 0;
+    text-decoration: none;
+    font-size: 14px;
 }
 
-#history {
+.btn-secondary:hover {
+    text-decoration: underline;
+}
+
+/* History Section */
+#history-section h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.history-list {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 16px;
-    margin: 0 auto;
-    max-width: 800px;
 }
 
-.event {
+.event-card {
     background-color: #ffffff;
     border: 1px solid #e1e4e8;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    padding: 16px;
-    width: 100%;
+    border-radius: 10px;
+    padding: 20px;
 }
 
-#history h2 {
-    width: 100%;
-    text-decoration: underline;
-    margin: 0 0 10px;
-    padding: 0;
+.event-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
+.event-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #0056b3;
+}
+
+.event-date {
+    font-size: 13px;
+    color: #666;
+    font-style: italic;
+}
+
+.event-description {
+    line-height: 1.5;
+    color: #444;
+}
+
+.empty-state {
+    text-align: center;
+    color: #999;
+    padding: 40px;
+}

@@ -197,7 +197,8 @@ def dashboard():
     if "user_id" not in session:
         return redirect("/login")
     user = db.session.get(User, session["user_id"])
-    return f"Welcome {user.email} ---> ID: {user.id}"
+    # return f"Welcome {user.email} ---> ID: {user.id}"
+    return redirect("/")
 
 @app.route("/forget", methods=["GET", "POST"])
 def forget():
@@ -280,7 +281,7 @@ def profile(user_id):
     # team_member_subquery = select(TeamMember.team_id).where(TeamMember.user_id == user_id).subquery()
     # is_team_members_of = db.session.query(Team.event_id).join(team_member_subquery, Team.id == team_member_subquery.c.team_id).subquery()
     # events = db.session.execute(db.session.query(Event).join(is_team_members_of, is_team_members_of.c.event_id == Event.id)).scalars().all()
-    events = map(lambda team_membership: team_membership.event, user.team_memberships)
+    events = list(map(lambda team_membership: team_membership.event, user.team_memberships))
     return render_template("profile.html", 
                            form = profile_page, 
                            user = user, 
