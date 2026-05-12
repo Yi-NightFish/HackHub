@@ -80,6 +80,50 @@ def generate_team_code():
         existing_team = Team.query.filter_by(team_code=code).first()
         if not existing_team:
             return code
+        
+def create_team_for(events = None):
+    current_user = db.session.get(User, session["user_id"])
+    # events = Event.query.all()
+    # Soon Hong: Changed to create teams for joined events
+    events = [participation.event for participation in Participation.query.filter_by(user_id = session["user_id"]).all()] if events is None else events
+    if request.method == "POST":
+        name = request.form.get("name")
+        roles = request.form.get("roles")
+        motto = request.form.get("motto")
+        project_idea = request.form.get("project_idea")
+        event_id = request.form.get("event_id")
+        max_members = int(request.form.get("max_members"))
+        if max_members < 1 or max_members > 6:
+            return "Team size must be between 1 and 6"
+        new_team = Team(
+            name = name,
+            roles = roles,
+            motto = motto,
+            project_idea = project_idea,
+            event_id = event_id,
+            leader_id = session["user_id"],
+            team_code = generate_team_code(),
+            max_members = max_members
+        )
+        db.session.add(new_team)
+        db.session.commit()
+        # leader = TeamMember(
+        #     team_id = new_team.id,
+        #     user_id = session["user_id"],
+        #     roles = "Leader"
+        # )
+        # db.session.add(leader)
+        # db.session.commit()
+        participation = Participation.query.filter_by(
+            user_id = session["user_id"],
+            event_id = event_id
+        ).first()
+        participation.team_id = new_team.id
+        participation.roles = "Leader"
+        db.session.add(participation)
+        db.session.commit()
+        return redirect(url_for("team_detail", team_id = new_team.id))
+    return render_template("create_team.html", events = events, current_user = current_user)
 
 # Main routes
 @app.route("/")
@@ -482,48 +526,7 @@ def teams():
 @app.route("/team/create", methods = ["GET", "POST"])
 @login_required
 def create_team():
-    current_user = db.session.get(User, session["user_id"])
-    # events = Event.query.all()
-    # Soon Hong: Changed to create teams for joined events
-    events = [participation.event for participation in Participation.query.filter_by(user_id = session["user_id"]).all()]
-    if request.method == "POST":
-        name = request.form.get("name")
-        roles = request.form.get("roles")
-        motto = request.form.get("motto")
-        project_idea = request.form.get("project_idea")
-        event_id = request.form.get("event_id")
-        max_members = int(request.form.get("max_members"))
-        if max_members < 1 or max_members > 6:
-            return "Team size must be between 1 and 6"
-        new_team = Team(
-            name = name,
-            roles = roles,
-            motto = motto,
-            project_idea = project_idea,
-            event_id = event_id,
-            leader_id = session["user_id"],
-            team_code = generate_team_code(),
-            max_members = max_members
-        )
-        db.session.add(new_team)
-        db.session.commit()
-        # leader = TeamMember(
-        #     team_id = new_team.id,
-        #     user_id = session["user_id"],
-        #     roles = "Leader"
-        # )
-        # db.session.add(leader)
-        # db.session.commit()
-        participation = Participation.query.filter_by(
-            user_id = session["user_id"],
-            event_id = event_id
-        ).first()
-        participation.team_id = new_team.id
-        participation.roles = "Leader"
-        db.session.add(participation)
-        db.session.commit()
-        return redirect(url_for("team_detail", team_id = new_team.id))
-    return render_template("create_team.html", events = events, current_user = current_user)
+    return create_team_for()
 
 @app.route("/team/<int:team_id>/request", methods = ["POST"])
 @login_required
@@ -568,7 +571,8 @@ def team_detail(team_id):
     current_user = db.session.get(User, session["user_id"])
     is_member = Participation.query.filter_by(team_id = team.id,
                                            user_id = session["user_id"]).first() is not None
-    member_of_other_team = Participation.query.filter_by(user_id = session["user_id"]).first().team_id is not None
+    participation = Participation.query.filter_by(user_id = session["user_id"]).first()
+    member_of_other_team = False if not participation else participation.team_id is not None
     pending_requests = []
     if team.leader_id == session["user_id"]:
         pending_requests = TeamJoinRequest.query.filter_by(team_id = team.id, status = "Pending").all()
@@ -750,6 +754,12 @@ def autosave_team(team_id):
         return "Invalid field"
     db.session.commit()
     return "Saved"
+
+@app.route("/team/create/<int:event_id>", methods = ["GET", "POST"])
+@login_required
+def create_team_for_event(event_id):
+    return create_team_for(events= [db.session.get(Event, event_id)])
+
 #------------------------------------------------------------------------------------------------------
 # nx - chat system
 @app.route("/chat_home")

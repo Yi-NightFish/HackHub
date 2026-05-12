@@ -6,7 +6,7 @@ from functools import reduce
 from app.routes import login_required
 from app.forms import EventForm
 import datetime as dt
-from forms import EventForm
+from app.forms import EventForm
 
 # Helper function
 def get_user_by_id(user_id):
@@ -147,11 +147,16 @@ def event_detail(event_id):
         
         # Get soloists (participants without a team)
         soloists = [p.user for p in Participation.query.filter_by(event_id=event_id, team_id=None).all()] if event else []
+        enrolled = False
+        if current_user:
+            enrolled = current_user in participants
+        in_team = False
+        if current_user:
+            participation = Participation.query.filter_by(event_id = event_id, user_id = current_user.id).first()
+            if participation:
+                in_team = participation.team_id is not None
 
         if active_tab == "overview":
-            enrolled = False
-            if current_user:
-                enrolled = current_user in participants
             no_participant = len(event.participants)
             return render_template(
                 "event_detail.html", 
@@ -177,7 +182,9 @@ def event_detail(event_id):
                 event = event,
                 current_user = current_user,
                 active_tab = active_tab,
-                teams = teams
+                teams = teams,
+                enrolled = enrolled,
+                in_team = in_team
             )
         elif active_tab == "solo":
             leader_team = None
