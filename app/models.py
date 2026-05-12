@@ -17,6 +17,14 @@ class User(db.Model):
     assigned_tasks = db.relationship('Task', foreign_keys='Task.assigned_to', backref='assigned_user', lazy=True)
     team_memberships = db.relationship('Participation', backref='user', lazy=True)
     announcements = db.relationship('Announcement', backref='creator', lazy=True)
+    last_seen = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
+
+    def is_online(self):
+        if self.last_seen is None:
+            return False
+        now = datetime.datetime.now(datetime.UTC).replace(tzinfo=None)
+        # Consider user online if last seen within the last 5 minutes
+        return (now - self.last_seen) < datetime.timedelta(minutes=1)
 
     def __repr__(self):
         return f'<User {self.name}>'
@@ -157,6 +165,8 @@ class Message(db.Model):
     message = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
     is_read = db.Column(db.Boolean, default=False)
+    deleted_by_sender = db.Column(db.Boolean, default=False)
+    deleted_by_receiver = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return f'<Message {self.sender_id} - {self.receiver_id}>'

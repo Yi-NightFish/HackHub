@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Chats{% endblock %}
+{% block content %}
+<h1>Chat Homepage</h1>
+<div style="display:flex; flex-direction:column; gap:10px;">
+
+    {% for user in users %}
+
+    <a href="{{ url_for('chat', user_id=user.id) }}"
+       style="
+       text-decoration:none;
+       color:black;
+       padding:15px;
+       border:1px solid #ccc;
+       border-radius:10px;
+       background:#f9f9f9;
+       ">
+        <strong>{{ user.name }}</strong>
+
+        {% if user.is_online() %}
+            <span style="color:green;"> Online</span>
+        {% else %}
+            <span style="color:gray;"> Offline</span>
+        {% endif %}
+
+    </a>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

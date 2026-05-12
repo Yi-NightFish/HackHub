@@ -3,7 +3,7 @@ import random
 import string
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime as dt
-from flask_mail import Message
+from flask_mail import Message as MailMessage
 import functools
 import qrcode
 import io
@@ -138,6 +138,12 @@ def login():
 
 @app.route("/logout")
 def logout():
+    user_id = session.get("user_id")
+    if user_id:
+        user = db.session.get(User, user_id)
+        if user:
+            user.last_seen = dt.datetime.now(dt.UTC).replace(tzinfo=None) - dt.timedelta(minutes=2)  # Set last seen to 2 minutes ago to mark as offline
+            db.session.commit()
     session.clear()
     return redirect(url_for("home"))
 
@@ -284,15 +290,27 @@ def tasks(team_id):
         db.session.commit()
         return redirect(url_for("tasks", team_id = team.id))
     status_filter = request.args.get("status", "all")
+    # nx
+    search_query = request.args.get("searchtasks", "").strip()
+    # wy
     now = dt.datetime.now()
     query = Task.query.filter_by(team_id = team.id)
     if status_filter != "all":
         query = query.filter(Task.status == status_filter)
+    # nx
+    if search_query:
+        query = query.filter(Task.title.ilike(f"%{search_query}%") | Task.description.ilike(f"%{search_query}%"))
+    # wy
     status_order = case(((Task.is_done == False) & (Task.deadline < now) & (Task.status.in_(["To Do", "In Progress"])), 0), (Task.status == "Wishlist", 1), (Task.status == "To Do", 2), (Task.status == "In Progress", 3), (Task.status == "In Review", 4), (Task.status == "Complete", 5), else_=6)   
     priority_order = case((Task.priority.in_(["High","high"]), 0), (Task.priority.in_(["Medium","medium"]), 1), (Task.priority.in_(["Low","low"]), 2), else_=3)
     query = query.order_by(status_order, priority_order, Task.deadline.asc())
-    tasks = query.all()
-    return render_template("tasks.html", form = form, tasks = tasks, datetime = dt, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]), team = team)
+    # tasks = query.all()
+        # nx
+    tasks_results = query.all()
+    if request.headers.get("HX-Request"):
+        return render_template("partials/task_list.html", tasks = tasks_results, datetime = dt)
+    # wy
+    return render_template("tasks.html", form = form, tasks = tasks_results, datetime = dt, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]), team = team)
 
 @app.route("/task/<int:id>/toggle", methods = ["POST"])
 @login_required
@@ -438,12 +456,24 @@ def toggle_subtask(id):
 @app.route("/teams")
 @login_required
 def teams():
-    all_teams = Team.query.all()
+    # nx
+    searchteams = request.args.get("searchteams", "").strip()
+
+    # all_teams = Team.query.all()
+    query = Team.query
+    if searchteams:
+        query = query.filter(Team.name.ilike(f"%{searchteams}%"))
+    all_teams = query.all()
+    # wy
     current_user = db.session.get(User, session["user_id"])
     # joined_team_ids = [
     #     member.team_id
     #     for member in TeamMember.query.filter_by(user_id = session["user_id"]).all()]
     joined_team_ids = [participation.team_id for participation in Participation.query.filter_by(user_id = session["user_id"]).filter(Participation.team_id != None).all()]
+    # nx
+    if request.headers.get("HX-Request"):
+        return render_template("/partials/team_list.html", teams = all_teams, current_user = current_user, joined_team_ids = joined_team_ids)
+    # wy
     return render_template("teams.html",
                            teams = all_teams,
                            current_user = current_user,
@@ -721,3 +751,111 @@ def autosave_team(team_id):
     db.session.commit()
     return "Saved"
 #------------------------------------------------------------------------------------------------------
+# nx - chat system
+@app.route("/chat_home")
+@login_required
+def chat_home():
+    current_user_id = session.get("user_id")
+    users = User.query.filter(User.id != current_user_id).all()
+
+    return render_template(
+        "chat_home.html",
+        users=users
+    )
+
+@app.route("/chat/<int:user_id>")
+@login_required
+def chat(user_id):
+    current_user_id = session.get("user_id")
+    current_user = db.session.get(User, current_user_id)
+    other_user = db.session.get(User, user_id)
+    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == user_id) & (Message.deleted_by_sender == False)) | 
+                                    ((Message.sender_id == user_id) & (Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False))
+    ).order_by(Message.timestamp.asc()).all()
+
+    return render_template("chat.html",messages = messages, other_user = other_user, current_user_id=current_user_id, current_user = current_user)
+
+# @app.route("/chat")
+# @login_required
+# def chat():
+#     # get user_id
+#     user_id = session.get("user_id")
+#     current_user = db.session.get(User, user_id)
+#     receiver_id = 2 if user_id == 1 else 1
+#     other_user = db.session.get(User, receiver_id)
+#     # search msg i send or receive and not deleted with 时间顺序
+#     messages = Message.query.filter(((Message.sender_id == user_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
+#     return render_template("chat.html", messages = messages, current_user_id = user_id, current_user = current_user, other_user = other_user)
+    
+@app.route("/send_message", methods=["POST"])
+@login_required
+def send_message():
+    # get msg and sender_id
+    content = request.form["message"]
+    sender_id = session.get("user_id")
+    receiver_id = request.form["user_id"]
+    other_user = db.session.get(User, receiver_id)
+    # receiver_id = 2 if sender_id == 1 else 1  #user1/2互发消息
+    new_message = Message(message = content, sender_id = sender_id, receiver_id = receiver_id) #timestamp会自动生成/存数据库
+    db.session.add(new_message)
+    db.session.commit()
+    # return redirect(url_for("chat", user_id=sender_id)) #发完消息回聊天界面，user_id不变
+    # messages = Message.query.filter(((Message.sender_id == sender_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == sender_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
+    messages = Message.query.filter(((Message.sender_id == sender_id) & (Message.receiver_id == receiver_id) & (Message.deleted_by_sender == False)) | ((Message.sender_id == receiver_id) & (Message.receiver_id == sender_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
+    return render_template("message.html", messages = messages, current_user_id = sender_id, other_user = other_user) #只返回新消息，前端htmx负责更新页面
+    
+@app.route("/clear/<int:user_id>")
+@login_required
+def clear_messages(user_id):
+    current_user_id = session.get("user_id")
+    # find all my msg and 标记为deleted for sender/receiver depend on my身份，真正删除在数据库里保留但不展示(soft delete)
+    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == user_id)) | ((Message.sender_id == user_id) & (Message.receiver_id == current_user_id))).all()
+    for message in messages:
+        if message.sender_id == current_user_id:
+            message.deleted_by_sender = True
+        if message.receiver_id == current_user_id:
+            message.deleted_by_receiver = True
+        if message.deleted_by_sender and message.deleted_by_receiver:
+            db.session.delete(message) #双方都删除了才真正从数据库删除
+    db.session.commit()
+    return redirect(url_for("chat", user_id=user_id))
+    
+@app.route("/message")
+@login_required
+def get_message():
+    current_user_id = session.get("user_id")
+    other_user_id = request.args.get("user_id")
+    user = db.session.get(User, current_user_id)
+    if user:
+        user.last_seen = dt.datetime.now(dt.UTC).replace(tzinfo=None)
+    # find unread msg
+    unread_messages = Message.query.filter_by(receiver_id = current_user_id, sender_id = other_user_id, is_read = False).all()
+    for message in unread_messages:
+        # seen
+        message.is_read = True
+    db.session.commit()
+    # receiver_id = 2 if current_user_id == 1 else 1
+    other_user = db.session.get(User, other_user_id)
+    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == other_user_id) & (Message.deleted_by_sender == False)) | ((Message.sender_id == other_user_id) & (Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
+    return render_template("message.html", messages = messages, current_user_id = current_user_id, other_user = other_user)
+
+@app.route("/delete_message/<int:message_id>")
+@login_required
+def delete_message(message_id):
+
+    current_user_id = session.get("user_id")
+    message = db.session.get(Message, message_id)
+
+    if not message:
+        return redirect(request.referrer)
+
+    if message.sender_id == current_user_id:
+        message.deleted_by_sender = True
+    if message.receiver_id == current_user_id:
+        message.deleted_by_receiver = True
+    if message.deleted_by_sender and message.deleted_by_receiver:
+        db.session.delete(message)
+
+    db.session.commit()
+
+    return redirect(request.referrer)

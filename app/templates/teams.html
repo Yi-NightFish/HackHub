@@ -6,10 +6,12 @@
 
 {% block content %}
 <div class="team-page">
+    <div class="team-header">
     <h1 class="team-title">Team Dashboard</h1>
-
-    <div class="team-grid">
-        {% for team in teams %}
+        <input type="text" name="searchteams" placeholder="Search teams..." hx-get="{{ url_for('teams') }}" hx-trigger="keyup changed delay:300ms" hx-target="#team-list" hx-swap="innerHTML" class="search-box"/>
+    </div>
+    <div class="team-grid" id="team-list">
+        <!-- {% for team in teams %}
         <a class="team-card" href="{{ url_for('team_detail', team_id=team.id) }}">
             <h2>{{ team.name }}</h2>
             <p>Motto: {{ team.motto or "-" }}</p>
@@ -26,7 +28,8 @@
         </a>
         {% else %}
         <p>No teams found.</p>
-        {% endfor %}
+        {% endfor %} -->
+        {% include "partials/team_list.html" %}
     </div>
 
     <div class="bottom-line"></div>
