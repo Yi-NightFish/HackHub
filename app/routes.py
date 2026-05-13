@@ -758,10 +758,7 @@ def chat_home():
     current_user_id = session.get("user_id")
     users = User.query.filter(User.id != current_user_id).all()
 
-    return render_template(
-        "chat_home.html",
-        users=users
-    )
+    return render_template("chat_home.html", users = users)
 
 @app.route("/chat/<int:user_id>")
 @login_required
