@@ -752,7 +752,7 @@ def autosave_team(team_id):
     return "Saved"
 #------------------------------------------------------------------------------------------------------
 # nx - chat system
-@app.route("/chat_home")
+@app.route("/chat")
 @login_required
 def chat_home():
     current_user_id = session.get("user_id")
