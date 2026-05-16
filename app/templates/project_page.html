@@ -141,10 +141,6 @@
                     hx-post="{{ url_for('autosave_project', team_id=team.id) }}" hx-trigger="change"
                     hx-vals='{"field":"demo_link"}' hx-swap="none">
 
-                <input class="inline-input" name="value" value="{{ project.screenshots_link or '' }}"
-                    placeholder="Screenshots link" hx-post="{{ url_for('autosave_project', team_id=team.id) }}"
-                    hx-trigger="change" hx-vals='{"field":"screenshots_link"}' hx-swap="none">
-
                 {% endif %}
 
                 {% if project.github_link %}
@@ -156,12 +152,6 @@
                 {% if project.demo_link %}
                 <a href="{{ project.demo_link }}" target="_blank" class="link-btn">
                     Live Demo
-                </a>
-                {% endif %}
-
-                {% if project.screenshots_link %}
-                <a href="{{ project.screenshots_link }}" target="_blank" class="link-btn">
-                    Screenshots
                 </a>
                 {% endif %}
 

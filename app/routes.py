@@ -937,8 +937,6 @@ def autosave_project(team_id):
         project.demo_link = value
     elif field == "github_link":
         project.github_link = value
-    elif field == "screenshots_link":
-        project.screenshots_link = value
     elif field == "contributions":
         project.contributions = value
     else:
