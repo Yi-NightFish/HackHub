@@ -284,15 +284,27 @@ def tasks(team_id):
         db.session.commit()
         return redirect(url_for("tasks", team_id = team.id))
     status_filter = request.args.get("status", "all")
+    # nx
+    search_query = request.args.get("searchtasks", "").strip()
+    # wy
     now = dt.datetime.now()
     query = Task.query.filter_by(team_id = team.id)
     if status_filter != "all":
         query = query.filter(Task.status == status_filter)
+    # nx
+    if search_query:
+        query = query.filter(Task.title.ilike(f"%{search_query}%") | Task.description.ilike(f"%{search_query}%"))
+    # wy
     status_order = case(((Task.is_done == False) & (Task.deadline < now) & (Task.status.in_(["To Do", "In Progress"])), 0), (Task.status == "Wishlist", 1), (Task.status == "To Do", 2), (Task.status == "In Progress", 3), (Task.status == "In Review", 4), (Task.status == "Complete", 5), else_=6)   
     priority_order = case((Task.priority.in_(["High","high"]), 0), (Task.priority.in_(["Medium","medium"]), 1), (Task.priority.in_(["Low","low"]), 2), else_=3)
     query = query.order_by(status_order, priority_order, Task.deadline.asc())
-    tasks = query.all()
-    return render_template("tasks.html", form = form, tasks = tasks, datetime = dt, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]), team = team)
+    # tasks = query.all()
+        # nx
+    tasks_results = query.all()
+    if request.headers.get("HX-Request"):
+        return render_template("partials/task_list.html", tasks = tasks_results, datetime = dt)
+    # wy
+    return render_template("tasks.html", form = form, tasks = tasks_results, datetime = dt, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]), team = team)
 
 @app.route("/task/<int:id>/toggle", methods = ["POST"])
 @login_required
@@ -438,12 +450,24 @@ def toggle_subtask(id):
 @app.route("/teams")
 @login_required
 def teams():
-    all_teams = Team.query.all()
+    # nx
+    searchteams = request.args.get("searchteams", "").strip()
+
+    # all_teams = Team.query.all()
+    query = Team.query
+    if searchteams:
+        query = query.filter(Team.name.ilike(f"%{searchteams}%"))
+    all_teams = query.all()
+    # wy
     current_user = db.session.get(User, session["user_id"])
     # joined_team_ids = [
     #     member.team_id
     #     for member in TeamMember.query.filter_by(user_id = session["user_id"]).all()]
     joined_team_ids = [participation.team_id for participation in Participation.query.filter_by(user_id = session["user_id"]).filter(Participation.team_id != None).all()]
+    # nx
+    if request.headers.get("HX-Request"):
+        return render_template("/partials/team_list.html", teams = all_teams, current_user = current_user, joined_team_ids = joined_team_ids)
+    # wy
     return render_template("teams.html",
                            teams = all_teams,
                            current_user = current_user,
@@ -543,6 +567,7 @@ def team_detail(team_id):
     current_user = db.session.get(User, session["user_id"])
     is_member = Participation.query.filter_by(team_id = team.id,
                                            user_id = session["user_id"]).first() is not None
+    member_of_other_team = Participation.query.filter_by(user_id = session["user_id"]).first().team_id is not None
     pending_requests = []
     if team.leader_id == session["user_id"]:
         pending_requests = TeamJoinRequest.query.filter_by(team_id = team.id, status = "Pending").all()
@@ -555,14 +580,17 @@ def team_detail(team_id):
     existing_request = TeamJoinRequest.query.filter_by(team_id = team.id,
                                                        user_id = session["user_id"],
                                                        status = "Pending").first()
-    return render_template("team_detail.html",
-                           team = team,
-                           current_user = current_user,
-                           is_member = is_member,
-                           pending_requests = pending_requests,
-                           invite_link = invite_link,
-                           qr_code = qr_code,
-                           existing_request = existing_request)
+    return render_template(
+                        "team_detail.html",
+                        team = team,
+                        current_user = current_user,
+                        is_member = is_member,
+                        pending_requests = pending_requests,
+                        invite_link = invite_link,
+                        qr_code = qr_code,
+                        existing_request = existing_request,
+                        member_of_other_team = member_of_other_team
+    )
     
 @app.route("/team/request/<int:request_id>/approve", methods = ["POST"])
 @login_required
@@ -580,6 +608,8 @@ def approve_join_request(request_id):
     # new_member = TeamMember(team_id = team.id, user_id = join_request.user_id, roles = "Member")
     print(request_id, join_request.user_id, team.event_id)
     participation = Participation.query.filter_by(user_id = join_request.user_id, event_id = team.event_id).first()
+    if participation.team_id is not None:
+        return "User already in a team"
     participation.team_id = team.id 
     join_request.status = "Approved"
     # db.session.add(new_member)
@@ -719,113 +749,3 @@ def autosave_team(team_id):
     db.session.commit()
     return "Saved"
 #------------------------------------------------------------------------------------------------------
-@app.route("/explore")
-@login_required
-def explore():
-    search_query = request.args.get("search", "").strip()
-    status_filter = request.args.get("status", "all")
-    sort_by = request.args.get("sort", "newest")
-    start_date = request.args.get("start_date", "")
-    end_date = request.args.get("end_date", "")
-    deadline = request.args.get("deadline", "")
-    page = request.args.get("page", 1, type=int)
-
-    if search_query:
-        history = session.get("search_history", [])
-        if search_query in history:
-            history.remove(search_query) #remove old one
-        history.insert(0, search_query) #add to front
-        session["search_history"] = history[:5]  # Keep only last 5 unique searches
-        session.modified = True # tell flask is updated
-
-    query = Event.query.join(User, Event.organizer_id == User.id)
-
-    if search_query:
-        query = query.filter(Event.title.ilike(f"%{search_query}%") | Event.description.ilike(f"%{search_query}%") | User.name.ilike(f"%{search_query}%"))
-    if status_filter != "all":
-        if status_filter == 'completed':
-            query = query.filter((Event.status == 'completed') | (Event.end_time < dt.datetime.now()))
-        elif status_filter == 'ongoing':
-            query = query.filter((Event.status == 'ongoing') | ((Event.start_time <= dt.datetime.now()) & (Event.end_time >= dt.datetime.now())))
-        elif status_filter == 'open':
-            query = query.filter((Event.status == 'open') | ((Event.start_time > dt.datetime.now())))
-        elif status_filter == 'cancelled':
-            query = query.filter(Event.status == 'cancelled')
-    if start_date:
-        query = query.filter(Event.date >= start_date)
-    if end_date:
-        query = query.filter(Event.date <= end_date)
-    if deadline :
-        query = query.filter(Event.deadline <= deadline)
-    if sort_by == "newest":
-        query = query.order_by(Event.date.desc())
-    elif sort_by == "oldest":
-        query = query.order_by(Event.date.asc())
-    elif sort_by == "title_asc":
-        query = query.order_by(Event.title.asc())
-    else:
-        query = query.order_by(Event.date.asc())
-
-    paginate = query.paginate(page=page, per_page=12, error_out=False)
-    events = paginate.items
-    if request.headers.get("HX-Request"):
-        return render_template("partials/event_list.html", events = events, search_query = search_query, paginate = paginate or None)
-    return render_template("explore.html", events = events, search_query = search_query, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]), sort_by = sort_by, paginate = paginate, history = session.get("search_history", []))
-# wy - project page -----------------------------------------------------------------------------------
-@app.route("/team/<int:team_id>/project")
-@login_required
-def project_page(team_id):
-    team = db.session.get(Team, team_id)
-    if not team:
-        return "Team not found"
-    event = db.session.get(Event, team.event_id)
-    current_user = db.session.get(User, session["user_id"])
-    is_member = Participation.query.filter_by(team_id = team.id,
-                                           user_id = session["user_id"]).first() is not None
-    can_edit = is_member
-    project = Project.query.filter_by(team_id = team.id).first()
-    if not project:
-        project = Project(team_id = team.id, title = f"{team.name} Project")
-        db.session.add(project)
-        db.session.commit()
-    return render_template("project_page.html",
-                           team = team,
-                           project = project,
-                           current_user = current_user, 
-                           can_edit = can_edit,
-                           event = event)
-    
-@app.route("/team/<int:team_id>/project/autosave", methods = ["POST"])
-@login_required
-def autosave_project(team_id):
-    team = db.session.get(Team, team_id)
-    if not team:
-        return "Team not found"
-    is_member = Participation.query.filter_by(team_id = team.id, user_id = session["user_id"]).first()
-    if not is_member:
-        return "Unauthorized"
-    project = Project.query.filter_by(team_id = team.id).first()
-    if not project:
-        project = Project(team_id = team.id, title = f"{team.name} Project")
-        db.session.add(project)
-        db.session.commit()
-    field = request.form.get("field")
-    value = request.form.get("value")
-    if field == "title":
-        project.title = value
-    elif field == "description":
-        project.description = value
-    elif field == "tech_stack":
-        project.tech_stack = value
-    elif field == "demo_link":
-        project.demo_link = value
-    elif field == "github_link":
-        project.github_link = value
-    elif field == "screenshots_link":
-        project.screenshots_link = value
-    elif field == "contributions":
-        project.contributions = value
-    else:
-        return "Invalid field"
-    db.session.commit()
-    return "Saved"
