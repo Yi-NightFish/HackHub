@@ -3,58 +3,101 @@
 {% block title %}Profile | Hackhub{% endblock %}
 
 {% block css %}
-<link rel = "stylesheet" href = "{{url_for('static', filename = 'css/profile.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename = 'css/profile.css')}}">
 {% endblock %}
 
 {% block content %}
-<div id = "profile-container">
-    <h1>Profile</h1>
+{% set is_owner = (user.id == current_user.id) %}
 
-    <form action = "" method = "POST">
-        {{form.hidden_tag()}}
-        {% set hide = (user.id != current_user.id) %}
-        <div id = "username">
-            <p>{{form.username.label}}</p>
-            {{form.username(size = 32, class = "profileInput", readOnly = hide, value = user.name)}}
-        </div>
+<div id="profile-container">
+    <div class="profile-header">
+        <h1>{{ user.name }}'s Profile</h1>
+        {% if not is_owner %}
+            <a href="{{ url_for('chat', user_id=user.id) }}" class="chat-btn-wrapper">
+                <img src="{{ url_for('static', filename='images/chat-bubble-icon.png') }}" class="chat-icon">
+                <span>Message</span>
+            </a>
+        {% endif %}
+    </div>
 
-        <div id = email>
-            <p>{{form.email.label}}</p>
-            {{form.email(size = 32, class = "profileInput", readOnly = hide, value = user.email, type = "email")}}
-        </div>
-
-        <div id = university>
-            <p>{{form.university.label}}</p>
-            {{form.university(size = 32, class = "profileInput", readOnly = hide, value = user.university)}}
-        </div>
-
-        <div id = skills>
-            <p>{{form.skills.label}}</p>
-            {{form.skills(size = 32, class = "profileInput", readOnly = hide, value = user.skills)}}
-        </div>
-
-        <div id = github_link>
-            <p>{{form.github_link.label}}</p>
-            {{form.github_link(size = 32, class = "profileInput", readOnly = hide, value = user.github_link)}}
-        </div>
-
-        {{form.submit(id = 'submitButton', hidden = hide)}}
-        <a href = '{{url_for("reset_pwd")}}' {{'hidden' if hide else ''}}>Reset Password</a>
-    </form>
-
-    {% if events %}
-        <div id = "history">
-            <h2>History</h2>
-            {% for event in events %}
-                <div class = "event">
-                    <h3>{{event.title}} ({{event.start_time.date()}})</h3>
-                    <hr>
-                    <p id = "history-description">{{event.description}}</p>
+    <div class="profile-card">
+        {% if is_owner %}
+            <form action="" method="POST" class="profile-form">
+                {{ form.hidden_tag() }}
+                
+                <div class="field-group">
+                    {{ form.username.label }}
+                    {{ form.username(size=32, class="profileInput", value=user.name) }}
                 </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <p>No Event Joined</p>
-    {% endif %}
+
+                <div class="field-group">
+                    {{ form.email.label }}
+                    {{ form.email(size=32, class="profileInput", value=user.email, type="email") }}
+                </div>
+
+                <div class="field-group">
+                    {{ form.university.label }}
+                    {{ form.university(size=32, class="profileInput", value=user.university) }}
+                </div>
+
+                <div class="field-group">
+                    {{ form.skills.label }}
+                    {{ form.skills(size=32, class="profileInput", value=user.skills) }}
+                </div>
+
+                <div class="field-group">
+                    {{ form.github_link.label }}
+                    {{ form.github_link(size=32, class="profileInput", value=user.github_link) }}
+                </div>
+
+                <div class="profile-actions">
+                    {{ form.submit(id='submitButton', class="btn-primary") }}
+                    <a href="{{ url_for('reset_pwd') }}" class="btn-secondary">Reset Password</a>
+                </div>
+            </form>
+        {% else %}
+            <div class="profile-details">
+                <div class="detail-item">
+                    <span class="label">University</span>
+                    <span class="value">{{ user.university or 'Not specified' }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Skills</span>
+                    <span class="value">{{ user.skills or 'No skills listed' }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">GitHub</span>
+                    <span class="value">
+                        {% if user.github_link %}
+                            <a href="{{ user.github_link }}" target="_blank">{{ user.github_link }}</a>
+                        {% else %}
+                            Not linked
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <section id="history-section">
+        <h2>Event History</h2>
+        {% if events %}
+
+            <div class="history-list">
+                {% for event in events %}
+                    <div class="event-card">
+                        <div class="event-header">
+                            <h3>{{ event.title }}</h3>
+                            <span class="event-date">{{ event.start_time.strftime('%b %d, %Y') }}</span>
+                        </div>
+                        <hr>
+                        <p class="event-description">{{ event.description }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="empty-state">No events joined yet.</p>
+        {% endif %}
+    </section>
 </div>
 {% endblock %}

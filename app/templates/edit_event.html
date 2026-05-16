@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="team-page">
+    <h1 class="team-title">Edit Event: {{ event.title }}</h1>
+
+    <form class="form-box" method="POST" novalidate>
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            {{ form.title.label }}
+            {% if form.title.errors %}
+                {{ form.title(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.title.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.title(class="form-control", required="") }}
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.description.label }}
+            {% if form.description.errors %}
+                {{ form.description(class="form-control is-invalid", rows="5", required="") }}
+                <div class="invalid-feedback">
+                    {% for error in form.description.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.description(class="form-control", rows="5", required="") }}
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.deadline.label }}
+            <small class="form-text text-muted">Registration deadline must be before the event starts</small>
+            {% if form.deadline.errors %}
+                {{ form.deadline(class="form-control is-invalid", type="datetime-local", required="") }}
+                <div class="invalid-feedback">
+                    {% for error in form.deadline.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.deadline(class="form-control", type="datetime-local", required="") }}
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.start_time.label }}
+            {% if form.start_time.errors %}
+                {{ form.start_time(class="form-control is-invalid", type="datetime-local", required="") }}
+                <div class="invalid-feedback">
+                    {% for error in form.start_time.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.start_time(class="form-control", type="datetime-local", required="") }}
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.end_time.label }}
+            <small class="form-text text-muted">Event end time must be after the start time</small>
+            {% if form.end_time.errors %}
+                {{ form.end_time(class="form-control is-invalid", type="datetime-local", required="") }}
+                <div class="invalid-feedback">
+                    {% for error in form.end_time.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.end_time(class="form-control", type="datetime-local", required="") }}
+            {% endif %}
+        </div>
+
+        {{ form.submit(class="team-btn") }}
+    </form>
+
+    <div class="team-actions">
+        <a class="back-link team-btn" href="{{ url_for('event_detail', event_id=event.id) }}">Cancel</a>
+    </div>
+</div>
+
+<style>
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1em;
+        font-family: inherit;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #2a7ae2;
+        box-shadow: 0 0 0 2px rgba(42, 122, 226, 0.2);
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+
+    .invalid-feedback {
+        color: #dc3545;
+        font-size: 0.9em;
+        margin-top: 5px;
+    }
+
+    .form-text {
+        font-size: 0.85em;
+        color: #666;
+    }
+
+    .team-btn {
+        padding: 10px 20px;
+        background: #2a7ae2;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: 600;
+        transition: background 0.3s ease;
+    }
+
+    .team-btn:hover {
+        background: #1e5cbb;
+    }
+
+    .team-actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .back-link {
+        text-decoration: none;
+        display: inline-block;
+        padding: 10px 20px;
+        background: #6c757d;
+        color: white;
+        border-radius: 5px;
+        transition: background 0.3s ease;
+    }
+
+    .back-link:hover {
+        background: #5a6268;
+        text-decoration: none;
+    }
+
+    .form-box {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        margin: 30px auto;
+    }
+
+    .team-title {
+        text-align: center;
+        margin: 20px 0;
+        color: #333;
+    }
+</style>
+
+{% endblock %}
