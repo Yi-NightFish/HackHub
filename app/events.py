@@ -144,9 +144,6 @@ def event_detail(event_id):
 
         participants = get_participants()
         teams = [team for team in event.teams if Participation.query.filter_by(team_id = team.id).count() < team.max_members] if event else []
-        
-        # Get soloists (participants without a team)
-        soloists = [p.user for p in Participation.query.filter_by(event_id=event_id, team_id=None).all()] if event else []
         enrolled = False
         if current_user:
             enrolled = current_user in participants
@@ -155,6 +152,10 @@ def event_detail(event_id):
             participation = Participation.query.filter_by(event_id = event_id, user_id = current_user.id).first()
             if participation:
                 in_team = participation.team_id is not None
+        
+        def require_login():
+            if not current_user:
+                return redirect(url_for("login", next = request.url))
 
         if active_tab == "overview":
             no_participant = len(event.participants)
@@ -167,8 +168,7 @@ def event_detail(event_id):
                 enrolled = enrolled
             )
         elif active_tab == "participants":
-            if not current_user:
-                return redirect(url_for("login", next = request.url))
+            require_login()
             return render_template(
                 "event_detail.html", 
                 event = event, 
@@ -177,6 +177,7 @@ def event_detail(event_id):
                 participants = participants
             )
         elif active_tab == "teams":
+            require_login()
             return render_template(
                 "event_detail.html",
                 event = event,
@@ -187,6 +188,9 @@ def event_detail(event_id):
                 in_team = in_team
             )
         elif active_tab == "solo":
+            require_login()
+            # Get soloists (participants without a team)
+            soloists = [p.user for p in Participation.query.filter_by(event_id=event_id, team_id=None).filter(Participation.user_id != current_user.id).all()] if event else []
             leader_team = None
             leader_team_member_count = 0
             leader_team_full = False
