@@ -1,144 +1,148 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-    <title>Task Details</title>
-    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/task_details.css') }}">
-</head>
+{% block css %}
+<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team.css') }}">
+{% endblock %}
 
-<body>
-    <div class="page">
+{% block content %}
 
-        <div class="top-bar">
-            <a href="{{ url_for('tasks', team_id=task.team_id) }}" class="back-link">← Back</a>
-            <span id="save-status"></span>
-        </div>
+<div class="team-page">
 
-        <h1>Details</h1>
+    <h1 class="team-title">{{ team.name }}</h1>
 
-        <div class="details-layout">
+    {% if team.leader_id == current_user.id or is_member %}
 
-            <!-- LEFT: TASK DETAILS -->
-            <div class="task-info-box">
+    <!-- TEAM DETAILS -->
 
-                <label>Title</label>
-                <input type="text" name="value" value="{{ task.title }}"
-                    hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change" hx-swap="innerHTML"
-                    hx-target="#save-status" hx-vals='{"field":"title"}'>
+    <div class="detail-box">
 
-                <label>Description</label>
-                <textarea name="value" hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change"
-                    hx-swap="innerHTML" hx-target="#save-status"
-                    hx-vals='{"field":"description"}'>{{ task.description }}</textarea>
+        <p><strong>Motto:</strong></p>
 
-                <label>Assignee</label>
-                <select name="value" hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change"
-                    hx-swap="innerHTML" hx-target="#save-status" hx-vals='{"field":"assigned_to"}'>
-                    {% for user in users %}
-                    <option value="{{ user.id }}" {% if task.assigned_to==user.id %}selected{% endif %}>
-                        {{ user.name }}
-                    </option>
-                    {% endfor %}
-                </select>
+        {% if team.leader_id == current_user.id %}
+            <input
+                name="value"
+                value="{{ team.motto or '' }}"
+                hx-post="{{ url_for('autosave_team', team_id=team.id) }}"
+                hx-trigger="change"
+                hx-vals='{"field":"motto"}'
+                hx-swap="none"
+            >
+        {% else %}
+            <p>{{ team.motto or "-" }}</p>
+        {% endif %}
 
-                <label>Priority</label>
-                <select name="value" hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change"
-                    hx-swap="innerHTML" hx-target="#save-status" hx-vals='{"field":"priority"}'>
-                    <option value="Low" {% if task.priority=="Low" %}selected{% endif %}>Low</option>
-                    <option value="Medium" {% if task.priority=="Medium" %}selected{% endif %}>Medium</option>
-                    <option value="High" {% if task.priority=="High" %}selected{% endif %}>High</option>
-                </select>
+        <p><strong>Roles Needed:</strong></p>
 
-                <label>Deadline</label>
-                <input type="date" name="value"
-                    value="{{ task.deadline.strftime('%Y-%m-%d') if task.deadline else '' }}"
-                    hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change" hx-swap="innerHTML"
-                    hx-target="#save-status" hx-vals='{"field":"deadline"}'>
+        {% if team.leader_id == current_user.id %}
+            <input
+                name="value"
+                value="{{ team.roles or '' }}"
+                hx-post="{{ url_for('autosave_team', team_id=team.id) }}"
+                hx-trigger="change"
+                hx-vals='{"field":"roles"}'
+                hx-swap="none"
+            >
+        {% else %}
+            <p>{{ team.roles or "-" }}</p>
+        {% endif %}
 
-                <label>Status</label>
-                <select name="value" hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change"
-                    hx-swap="innerHTML" hx-target="#save-status" hx-vals='{"field":"status"}'>
-                    <option value="Wishlist" {% if task.status=="Wishlist" %}selected{% endif %}>Wishlist</option>
-                    <option value="To Do" {% if task.status=="To Do" %}selected{% endif %}>To Do</option>
-                    <option value="In Progress" {% if task.status=="In Progress" %}selected{% endif %}>In Progress
-                    </option>
-                    <option value="In Review" {% if task.status=="In Review" %}selected{% endif %}>In Review</option>
-                    <option value="Complete" {% if task.status=="Complete" %}selected{% endif %}>Complete</option>
-                </select>
+        <p><strong>Project Idea:</strong></p>
 
-            </div>
+        {% if team.leader_id == current_user.id %}
+            <textarea
+                name="value"
+                hx-post="{{ url_for('autosave_team', team_id=team.id) }}"
+                hx-trigger="change"
+                hx-vals='{"field":"project_idea"}'
+                hx-swap="none"
+            >{{ team.project_idea or '' }}</textarea>
+        {% else %}
+            <p>{{ team.project_idea or "-" }}</p>
+        {% endif %}
 
-            <!-- RIGHT: SUBTASK + ACTIVITY -->
-            <div class="right-side">
+        <p><strong>Team Code:</strong> {{ team.team_code }}</p>
 
-                <!-- SUBTASKS -->
-                <section class="card">
-                    <h2>Subtask</h2>
+        <p>
+            <strong>Members:</strong>
 
-                    <form method="POST" action="{{ url_for('add_subtask', id=task.id) }}" class="subtask-form">
+            {{ team.members|length }} /
 
-                        <input type="text" name="title" placeholder="Subtask title" required>
+            {% if team.leader_id == current_user.id %}
+                <input
+                    class="member-limit-input"
+                    type="number"
+                    min="1"
+                    max="6"
+                    name="value"
+                    value="{{ team.max_members }}"
+                    hx-post="{{ url_for('autosave_team', team_id=team.id) }}"
+                    hx-trigger="change"
+                    hx-vals='{"field":"max_members"}'
+                    hx-swap="none"
+                >
+            {% else %}
+                {{ team.max_members }}
+            {% endif %}
+        </p>
 
-                        <select name="assigned_to">
-                            {% for user in users %}
-                            <option value="{{ user.id }}">{{ user.name }}</option>
-                            {% endfor %}
-                        </select>
-
-                        <select name="priority">
-                            <option value="Low">Low</option>
-                            <option value="Medium">Medium</option>
-                            <option value="High">High</option>
-                        </select>
-
-                        <input type="date" name="deadline">
-
-                        <button type="submit">Add</button>
-                    </form>
-
-                    <div class="subtask-list">
-                        {% for subtask in subtasks %}
-                        <div class="subtask-row 
-                                    {% if subtask.is_done %}completed{% endif %} 
-                                    {% if subtask.is_overdue %}overdue{% endif %}">
-                            <form method="POST" action="{{ url_for('toggle_subtask', id=subtask.id) }}">
-                                <button type="submit" class="checkbox-btn">
-                                    {% if subtask.is_done %}✓{% else %}☐{% endif %}
-                                </button>
-                            </form>
-
-                            <span>{{ subtask.title }}</span>
-                            <span>{{ subtask.assigned_user.name if subtask.assigned_user else "-" }}</span>
-                            <span>{{ subtask.priority }}</span>
-                            <span>{{ subtask.deadline.strftime('%d %b %Y') if subtask.deadline else "-" }}</span>
-                        </div>
-                        {% else %}
-                        <p class="empty">No subtasks found.</p>
-                        {% endfor %}
-                    </div>
-                </section>
-
-                <!-- ACTIVITY -->
-                <section class="card">
-                    <h2>Activity</h2>
-                    <div class="activity-list">
-                        {% for activity in task.activities %}
-                        <div class="activity-item">
-                            <strong>{{ activity.user.name }}</strong>
-                            {{ activity.action }}
-                            <br>
-                            <small>{{ activity.created_at.strftime('%d %b %Y, %I:%M %p') }}</small>
-                        </div>
-                        {% else %}
-                        <p class="empty">No activity yet.</p>
-                        {% endfor %}
-                    </div>
-                </section>
-
-            </div>
-        </div>
     </div>
-</body>
 
-</html>
+    <h2>Team Members</h2>
+
+    <div id="member-list">
+
+        {% for member in team.members %}
+
+        <div class="member-row">
+
+            <a href="{{ url_for('profile', user_id=member.user_id) }}">
+                {{ member.user.name or member.user.email }}
+            </a>
+
+            -
+            {{ member.roles or "Member" }}
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    <!-- TASK BUTTON ONLY FOR MEMBER/LEADER -->
+
+    <form method="POST" action="{{ url_for('tasks', team_id=team.id) }}">
+        <button type="submit">Tasks</button>
+    </form>
+
+    {% endif %}
+
+    <!-- PROJECT BUTTON FOR EVERYONE -->
+
+    <form method="GET" action="{{ url_for('project_page', team_id=team.id) }}">
+        <button type="submit">Project</button>
+    </form>
+
+    <!-- LEADER ONLY ACTIONS -->
+
+    {% if team.leader_id == current_user.id %}
+
+    <div class="team-actions">
+
+        <form method="POST" action="{{ url_for('delete_team', team_id=team.id) }}">
+            <button class="danger" type="submit">
+                Delete Team
+            </button>
+        </form>
+
+    </div>
+
+    {% endif %}
+
+    <a class="back-link" href="{{ url_for('teams') }}">
+        Back to Teams
+    </a>
+
+</div>
+
+{% endblock %}

@@ -29,7 +29,8 @@
                     <div>{{ form.status.label() }}{{ form.status() }}</div>
 
                     <div>{{ form.submit(class="create-btn") }}</div>
-                </form>
+                </form><br>
+                <a href="{{ url_for('team_detail', team_id=team.id) }}" class="button">← Back to Team</a>
             </div>
 
             <!-- Task Main Section -->
@@ -71,18 +72,13 @@
                 <!-- Task Scroll Area -->
                 <div class="task-scroll-area">
                     <div class="task-card-list" id="task-list-container">
-                        {% include "partials/task_list.html" %}
+                        <!-- Task list starts here -->
+                        {% for task in tasks %}
+                        {% set is_overdue = (not task.is_done) and (task.status in ['To Do', 'In Progress']) and task.deadline and task.deadline < datetime.datetime.now() %}
 
-                        <!-- {% for task in tasks %}
-                        {% set is_overdue = (not task.is_done)
-                        and (task.status in ['To Do', 'In Progress'])
-                        and task.deadline
-                        and task.deadline < datetime.datetime.now() %}
-
-                        <div class="task-card {% if is_overdue %}overdue-card{% endif %}"> -->
-
+                        <div class="task-card {% if is_overdue %}overdue-card{% endif %}">
                             <!-- Clickable Task Card -->
-                            <!-- <a class="task-card-link" href="{{ url_for('task_details', id=task.id) }}">
+                            <a class="task-card-link" href="{{ url_for('task_details', team_id=task.team_id, id=task.id) }}">
                                 <h3>{{ task.title }}</h3>
 
                                 <p>
@@ -123,13 +119,12 @@
                                         {{ task.status }}
                                     </span>
                                 </p>
-                            </a> -->
+                            </a>
 
                             <!-- Task Actions -->
-                            <!-- <div class="task-actions"> -->
-
+                            <div class="task-actions">
                                 <!-- Toggle Done -->
-                                <!-- <form method="POST" action="{{ url_for('toggle_task', id=task.id) }}">
+                                <form method="POST" action="{{ url_for('toggle_task', team_id=task.team_id, id=task.id) }}">
                                     <button type="submit">
                                         {% if task.is_done %}
                                             Undo
@@ -137,22 +132,21 @@
                                             Done
                                         {% endif %}
                                     </button>
-                                </form> -->
+                                </form>
 
                                 <!-- Delete Task -->
-                                <!-- <form method="POST" action="{{ url_for('delete_task', id=task.id) }}">
+                                <form method="POST" action="{{ url_for('delete_task', team_id=task.team_id, id=task.id) }}">
                                     <button type="submit" onclick="return confirm('Delete this task?')">
                                         Delete
                                     </button>
                                 </form>
-
                             </div>
                         </div>
 
                         {% else %}
                             <p class="empty">No tasks found.</p>
-                        {% endfor %} -->
-
+                        {% endfor %}
+                        <!-- Task list ends here -->
                     </div>
                 </div>
 

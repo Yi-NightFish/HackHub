@@ -311,7 +311,7 @@ def verify_update_email():
     return render_template("otp_veri.html", email = new_email)
 
 # wy - task management system ----------------------------------------------------------------------------
-@app.route ("/tasks/<int:team_id>", methods = ["GET", "POST"])
+@app.route ("/team/<int:team_id>/tasks", methods = ["GET", "POST"])
 @login_required
 def tasks(team_id):
     team = db.session.get(Team, team_id)   
@@ -420,9 +420,9 @@ def autosave_task(id):
     db.session.commit()
     return "Saved"
 
-@app.route("/task/<int:id>/details", methods = ["GET", "POST"])
+@app.route("/team/<int:team_id>/task/<int:id>/details", methods = ["GET", "POST"])
 @login_required
-def task_details(id):
+def task_details(team_id, id):
     task = db.session.get(Task, id)
     if not task:
         return "Task not found"
@@ -451,11 +451,12 @@ def task_details(id):
     return render_template("task_details.html", 
                            task = task,
                            users = team_members,
-                           subtasks = subtasks)
+                           subtasks = subtasks, 
+                           team_id = team_id)
 
-@app.route("/task/<int:id>/add_subtask", methods = ["POST"])
+@app.route("/team/<int:team_id>/task/<int:id>/add_subtask", methods = ["POST"])
 @login_required
-def add_subtask(id):
+def add_subtask(team_id, id):
     title = request.form.get("title")
     assigned_to = request.form.get("assigned_to")
     status = request.form.get("status")
@@ -469,11 +470,11 @@ def add_subtask(id):
                           if deadline else None, task_id = id)
     db.session.add(new_subtask)
     db.session.commit()
-    return redirect(url_for("task_details", id = id))
+    return redirect(url_for("task_details", team_id = team_id, id = id))
 
-@app.route("/subtask/<int:sub_id>/edit", methods = ["POST"])
+@app.route("/team/<int:team_id>/subtask/<int:sub_id>/edit", methods = ["POST"])
 @login_required
-def edit_subtask(sub_id):
+def edit_subtask(team_id, sub_id):
     sub = db.session.get(Subtask, sub_id)
     if not sub:
         return "Subtask not found"
@@ -487,15 +488,15 @@ def edit_subtask(sub_id):
         except:
             return "Invalid date format"
     db.session.commit()
-    return redirect(url_for("task_details", id = sub.task_id))
+    return redirect(url_for("task_details", team_id = team_id, id = sub.task_id))
 
-@app.route("/subtask/<int:id>/toggle", methods=["POST"])
+@app.route("/team/<int:team_id>/subtask/<int:sub_id>/toggle", methods=["POST"])
 @login_required
-def toggle_subtask(id):
-    subtask = Subtask.query.get(id)
+def toggle_subtask(team_id, sub_id):
+    subtask = Subtask.query.get(sub_id)
     subtask.is_done = not subtask.is_done
     db.session.commit()
-    return redirect(url_for("task_details", id = subtask.task_id))
+    return redirect(url_for("task_details", team_id = team_id, id = subtask.task_id))
 # --------------------------------------------------------------------------------------------------------
 # wy - team formation system -----------------------------------------------------------------------------
 @app.route("/teams")
@@ -873,3 +874,61 @@ def delete_message(message_id):
     db.session.commit()
 
     return redirect(request.referrer)
+# wy - project page -----------------------------------------------------------------------------------
+@app.route("/team/<int:team_id>/project")
+@login_required
+def project_page(team_id):
+    team = db.session.get(Team, team_id)
+    if not team:
+        return "Team not found"
+    event = db.session.get(Event, team.event_id)
+    current_user = db.session.get(User, session["user_id"])
+    is_member = Participation.query.filter_by(team_id = team.id,
+                                           user_id = session["user_id"]).first() is not None
+    can_edit = is_member
+    project = Project.query.filter_by(team_id = team.id).first()
+    if not project:
+        project = Project(team_id = team.id, title = f"{team.name} Project")
+        db.session.add(project)
+        db.session.commit()
+    return render_template("project_page.html",
+                           team = team,
+                           project = project,
+                           current_user = current_user, 
+                           can_edit = can_edit,
+                           event = event)
+    
+@app.route("/team/<int:team_id>/project/autosave", methods = ["POST"])
+@login_required
+def autosave_project(team_id):
+    team = db.session.get(Team, team_id)
+    if not team:
+        return "Team not found"
+    is_member = Participation.query.filter_by(team_id = team.id, user_id = session["user_id"]).first()
+    if not is_member:
+        return "Unauthorized"
+    project = Project.query.filter_by(team_id = team.id).first()
+    if not project:
+        project = Project(team_id = team.id, title = f"{team.name} Project")
+        db.session.add(project)
+        db.session.commit()
+    field = request.form.get("field")
+    value = request.form.get("value")
+    if field == "title":
+        project.title = value
+    elif field == "description":
+        project.description = value
+    elif field == "tech_stack":
+        project.tech_stack = value
+    elif field == "demo_link":
+        project.demo_link = value
+    elif field == "github_link":
+        project.github_link = value
+    elif field == "screenshots_link":
+        project.screenshots_link = value
+    elif field == "contributions":
+        project.contributions = value
+    else:
+        return "Invalid field"
+    db.session.commit()
+    return "Saved"

@@ -223,3 +223,13 @@ button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
+/* 
+.team-nav-buttons {
+    display: block;
+    text-align: center;
+    margin-top: 14px;
+    font-size: 15px;
+    font-weight: bold;
+    color: black;
+    text-decoration: none;
+} */
