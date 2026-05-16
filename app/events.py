@@ -4,7 +4,9 @@ from flask import render_template, session, request, redirect, url_for
 from sqlalchemy import select
 from functools import reduce
 from app.routes import login_required
+from app.forms import EventForm
 import datetime as dt
+from app.forms import EventForm
 
 # Helper function
 def get_user_by_id(user_id):
@@ -87,6 +89,49 @@ def explore():
                         history = session.get("search_history", [])
     )
 
+@app.route("/event/create", methods=["GET", "POST"])
+@login_required
+def create_event():
+    form = EventForm()
+    current_user = get_current_user()
+    
+    if request.method == "POST":
+        if form.validate_on_submit():
+            # Validate that end_time is after start_time
+            if form.end_time.data <= form.start_time.data:
+                form.end_time.errors = ["End time must be after start time"]
+                return render_template("create_event.html", form=form, current_user=current_user)
+            
+            # Validate that deadline is before start_time
+            if form.deadline.data >= form.start_time.data:
+                form.deadline.errors = ["Deadline must be before start time"]
+                return render_template("create_event.html", form=form, current_user=current_user)
+            
+            new_event = Event(
+                title=form.title.data,
+                description=form.description.data,
+                organizer_id=session["user_id"],
+                start_time=form.start_time.data,
+                end_time=form.end_time.data,
+                deadline=form.deadline.data,
+                cancelled=False
+            )
+            db.session.add(new_event)
+            db.session.commit()
+            
+            # Add the organizer as a participant
+            participation = Participation(
+                user_id=session["user_id"],
+                event_id=new_event.id,
+                team_id=None
+            )
+            db.session.add(participation)
+            db.session.commit()
+            
+            return redirect(url_for("event_detail", event_id=new_event.id))
+    
+    return render_template("create_event.html", form=form, current_user=current_user)
+
 @app.route("/event/<event_id>", methods = ["GET", "POST"])
 def event_detail(event_id):
     if request.method == "GET":
@@ -99,14 +144,20 @@ def event_detail(event_id):
 
         participants = get_participants()
         teams = [team for team in event.teams if Participation.query.filter_by(team_id = team.id).count() < team.max_members] if event else []
+        enrolled = False
+        if current_user:
+            enrolled = current_user in participants
+        in_team = False
+        if current_user:
+            participation = Participation.query.filter_by(event_id = event_id, user_id = current_user.id).first()
+            if participation:
+                in_team = participation.team_id is not None
         
-        # Get soloists (participants without a team)
-        soloists = [p.user for p in Participation.query.filter_by(event_id=event_id, team_id=None).all()] if event else []
+        def require_login():
+            if not current_user:
+                return redirect(url_for("login", next = request.url))
 
         if active_tab == "overview":
-            enrolled = False
-            if current_user:
-                enrolled = current_user in participants
             no_participant = len(event.participants)
             return render_template(
                 "event_detail.html", 
@@ -117,8 +168,7 @@ def event_detail(event_id):
                 enrolled = enrolled
             )
         elif active_tab == "participants":
-            if not current_user:
-                return redirect(url_for("login", next = request.url))
+            require_login()
             return render_template(
                 "event_detail.html", 
                 event = event, 
@@ -127,14 +177,20 @@ def event_detail(event_id):
                 participants = participants
             )
         elif active_tab == "teams":
+            require_login()
             return render_template(
                 "event_detail.html",
                 event = event,
                 current_user = current_user,
                 active_tab = active_tab,
-                teams = teams
+                teams = teams,
+                enrolled = enrolled,
+                in_team = in_team
             )
         elif active_tab == "solo":
+            require_login()
+            # Get soloists (participants without a team)
+            soloists = [p.user for p in Participation.query.filter_by(event_id=event_id, team_id=None).filter(Participation.user_id != current_user.id).all()] if event else []
             leader_team = None
             leader_team_member_count = 0
             leader_team_full = False
@@ -206,3 +262,49 @@ def unroll(event_id):
     db.session.delete(participation)
     db.session.commit()
     return redirect(url_for("event_detail", event_id = event_id))
+
+@app.route("/event/<event_id>/edit", methods=["GET", "POST"])
+@login_required
+def edit_event(event_id):
+    event = db.session.get(Event, event_id)
+    current_user = get_current_user()
+    
+    if not event:
+        return "Event not found", 404
+    
+    # Check if current user is the organizer
+    if event.organizer_id != session["user_id"]:
+        return "Unauthorized: Only the event organizer can edit this event", 403
+    
+    form = EventForm()
+    
+    if request.method == "GET":
+        # Populate form with existing event data
+        form.title.data = event.title
+        form.description.data = event.description
+        form.start_time.data = event.start_time
+        form.end_time.data = event.end_time
+        form.deadline.data = event.deadline
+    
+    if form.validate_on_submit():
+        # Validate that end_time is after start_time
+        if form.end_time.data <= form.start_time.data:
+            form.end_time.errors = ["End time must be after start time"]
+            return render_template("edit_event.html", form=form, event=event, current_user=current_user)
+        
+        # Validate that deadline is before start_time
+        if form.deadline.data >= form.start_time.data:
+            form.deadline.errors = ["Deadline must be before start time"]
+            return render_template("edit_event.html", form=form, event=event, current_user=current_user)
+        
+        # Update event details
+        event.title = form.title.data
+        event.description = form.description.data
+        event.start_time = form.start_time.data
+        event.end_time = form.end_time.data
+        event.deadline = form.deadline.data
+        
+        db.session.commit()
+        return redirect(url_for("event_detail", event_id=event.id))
+    
+    return render_template("edit_event.html", form=form, event=event, current_user=current_user)

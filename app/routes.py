@@ -3,7 +3,7 @@ import random
 import string
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime as dt
-from flask_mail import Message
+from flask_mail import Message as MailMessage
 import functools
 import qrcode
 import io
@@ -80,6 +80,50 @@ def generate_team_code():
         existing_team = Team.query.filter_by(team_code=code).first()
         if not existing_team:
             return code
+        
+def create_team_for(events = None):
+    current_user = db.session.get(User, session["user_id"])
+    # events = Event.query.all()
+    # Soon Hong: Changed to create teams for joined events
+    events = [participation.event for participation in Participation.query.filter_by(user_id = session["user_id"]).all()] if events is None else events
+    if request.method == "POST":
+        name = request.form.get("name")
+        roles = request.form.get("roles")
+        motto = request.form.get("motto")
+        project_idea = request.form.get("project_idea")
+        event_id = request.form.get("event_id")
+        max_members = int(request.form.get("max_members"))
+        if max_members < 1 or max_members > 6:
+            return "Team size must be between 1 and 6"
+        new_team = Team(
+            name = name,
+            roles = roles,
+            motto = motto,
+            project_idea = project_idea,
+            event_id = event_id,
+            leader_id = session["user_id"],
+            team_code = generate_team_code(),
+            max_members = max_members
+        )
+        db.session.add(new_team)
+        db.session.commit()
+        # leader = TeamMember(
+        #     team_id = new_team.id,
+        #     user_id = session["user_id"],
+        #     roles = "Leader"
+        # )
+        # db.session.add(leader)
+        # db.session.commit()
+        participation = Participation.query.filter_by(
+            user_id = session["user_id"],
+            event_id = event_id
+        ).first()
+        participation.team_id = new_team.id
+        participation.roles = "Leader"
+        db.session.add(participation)
+        db.session.commit()
+        return redirect(url_for("team_detail", team_id = new_team.id))
+    return render_template("create_team.html", events = events, current_user = current_user)
 
 # Main routes
 @app.route("/")
@@ -138,6 +182,12 @@ def login():
 
 @app.route("/logout")
 def logout():
+    user_id = session.get("user_id")
+    if user_id:
+        user = db.session.get(User, user_id)
+        if user:
+            user.last_seen = dt.datetime.now(dt.UTC).replace(tzinfo=None) - dt.timedelta(minutes=2)  # Set last seen to 2 minutes ago to mark as offline
+            db.session.commit()
     session.clear()
     return redirect(url_for("home"))
 
@@ -147,7 +197,8 @@ def dashboard():
     if "user_id" not in session:
         return redirect("/login")
     user = db.session.get(User, session["user_id"])
-    return f"Welcome {user.email} ---> ID: {user.id}"
+    # return f"Welcome {user.email} ---> ID: {user.id}"
+    return redirect("/")
 
 @app.route("/forget", methods=["GET", "POST"])
 def forget():
@@ -230,7 +281,7 @@ def profile(user_id):
     # team_member_subquery = select(TeamMember.team_id).where(TeamMember.user_id == user_id).subquery()
     # is_team_members_of = db.session.query(Team.event_id).join(team_member_subquery, Team.id == team_member_subquery.c.team_id).subquery()
     # events = db.session.execute(db.session.query(Event).join(is_team_members_of, is_team_members_of.c.event_id == Event.id)).scalars().all()
-    events = map(lambda team_membership: team_membership.event, user.team_memberships)
+    events = list(map(lambda team_membership: team_membership.event, user.team_memberships))
     return render_template("profile.html", 
                            form = profile_page, 
                            user = user, 
@@ -476,49 +527,7 @@ def teams():
 @app.route("/team/create", methods = ["GET", "POST"])
 @login_required
 def create_team():
-    current_user = db.session.get(User, session["user_id"])
-    current_user_id = session["user_id"]
-    # events = Event.query.all()
-    # Soon Hong: Changed to create teams for joined events
-    events = [participation.event for participation in Participation.query.filter_by(user_id = session["user_id"]).all()]
-    if request.method == "POST":
-        name = request.form.get("name") 
-        roles = request.form.get("roles")
-        motto = request.form.get("motto")
-        project_idea = request.form.get("project_idea")
-        event_id = request.form.get("event_id")
-        max_members = int(request.form.get("max_members"))
-        if max_members < 1 or max_members > 6:
-            return "Team size must be between 1 and 6"
-        new_team = Team(
-            name = name,
-            roles = roles,
-            motto = motto,
-            project_idea = project_idea,
-            event_id = event_id,
-            leader_id = current_user_id,
-            team_code = generate_team_code(),
-            max_members = max_members
-        )
-        db.session.add(new_team)
-        db.session.commit()
-        # leader = TeamMember(
-        #     team_id = new_team.id,
-        #     user_id = session["user_id"],
-        #     roles = "Leader"
-        # )
-        # db.session.add(leader)
-        # db.session.commit()
-        participation = Participation.query.filter_by(
-            user_id = session["user_id"],
-            event_id = event_id
-        ).first()
-        participation.team_id = new_team.id
-        participation.roles = "Leader"
-        db.session.add(participation)
-        db.session.commit()
-        return redirect(url_for("team_detail", team_id = new_team.id))
-    return render_template("create_team.html", events = events, current_user = current_user)
+    return create_team_for()
 
 @app.route("/team/<int:team_id>/request", methods = ["POST"])
 @login_required
@@ -567,7 +576,8 @@ def team_detail(team_id):
     current_user = db.session.get(User, session["user_id"])
     is_member = Participation.query.filter_by(team_id = team.id,
                                            user_id = session["user_id"]).first() is not None
-    member_of_other_team = Participation.query.filter_by(user_id = session["user_id"]).first().team_id is not None
+    participation = Participation.query.filter_by(user_id = session["user_id"]).first()
+    member_of_other_team = False if not participation else participation.team_id is not None
     pending_requests = []
     if team.leader_id == session["user_id"]:
         pending_requests = TeamJoinRequest.query.filter_by(team_id = team.id, status = "Pending").all()
@@ -748,4 +758,118 @@ def autosave_team(team_id):
         return "Invalid field"
     db.session.commit()
     return "Saved"
+
+@app.route("/team/create/<int:event_id>", methods = ["GET", "POST"])
+@login_required
+def create_team_for_event(event_id):
+    return create_team_for(events= [db.session.get(Event, event_id)])
+
 #------------------------------------------------------------------------------------------------------
+# nx - chat system
+@app.route("/chat_home")
+@login_required
+def chat_home():
+    current_user_id = session.get("user_id")
+    users = User.query.filter(User.id != current_user_id).all()
+
+    return render_template(
+        "chat_home.html",
+        users=users
+    )
+
+@app.route("/chat/<int:user_id>")
+@login_required
+def chat(user_id):
+    current_user_id = session.get("user_id")
+    current_user = db.session.get(User, current_user_id)
+    other_user = db.session.get(User, user_id)
+    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == user_id) & (Message.deleted_by_sender == False)) | 
+                                    ((Message.sender_id == user_id) & (Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False))
+    ).order_by(Message.timestamp.asc()).all()
+
+    return render_template("chat.html",messages = messages, other_user = other_user, current_user_id=current_user_id, current_user = current_user)
+
+# @app.route("/chat")
+# @login_required
+# def chat():
+#     # get user_id
+#     user_id = session.get("user_id")
+#     current_user = db.session.get(User, user_id)
+#     receiver_id = 2 if user_id == 1 else 1
+#     other_user = db.session.get(User, receiver_id)
+#     # search msg i send or receive and not deleted with 时间顺序
+#     messages = Message.query.filter(((Message.sender_id == user_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
+#     return render_template("chat.html", messages = messages, current_user_id = user_id, current_user = current_user, other_user = other_user)
+    
+@app.route("/send_message", methods=["POST"])
+@login_required
+def send_message():
+    # get msg and sender_id
+    content = request.form["message"]
+    sender_id = session.get("user_id")
+    receiver_id = request.form["user_id"]
+    other_user = db.session.get(User, receiver_id)
+    # receiver_id = 2 if sender_id == 1 else 1  #user1/2互发消息
+    new_message = Message(message = content, sender_id = sender_id, receiver_id = receiver_id) #timestamp会自动生成/存数据库
+    db.session.add(new_message)
+    db.session.commit()
+    # return redirect(url_for("chat", user_id=sender_id)) #发完消息回聊天界面，user_id不变
+    # messages = Message.query.filter(((Message.sender_id == sender_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == sender_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
+    messages = Message.query.filter(((Message.sender_id == sender_id) & (Message.receiver_id == receiver_id) & (Message.deleted_by_sender == False)) | ((Message.sender_id == receiver_id) & (Message.receiver_id == sender_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
+    return render_template("message.html", messages = messages, current_user_id = sender_id, other_user = other_user) #只返回新消息，前端htmx负责更新页面
+    
+@app.route("/clear/<int:user_id>")
+@login_required
+def clear_messages(user_id):
+    current_user_id = session.get("user_id")
+    # find all my msg and 标记为deleted for sender/receiver depend on my身份，真正删除在数据库里保留但不展示(soft delete)
+    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == user_id)) | ((Message.sender_id == user_id) & (Message.receiver_id == current_user_id))).all()
+    for message in messages:
+        if message.sender_id == current_user_id:
+            message.deleted_by_sender = True
+        if message.receiver_id == current_user_id:
+            message.deleted_by_receiver = True
+        if message.deleted_by_sender and message.deleted_by_receiver:
+            db.session.delete(message) #双方都删除了才真正从数据库删除
+    db.session.commit()
+    return redirect(url_for("chat", user_id=user_id))
+    
+@app.route("/message")
+@login_required
+def get_message():
+    current_user_id = session.get("user_id")
+    other_user_id = request.args.get("user_id")
+    user = db.session.get(User, current_user_id)
+    if user:
+        user.last_seen = dt.datetime.now(dt.UTC).replace(tzinfo=None)
+    # find unread msg
+    unread_messages = Message.query.filter_by(receiver_id = current_user_id, sender_id = other_user_id, is_read = False).all()
+    for message in unread_messages:
+        # seen
+        message.is_read = True
+    db.session.commit()
+    # receiver_id = 2 if current_user_id == 1 else 1
+    other_user = db.session.get(User, other_user_id)
+    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == other_user_id) & (Message.deleted_by_sender == False)) | ((Message.sender_id == other_user_id) & (Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
+    return render_template("message.html", messages = messages, current_user_id = current_user_id, other_user = other_user)
+
+@app.route("/delete_message/<int:message_id>")
+@login_required
+def delete_message(message_id):
+
+    current_user_id = session.get("user_id")
+    message = db.session.get(Message, message_id)
+
+    if not message:
+        return redirect(request.referrer)
+
+    if message.sender_id == current_user_id:
+        message.deleted_by_sender = True
+    if message.receiver_id == current_user_id:
+        message.deleted_by_receiver = True
+    if message.deleted_by_sender and message.deleted_by_receiver:
+        db.session.delete(message)
+
+    db.session.commit()
+
+    return redirect(request.referrer)

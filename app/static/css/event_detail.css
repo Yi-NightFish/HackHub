@@ -101,6 +101,18 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.create-team-btn{
+    grid-column: 1 / -1;
+}
+
+.create-team-btn a, .create-team-btn a:visited{
+    padding: 10px 16px;
+    border-radius: 999px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: 1px solid transparent;
+}
+
 .team-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 24px rgba(50, 71, 95, 0.12);
