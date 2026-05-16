@@ -1,4 +1,4 @@
-from flask import render_template, request, url_for, redirect, session, make_response
+from flask import render_template, request, url_for, redirect, session, make_response, current_app
 import random
 import string
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,6 +8,9 @@ import functools
 import qrcode
 import io
 import base64
+import os
+import json
+from werkzeug.utils import secure_filename
 
 from app import app, db, mail
 from app.models import *
@@ -124,6 +127,9 @@ def create_team_for(events = None):
         db.session.commit()
         return redirect(url_for("team_detail", team_id = new_team.id))
     return render_template("create_team.html", events = events, current_user = current_user)
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in current_app.config["ALLOWED_EXTENSIONS"]
 
 # Main routes
 @app.route("/")
@@ -891,13 +897,20 @@ def project_page(team_id):
         project = Project(team_id = team.id, title = f"{team.name} Project")
         db.session.add(project)
         db.session.commit()
+    screenshots = []
+    if project.screenshots_link:
+        try:
+            screenshots = json.loads(project.screenshots_link)
+        except:
+            screenshots = []
     return render_template("project_page.html",
                            team = team,
                            project = project,
                            current_user = current_user, 
                            can_edit = can_edit,
-                           event = event)
-    
+                           event = event,
+                           screenshots = screenshots)
+
 @app.route("/team/<int:team_id>/project/autosave", methods = ["POST"])
 @login_required
 def autosave_project(team_id):
@@ -932,3 +945,69 @@ def autosave_project(team_id):
         return "Invalid field"
     db.session.commit()
     return "Saved"
+
+@app.route("/team/<int:team_id>/project/upload_screenshot", methods = ["POST"])
+@login_required
+def upload_screenshot(team_id):
+    team = db.session.get(Team, team_id)
+    if not team:
+        return "Team not found"
+    is_member = Participation.query.filter_by(team_id = team.id, user_id = session["user_id"]).first()
+    if not is_member:
+        return "Unauthorized"
+    if "screenshot" not in request.files:
+        return "No file uploaded"
+    file = request.files["screenshot"]
+    if file.filename == "":
+        return "No file selected"
+    allowed_extensions = {"png", "jpg", "jpeg", "webp", "gif"}
+    file_ext = file.filename.rsplit(".", 1)[1].lower() if "." in file.filename else ""
+    if file_ext not in allowed_extensions:
+        return "Invalid file type. Allowed: png, jpg, jpeg, webp, gif"
+    timestamp = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = secure_filename(f"team_{team_id}_{timestamp}_{file.filename}") #create unique filename 
+    upload_folder = os.path.join("app", "static", "uploads", "projects")
+    os.makedirs(upload_folder, exist_ok = True)
+    filepath = os.path.join(upload_folder, filename)
+    file.save(filepath)
+    project = Project.query.filter_by(team_id = team.id).first()
+    if not project:
+        project = Project(team_id = team.id, title = f"{team.name} Project")
+        db.session.add(project)
+    screenshot_url = f"/static/uploads/projects/{filename}"
+    if project.screenshots_link:
+        try:
+            screenshots = json.loads(project.screenshots_link)
+        except:
+            screenshots = []
+    else:
+        screenshots = []
+    screenshots.append(screenshot_url)
+    project.screenshots_link = json.dumps(screenshots)
+    db.session.commit()
+    return redirect(url_for('project_page', team_id = team.id))
+
+@app.route("/team/<int:team_id>/project/delete_screenshot/<int:screenshot_index>", methods = ["POST"])
+@login_required
+def delete_screenshot(team_id, screenshot_index):
+    team = db.session.get(Team, team_id)
+    if not team:
+        return "Team not found"
+    is_member = Participation.query.filter_by(team_id = team.id, user_id = session["user_id"]).first()
+    if not is_member:
+        return "Unauthorized"
+    project = Project.query.filter_by(team_id = team.id).first()
+    if not project or not project.screenshots_link:
+        return redirect(url_for('project_page', team_id = team.id))
+    try:
+        screenshots = json.loads(project.screenshots_link)
+    except:
+        screenshots = []
+    if 0 <= screenshot_index < len(screenshots):
+        file_path = os.path.join('app', screenshots[screenshot_index].lstrip('/'))
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        screenshots.pop(screenshot_index)
+        project.screenshots_link = json.dumps(screenshots) if screenshots else None
+        db.session.commit()
+    return redirect(url_for('project_page', team_id = team.id))

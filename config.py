@@ -9,4 +9,6 @@ class Config:
     MAIL_SERVER = "smtp.gmail.com"
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-    
+    ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
+    UPLOAD_FOLDER = "app/static/uploads/projects"
+    os.makedirs(UPLOAD_FOLDER, exist_ok = True)
