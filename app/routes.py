@@ -790,8 +790,8 @@ def chat(user_id):
     # add visibility filter: only show messages after the time when I choose to see this chat (handle the case where I clear chat but not delete, then new msg comes in, I should be able to see the new msg but not the old msg before clear)
     visibility = ChatVisibility.query.filter_by(user_id = current_user_id, other_user_id = user_id).first()
     visible_time = visibility.visible_since if visibility else dt.datetime.min
-    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == user_id) & (Message.deleted_by_sender == False)) | 
-                                    ((Message.sender_id == user_id) & (Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False)) & (Message.timestamp >= visible_time)
+    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == user_id)) | 
+                                    ((Message.sender_id == user_id) & (Message.receiver_id == current_user_id)) & (Message.timestamp >= visible_time)
     ).order_by(Message.timestamp.asc()).all()
 
     return render_template("chat.html",messages = messages, other_user = other_user, current_user_id=current_user_id, current_user = current_user)
@@ -866,7 +866,7 @@ def get_message():
     visibility = ChatVisibility.query.filter_by(user_id = current_user_id, other_user_id = other_user_id).first()
     visible_time = visibility.visible_since if visibility else dt.datetime.min
     # receiver_id = 2 if current_user_id == 1 else 1
-    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == other_user_id) & (Message.deleted_by_sender == False)) | ((Message.sender_id == other_user_id) & (Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False)) & (Message.timestamp >= visible_time)).order_by(Message.timestamp.asc()).all()
+    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == other_user_id)) | ((Message.sender_id == other_user_id) & (Message.receiver_id == current_user_id)) & (Message.timestamp >= visible_time)).order_by(Message.timestamp.asc()).all()
     return render_template("message.html", messages = messages, current_user_id = current_user_id, other_user = other_user)
 
 @app.route("/delete_message/<int:message_id>")
@@ -897,7 +897,7 @@ def delete_message(message_id):
         other_user = db.session.get(User, other_user_id)
         visibility = ChatVisibility.query.filter_by(user_id = current_user_id, other_user_id = other_user_id).first()
         visible_time = visibility.visible_since if visibility else dt.datetime.min
-        messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == other_user_id) & (Message.is_deleted == False)) | ((Message.sender_id == other_user_id) & (Message.receiver_id == current_user_id) & (Message.is_deleted == False)) & (Message.timestamp >= visible_time)).order_by(Message.timestamp.asc()).all()
+        messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == other_user_id)) | ((Message.sender_id == other_user_id) & (Message.receiver_id == current_user_id)) & (Message.timestamp >= visible_time)).order_by(Message.timestamp.asc()).all()
         return render_template("message.html", messages = messages, current_user_id = current_user_id, other_user = other_user)
 
     return redirect(request.referrer)

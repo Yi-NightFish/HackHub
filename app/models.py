@@ -167,8 +167,8 @@ class Message(db.Model):
     message = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
     is_read = db.Column(db.Boolean, default=False)
-    deleted_by_sender = db.Column(db.Boolean, default=False)
-    deleted_by_receiver = db.Column(db.Boolean, default=False)
+    # deleted_by_sender = db.Column(db.Boolean, default=False)
+    # deleted_by_receiver = db.Column(db.Boolean, default=False)
     is_deleted = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
