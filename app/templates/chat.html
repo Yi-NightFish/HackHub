@@ -21,7 +21,7 @@
         <div><strong>User: {{ current_user.name if current_user else "User" ~ current_user_id }}</strong></div>
     </div>
     <div style="font-size: 0.9em;">
-        <a href="/chat_home">Chat Home</a> | 
+        <a href="/chat">Chat</a> | 
         <a href = "/clear/{{ other_user.id }}"> Clear Chat </a> |
     </div>
 <!-- // hx-get=requst for/message route to get msg list, hx-trigger=load and every 3s, hx-target=renew chatbox, hx-swap=change content, hx-on::after-request=scrollToBottom() to scroll to bottom after update -->
