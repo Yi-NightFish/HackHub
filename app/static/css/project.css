@@ -1,0 +1,319 @@
+body {
+    background: #f5f6fb;
+    font-family: Arial, sans-serif;
+    color: #222;
+}
+
+.project-container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 24px;
+}
+
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 22px;
+    border-radius: 16px;
+    margin-bottom: 22px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.project-title {
+    font-size: 34px;
+    margin: 0;
+}
+
+.project-title-input {
+    font-size: 34px;
+    font-weight: bold;
+    border: none;
+    outline: none;
+    width: 100%;
+    background: transparent;
+}
+
+.project-subtitle {
+    color: #666;
+    margin-bottom: 0;
+}
+
+.project-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 22px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.card h2 {
+    margin-top: 0;
+    font-size: 20px;
+}
+
+.inline-input,
+.inline-textarea {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.inline-textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.inline-textarea.small {
+    min-height: 70px;
+}
+
+.hint {
+    color: #777;
+    font-size: 13px;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    background: #eee9ff;
+    color: #4b2bb3;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.gallery img {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+}
+
+.contribution-box {
+    white-space: pre-wrap;
+    background: #f7f7f7;
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.link-btn,
+.edit-btn {
+    display: block;
+    background: #4b2bb3;
+    color: white;
+    text-decoration: none;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.member {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #4b2bb3;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+.name {
+    margin: 0;
+    font-weight: bold;
+}
+
+.role {
+    margin: 2px 0 0;
+    color: #777;
+    font-size: 13px;
+}
+
+@media (max-width: 850px) {
+    .project-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .project-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
+.upload-form {
+    margin-bottom: 20px;
+}
+
+.upload-area {
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    background: #f9f9f9;
+}
+
+.upload-area input[type="file"] {
+    display: inline-block;
+    margin: 10px;
+}
+
+.upload-label {
+    display: inline-block;
+    background: #2196F3;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.upload-label:hover {
+    background: #1976D2;
+}
+
+.upload-btn {
+    background: #4CAF50;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.upload-btn:hover {
+    background: #45a049;
+}
+
+.upload-area small {
+    display: block;
+    color: #666;
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+.screenshot-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.screenshot-item {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background: #f5f5f5;
+}
+
+.screenshot-item img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+}
+
+.delete-form {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.delete-screenshot {
+    background: rgba(255,0,0,0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-screenshot:hover {
+    background: red;
+}
+
+.no-screenshots {
+    text-align: center;
+    color: #999;
+    padding: 20px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.95);
+}
+
+.modal:target {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+.modal .close {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+.modal .close:hover {
+    color: #bbb;
+}

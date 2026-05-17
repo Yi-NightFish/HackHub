@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block css %}
+<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/project.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="project-container">
+
+    <div class="project-header">
+        <div>
+            {% if can_edit %}
+            <input class="project-title-input" name="value" value="{{ project.title }}"
+                hx-post="{{ url_for('autosave_project', team_id=team.id) }}" hx-trigger="change"
+                hx-vals='{"field":"title"}' hx-swap="none">
+            {% else %}
+            <h1 class="project-title">{{ project.title }}</h1>
+            {% endif %}
+
+            <p class="project-subtitle">
+                Team: <strong>{{ team.name }}</strong>
+            </p>
+        </div>
+
+        <a href="{{ url_for('team_detail', team_id=team.id) }}" class="edit-btn">
+            Back to Team
+        </a>
+    </div>
+
+    <div class="project-grid">
+
+        <div class="project-main">
+
+            <section class="card">
+                <h2>Overview</h2>
+
+                {% if can_edit %}
+                <textarea class="inline-textarea" name="value" placeholder="Write your project description here..."
+                    hx-post="{{ url_for('autosave_project', team_id=team.id) }}" hx-trigger="change"
+                    hx-vals='{"field":"description"}' hx-swap="none">{{ project.description or '' }}</textarea>
+                {% else %}
+                <p>{{ project.description or "No description provided yet." }}</p>
+                {% endif %}
+            </section>
+
+            <!-- Screenshots Section -->
+            <section class="card">
+                <h2>Project Screenshots</h2>
+
+                {% if can_edit %}
+                <form method="POST" action="{{ url_for('upload_screenshot', team_id=team.id) }}"
+                    enctype="multipart/form-data" class="upload-form">
+                    <div class="upload-area">
+                        <input type="file" name="screenshot" accept="image/*" id="screenshot-file" required>
+                        <label for="screenshot-file" class="upload-label">Choose Image</label>
+                        <button type="submit" class="upload-btn">Upload Screenshot</button>
+                        <small>PNG, JPG, JPEG, WEBP, GIF</small>
+                    </div>
+                </form>
+                {% endif %}
+
+                <div class="screenshot-gallery">
+                    {% if screenshots %}
+                    {% for screenshot in screenshots %}
+                    <div class="screenshot-item">
+                        <a href="#modal-{{ loop.index0 }}">
+                            <img src="{{ screenshot }}" alt="Project screenshot">
+                        </a>
+                        {% if can_edit %}
+                        <form method="POST"
+                            action="{{ url_for('delete_screenshot', team_id=team.id, screenshot_index=loop.index0) }}"
+                            class="delete-form">
+                            <button type="submit" class="delete-screenshot"
+                                onclick="return confirm('Delete this screenshot?')">×</button>
+                        </form>
+                        {% endif %}
+                    </div>
+
+                    <!-- Modal for this screenshot -->
+                    <div id="modal-{{ loop.index0 }}" class="modal">
+                        <a href="#" class="close">&times;</a>
+                        <img src="{{ screenshot }}" alt="Full size screenshot">
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="no-screenshots">No screenshots uploaded yet.</p>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Tech Stack</h2>
+
+                {% if can_edit %}
+                <input class="inline-input" name="value" value="{{ project.tech_stack or '' }}"
+                    placeholder="Example: Flask, SQLite, HTML, CSS"
+                    hx-post="{{ url_for('autosave_project', team_id=team.id) }}" hx-trigger="change"
+                    hx-vals='{"field":"tech_stack"}' hx-swap="none">
+                <p class="hint">Separate each tech with comma.</p>
+                {% endif %}
+
+                {% if project.tech_stack %}
+                <div class="tags">
+                    {% for tech in project.tech_stack.split(',') %}
+                    <span class="tag">{{ tech.strip() }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>-</p>
+                {% endif %}
+            </section>
+
+            <section class="card">
+                <h2>Work Division</h2>
+
+                {% if can_edit %}
+                <textarea class="inline-textarea" name="value" placeholder="Example: User 1 - Team Formation System, Task Management system... 
+         User 2 - User Authentication, User Profile..." hx-post="{{ url_for('autosave_project', team_id=team.id) }}"
+                    hx-trigger="change" hx-vals='{"field":"contributions"}'
+                    hx-swap="none">{{ project.contributions or '' }}</textarea>
+                {% else %}
+                <pre class="contribution-box">{{ project.contributions or "No contributions added yet." }}</pre>
+                {% endif %}
+            </section>
+
+        </div>
+
+        <div class="project-side">
+
+            <section class="card">
+                <h2>Project Links</h2>
+
+                {% if can_edit %}
+                <input class="inline-input" name="value" value="{{ project.github_link or '' }}"
+                    placeholder="GitHub repository link" hx-post="{{ url_for('autosave_project', team_id=team.id) }}"
+                    hx-trigger="change" hx-vals='{"field":"github_link"}' hx-swap="none">
+
+                <input class="inline-input" name="value" value="{{ project.demo_link or '' }}"
+                    placeholder="Demo video / live demo link"
+                    hx-post="{{ url_for('autosave_project', team_id=team.id) }}" hx-trigger="change"
+                    hx-vals='{"field":"demo_link"}' hx-swap="none">
+
+                {% endif %}
+
+                {% if project.github_link %}
+                <a href="{{ project.github_link }}" target="_blank" class="link-btn">
+                    GitHub Repository
+                </a>
+                {% endif %}
+
+                {% if project.demo_link %}
+                <a href="{{ project.demo_link }}" target="_blank" class="link-btn">
+                    Live Demo
+                </a>
+                {% endif %}
+
+                {% if not project.github_link and not project.demo_link %}
+                <p>No links available.</p>
+                {% endif %}
+            </section>
+
+            <section class="card">
+                <h2>Team Members</h2>
+
+                {% for member in team.members %}
+                <div class="member">
+                    <div class="avatar">
+                        {{ (member.user.name or member.user.email)[0]|upper }}
+                    </div>
+
+                    <div>
+                        <p class="name">{{ member.user.name or member.user.email }}</p>
+                        <p class="role">{{ member.roles or "Member" }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </section>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

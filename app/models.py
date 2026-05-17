@@ -76,6 +76,7 @@ class Team(db.Model):
     team_code = db.Column(db.String(20), unique=True, nullable=False)
     max_members = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now())
+    project_submitted = db.Column(db.Boolean, default=False)
     tasks = db.relationship('Task', backref='team', lazy=True)
     members = db.relationship('Participation', backref='team', lazy=True)
 
@@ -179,3 +180,19 @@ class Dashboard(db.Model):
 
     def __repr__(self):
         return f'<Dashboard {self.user_id} - {self.event_id}>'
+
+class Project(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False, unique=True)
+    title = db.Column(db.String(120), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    tech_stack = db.Column(db.String(300), nullable=True)
+    demo_link = db.Column(db.String(300), nullable=True)
+    github_link = db.Column(db.String(300), nullable=True)
+    screenshots_link = db.Column(db.Text, nullable=True)
+    contributions = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
+    team = db.relationship('Team', backref='project')
+    
+    def __repr__(self):
+        return f'<Project {self.title}>'
