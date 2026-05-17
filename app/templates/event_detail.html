@@ -107,8 +107,13 @@
     <div style="margin-bottom: 15px; color: #666; font-size: 0.9em;">
       Showing <strong>{{ soloists|length }}</strong> {% if soloists|length == 1 %}soloist{% else %}soloists{% endif %} looking for a team
     </div>
-
-    {% if soloists %}
+    <!--nx add sololist search box -->
+    <input type="text" name="search_soloists" placeholder="Search soloists by name or skills..." value="{{ search_soloists_query or '' }}" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 20px;" hx-get="/event/{{ event.id }}?tab=solo" hx-trigger="keyup changed delay:500ms" hx-target="#soloists-list" hx-swap="innerHTML">
+    <div id="soloists-list">
+      {% include "partials/soloists_list.html" %}
+    </div>
+    <!-- nx end -->
+    <!-- {% if soloists %}
       {% if leader_team %}
         <form method="POST" action="{{ url_for('invite_soloists', event_id=event.id) }}">
           <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
@@ -160,7 +165,7 @@
       {% endif %}
     {% else %}
       <p>No soloists are currently looking for teams in this event.</p>
-    {% endif %}
+    {% endif %} -->
   {% endif %}
 </div>
 {% endblock %}

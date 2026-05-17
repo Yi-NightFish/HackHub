@@ -13,7 +13,15 @@
             <p>{{ event.deadline.strftime('%a %Y-%m-%d') }}</p>
         <p><strong>Organizer:</strong> {{ event.organizer.name }}</p>
         <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
-            <a href="/event/{{ event.id }}" style="display: inline-block; padding: 10px 20px; background: #7f98ae; color: white; border-radius: 5px; cursor: pointer; text-decoration: none; transition: 0.2s;">{{"Register Now" if status == "open" else "View Detail"}}</a>
+            <!-- add register to view details -->
+            {% if event.id in joined_event_ids %}
+                <a href="/event/{{ event.id }}" style="display: inline-block; padding: 10px 20px; background: #7f98ae; color: white; border-radius: 5px; cursor: pointer; text-decoration: none; transition: 0.2s;">View Detail</a>
+            {% elif status == "open" %}
+                <a href="/event/{{ event.id }}" style="display: inline-block; padding: 10px 20px; background: #7f98ae; color: white; border-radius: 5px; cursor: pointer; text-decoration: none; transition: 0.2s;">Register Now</a>
+            {% else %}
+                <a href="/event/{{ event.id }}" style="display: inline-block; padding: 10px 20px; background: #7f98ae; color: white; border-radius: 5px; cursor: pointer; text-decoration: none; transition: 0.2s;">View Detail</a>
+            {% endif %}
+            <!-- <a href="/event/{{ event.id }}" style="display: inline-block; padding: 10px 20px; background: #7f98ae; color: white; border-radius: 5px; cursor: pointer; text-decoration: none; transition: 0.2s;">{{"Register Now" if status == "open" else "View Detail"}}</a> -->
         </div>
     </div>
     {% else %}

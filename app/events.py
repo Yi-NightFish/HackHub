@@ -38,6 +38,12 @@ def explore():
     page = request.args.get("page", 1, type=int)
     current_user = get_current_user()
 
+    # nx add if user enroll, btn become view details---------
+    joined_event_ids = set()
+    if current_user:
+        participations = Participation.query.filter_by(user_id = current_user.id).all()
+        joined_event_ids = set(p.event_id for p in participations)
+    # --------------------------------------
     if search_query:
         history = session.get("search_history", [])
         if search_query in history:
@@ -77,7 +83,7 @@ def explore():
     paginate = query.paginate(page=page, per_page=12, error_out=False)
     events = paginate.items
     if request.headers.get("HX-Request"):
-        return render_template("partials/event_list.html", events = events, search_query = search_query, paginate = paginate or None)
+        return render_template("partials/event_list.html", events = events, search_query = search_query, paginate = paginate or None, joined_event_ids = joined_event_ids)
     return render_template(
                         "explore.html", 
                         events = events, 
@@ -86,7 +92,8 @@ def explore():
                         current_user = current_user, 
                         sort_by = sort_by, 
                         paginate = paginate, 
-                        history = session.get("search_history", [])
+                        history = session.get("search_history", []), 
+                        joined_event_ids = joined_event_ids #nx add
     )
 
 @app.route("/event/create", methods=["GET", "POST"])
@@ -189,8 +196,15 @@ def event_detail(event_id):
             )
         elif active_tab == "solo":
             require_login()
+            # nx add search box
+            search_soloists_query = request.args.get("search_soloists", "").strip()
+            p_query = Participation.query.filter_by(event_id = event_id, team_id = None).join(User, Participation.user_id == User.id)
+            if search_soloists_query:
+                p_query = p_query.filter(User.name.ilike(f"%{search_soloists_query}%") | User.university.ilike(f"%{search_soloists_query}%") | User.skills.ilike(f"%{search_soloists_query}%"))
+            soloists = [p.user for p in p_query.filter(Participation.user_id != current_user.id).all()] if event else []
+
             # Get soloists (participants without a team)
-            soloists = [p.user for p in Participation.query.filter_by(event_id=event_id, team_id=None).filter(Participation.user_id != current_user.id).all()] if event else []
+            # soloists = [p.user for p in Participation.query.filter_by(event_id=event_id, team_id=None).filter(Participation.user_id != current_user.id).all()] if event else []
             leader_team = None
             leader_team_member_count = 0
             leader_team_full = False
@@ -199,6 +213,10 @@ def event_detail(event_id):
                 if leader_team:
                     leader_team_member_count = Participation.query.filter_by(team_id = leader_team.id).count()
                     leader_team_full = leader_team_member_count >= leader_team.max_members
+            # htmx search soloists
+            if request.headers.get("HX-Request"):
+                return render_template("partials/soloists_list.html", soloists = soloists, leader_team = leader_team, leader_team_member_count = leader_team_member_count, leader_team_full = leader_team_full)
+            # not htmx
             return render_template(
                 "event_detail.html",
                 event = event,
@@ -207,7 +225,8 @@ def event_detail(event_id):
                 soloists = soloists,
                 leader_team = leader_team,
                 leader_team_member_count = leader_team_member_count,
-                leader_team_full = leader_team_full
+                leader_team_full = leader_team_full,
+                search_soloists_query = search_soloists_query
             )
     else:
         user_id = request.form.get("user-id")
