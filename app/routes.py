@@ -865,7 +865,10 @@ def delete_message(message_id):
     message = db.session.get(Message, message_id)
 
     if not message:
-        return redirect(request.referrer)
+        # return redirect(request.referrer)
+        return "", 200
+    
+    other_user_id = message.receiver_id if message.sender_id == current_user_id else message.sender_id
 
     if message.sender_id == current_user_id:
         message.deleted_by_sender = True
@@ -875,6 +878,11 @@ def delete_message(message_id):
         db.session.delete(message)
 
     db.session.commit()
+
+    if request.headers.get("HX-Request"):
+        other_user = db.session.get(User, other_user_id)
+        messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == other_user_id) & (Message.deleted_by_sender == False)) | ((Message.sender_id == other_user_id) & (Message.receiver_id == current_user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
+        return render_template("message.html", messages = messages, current_user_id = current_user_id, other_user = other_user)
 
     return redirect(request.referrer)
 # wy - project page -----------------------------------------------------------------------------------
