@@ -1,5 +1,6 @@
 from app import db
 import datetime
+import datetime as dt
 import sqlalchemy as sa
 
 class User(db.Model):
@@ -168,9 +169,19 @@ class Message(db.Model):
     is_read = db.Column(db.Boolean, default=False)
     deleted_by_sender = db.Column(db.Boolean, default=False)
     deleted_by_receiver = db.Column(db.Boolean, default=False)
+    is_deleted = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return f'<Message {self.sender_id} - {self.receiver_id}>'
+    
+class ChatVisibility(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    other_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    visible_since = db.Column(db.DateTime, default=dt.datetime.min)
+
+    def __repr__(self):
+        return f'<ChatVisibility {self.user_id} - {self.other_user_id}>'
 
 class Dashboard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
