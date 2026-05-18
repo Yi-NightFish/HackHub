@@ -820,10 +820,9 @@ def hide_user(user_id):
     if not visibility:
         visibility = ChatVisibility(user_id = current_user_id, other_user_id = user_id, is_hidden = True)
         db.session.add(visibility)
-    if visibility.is_hidden:
-        visibility.is_hidden = False
-    else:
         visibility.is_hidden = True
+    else:
+        visibility.is_hidden = not visibility.is_hidden
     db.session.commit()
     return redirect(url_for("chat_home"))
     
@@ -893,6 +892,9 @@ def get_message():
         message.is_read = True
     db.session.commit()
     visibility = ChatVisibility.query.filter_by(user_id = current_user_id, other_user_id = other_user_id).first()
+    if visibility and visibility.is_hidden:
+        visibility.is_hidden = False
+        db.session.commit()
     visible_time = visibility.visible_since if visibility else dt.datetime.min
     # receiver_id = 2 if current_user_id == 1 else 1
     messages = Message.query.filter((((Message.sender_id == current_user_id) & (Message.receiver_id == other_user_id)) | ((Message.sender_id == other_user_id) & (Message.receiver_id == current_user_id))) & (Message.timestamp >= visible_time)).order_by(Message.timestamp.asc()).all()

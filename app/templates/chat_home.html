@@ -5,7 +5,7 @@
 <div style="display:flex; flex-direction:column; gap:10px;">
 
     {% for user in users %}
-    <div id="user-card-{{ user.id }}" style="position: relative; display: flex; flex-direction: column; padding: 15px; border-bottom: 1px solid #ccc; border-radius: 10px; background: #f9f9f9;">
+    <div id="user-card-{{ user.id }}" style="position: relative; display: flex; flex-direction: column; padding: 15px; border-bottom: 1px solid #ccc; border-radius: 10px; background: #f9f9f9; ">
 
     <a href="{{ url_for('chat', user_id=user.id) }}"
        style="text-decoration: none; color:black; padding: 15px; border: 1px solid #ccc; border-radius: 10px; background:#f9f9f9;">
@@ -18,9 +18,9 @@
         {% endif %}
 
     </a>
-    <details style="position: relative; top: 10px; right: 10px;">
-        <summary style="cursor: pointer; list-style: none;"> ⋮ </summary>
-        <div style="background:white; border: 1px solid #ccc; border-radius: 8px; padding: 5px; position: absolute; right: 0; min-width: 100px; z-index: 100;">
+    <details style="position: absolute; top: 12px; right: 15px; z-index: 10;">
+        <summary style="cursor: pointer; list-style: none; font-size: 1.3em; color: #888; user-select: none;"> ⋮ </summary>
+        <div style="background:white; border: 1px solid #ccc; border-radius: 8px; padding: 5px; position: absolute; right: 0; top: 25px; min-width: 100px; z-index: 100;">
             <a href="{{ url_for('hide_user', user_id=user.id) }}" style="color: #555; text-decoration: none; display: block; padding: 5px 10px; font-size: 0.9em; white-space: nowrap;">
                 {% if hidden_user_ids and user.id in hidden_user_ids %}
                     Unhide User
@@ -32,6 +32,23 @@
     </details>
     </div>
     {% endfor %}
+    {% if hidden_user %}
+    <details style="margin-top: 30px; border-top: 1px dashed #ccc; padding-top: 15px;">
+        <summary style="cursor: pointer; color: #888; font-size: 0.9em; user-select: none;">
+            Hidden Chats ({{ hidden_user|length }}) - Click to manage
+        </summary>
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+            {% for hidden_user in hidden_user %}
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: #fdfdfd;">
+                <span style="color: #555;">{{ hidden_user.name }}</span>
+                <a href="{{ url_for('hide_user', user_id=hidden_user.id) }}" style="background: #007bff; color: white; text-decoration: none; padding: 5px 10px; border-radius: 5px; font-size: 0.85em;">
+                    Unhide
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </details>
+    {% endif %}
 
 </div>
 {% endblock %}
