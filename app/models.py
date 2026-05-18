@@ -165,7 +165,7 @@ class Message(db.Model):
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     message = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
+    timestamp = db.Column(db.DateTime, default=lambda: datetime.datetime.now())
     is_read = db.Column(db.Boolean, default=False)
     # deleted_by_sender = db.Column(db.Boolean, default=False)
     # deleted_by_receiver = db.Column(db.Boolean, default=False)
