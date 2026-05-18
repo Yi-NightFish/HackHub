@@ -179,6 +179,7 @@ class ChatVisibility(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     other_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     visible_since = db.Column(db.DateTime, default=lambda: datetime.datetime.now(1970, 1, 1))
+    is_hidden = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return f'<ChatVisibility {self.user_id} - {self.other_user_id}>'

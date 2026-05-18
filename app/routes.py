@@ -777,9 +777,25 @@ def create_team_for_event(event_id):
 @login_required
 def chat_home():
     current_user_id = session.get("user_id")
-    users = User.query.filter(User.id != current_user_id).all()
+    # find all msg i send or receive
+    all_my_messages = Message.query.filter((Message.sender_id == current_user_id) | (Message.receiver_id == current_user_id)).all()
+    # find all user ids i have interacted
+    interacted_user_ids = set()
+    for msg in all_my_messages:
+        if msg.sender_id != current_user_id:
+            interacted_user_ids.add(msg.sender_id)
+        if msg.receiver_id != current_user_id:
+            interacted_user_ids.add(msg.receiver_id)
+    # find hidden user
+    hidden_relationships = ChatVisibility.query.filter_by(user_id = current_user_id, is_hidden = True).all()
+    hidden_user_ids = {rel.other_user_id for rel in hidden_relationships}
+    # find final user ids after excluding hidden users
+    final_user_ids = interacted_user_ids - hidden_user_ids
+    # show users i have chatted with and not hidden, with whom I can click to see the chat history
+    users = User.query.filter(User.id.in_(final_user_ids)).all() if final_user_ids else []
+    hidden_user= User.query.filter(User.id.in_(hidden_user_ids)).all() if hidden_user_ids else []
 
-    return render_template("chat_home.html", users = users)
+    return render_template("chat_home.html", users = users, hidden_user_ids = hidden_user_ids, hidden_user = hidden_user)
 
 @app.route("/chat/<int:user_id>")
 @login_required
@@ -796,17 +812,20 @@ def chat(user_id):
 
     return render_template("chat.html",messages = messages, other_user = other_user, current_user_id=current_user_id, current_user = current_user)
 
-# @app.route("/chat")
-# @login_required
-# def chat():
-#     # get user_id
-#     user_id = session.get("user_id")
-#     current_user = db.session.get(User, user_id)
-#     receiver_id = 2 if user_id == 1 else 1
-#     other_user = db.session.get(User, receiver_id)
-#     # search msg i send or receive and not deleted with 时间顺序
-#     messages = Message.query.filter(((Message.sender_id == user_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == user_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
-#     return render_template("chat.html", messages = messages, current_user_id = user_id, current_user = current_user, other_user = other_user)
+@app.route("/hide_user/<int:user_id>")
+@login_required
+def hide_user(user_id):
+    current_user_id = session.get("user_id")
+    visibility = ChatVisibility.query.filter_by(user_id = current_user_id, other_user_id = user_id).first()
+    if not visibility:
+        visibility = ChatVisibility(user_id = current_user_id, other_user_id = user_id, is_hidden = True)
+        db.session.add(visibility)
+    if visibility.is_hidden:
+        visibility.is_hidden = False
+    else:
+        visibility.is_hidden = True
+    db.session.commit()
+    return redirect(url_for("chat_home"))
     
 @app.route("/send_message", methods=["POST"])
 @login_required

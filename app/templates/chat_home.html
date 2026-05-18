@@ -5,16 +5,10 @@
 <div style="display:flex; flex-direction:column; gap:10px;">
 
     {% for user in users %}
+    <div id="user-card-{{ user.id }}" style="position: relative; display: flex; flex-direction: column; padding: 15px; border-bottom: 1px solid #ccc; border-radius: 10px; background: #f9f9f9;">
 
     <a href="{{ url_for('chat', user_id=user.id) }}"
-       style="
-       text-decoration:none;
-       color:black;
-       padding:15px;
-       border:1px solid #ccc;
-       border-radius:10px;
-       background:#f9f9f9;
-       ">
+       style="text-decoration: none; color:black; padding: 15px; border: 1px solid #ccc; border-radius: 10px; background:#f9f9f9;">
         <strong>{{ user.name }}</strong>
 
         {% if user.is_online() %}
@@ -24,9 +18,20 @@
         {% endif %}
 
     </a>
-
+    <details style="position: relative; top: 10px; right: 10px;">
+        <summary style="cursor: pointer; list-style: none;"> ⋮ </summary>
+        <div style="background:white; border: 1px solid #ccc; border-radius: 8px; padding: 5px; position: absolute; right: 0; min-width: 100px; z-index: 100;">
+            <a href="{{ url_for('hide_user', user_id=user.id) }}" style="color: #555; text-decoration: none; display: block; padding: 5px 10px; font-size: 0.9em; white-space: nowrap;">
+                {% if hidden_user_ids and user.id in hidden_user_ids %}
+                    Unhide User
+                {% else %}
+                    Hide User
+                {% endif %}
+            </a>
+        </div>
+    </details>
+    </div>
     {% endfor %}
 
 </div>
-
 {% endblock %}
