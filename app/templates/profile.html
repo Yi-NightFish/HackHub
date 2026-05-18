@@ -87,7 +87,7 @@
                 {% for event in events %}
                     <div class="event-card">
                         <div class="event-header">
-                            <h3>{{ event.title }}</h3>
+                            <h3><a href = '{{ url_for("event_detail", event_id = event.id) }}'>{{ event.title }}</a></h3>
                             <span class="event-date">{{ event.start_time.strftime('%b %d, %Y') }}</span>
                         </div>
                         <hr>
