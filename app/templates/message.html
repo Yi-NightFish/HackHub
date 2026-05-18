@@ -39,6 +39,7 @@
                     {% endif %}
                 </span> {{ msg.message }}
                 <!-- hamburger -->
+                {% if msg.sender_id == current_user_id %}
                 <details style="position:absolute; top:5px; right:5px;">
                     <summary style="cursor:pointer; list-style:none;"> ⋮ </summary>
                     <div style="background:white; border:1px solid #ccc; border-radius:8px; padding:5px; position:absolute; right:0; min-width:100px; z-index:100;">
@@ -57,5 +58,5 @@
                 </div>
             {% endif %}
         {% endif %}
-</div>
+    </div>
 {% endfor %}

@@ -790,8 +790,8 @@ def chat(user_id):
     # add visibility filter: only show messages after the time when I choose to see this chat (handle the case where I clear chat but not delete, then new msg comes in, I should be able to see the new msg but not the old msg before clear)
     visibility = ChatVisibility.query.filter_by(user_id = current_user_id, other_user_id = user_id).first()
     visible_time = visibility.visible_since if visibility else dt.datetime.min
-    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == user_id)) | 
-                                    ((Message.sender_id == user_id) & (Message.receiver_id == current_user_id)) & (Message.timestamp >= visible_time)
+    messages = Message.query.filter((((Message.sender_id == current_user_id) & (Message.receiver_id == user_id)) | 
+                                    ((Message.sender_id == user_id) & (Message.receiver_id == current_user_id))) & (Message.timestamp >= visible_time)
     ).order_by(Message.timestamp.asc()).all()
 
     return render_template("chat.html",messages = messages, other_user = other_user, current_user_id=current_user_id, current_user = current_user)
@@ -820,9 +820,13 @@ def send_message():
     new_message = Message(message = content, sender_id = sender_id, receiver_id = receiver_id) #timestamp会自动生成/存数据库
     db.session.add(new_message)
     db.session.commit()
+
+    visibility = ChatVisibility.query.filter_by(user_id = sender_id, other_user_id = receiver_id).first()
+    visible_time = visibility.visible_since if visibility else dt.datetime.min
+
     # return redirect(url_for("chat", user_id=sender_id)) #发完消息回聊天界面，user_id不变
     # messages = Message.query.filter(((Message.sender_id == sender_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == sender_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
-    messages = Message.query.filter(((Message.sender_id == sender_id) & (Message.receiver_id == receiver_id) & (Message.deleted_by_sender == False)) | ((Message.sender_id == receiver_id) & (Message.receiver_id == sender_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
+    messages = Message.query.filter((((Message.sender_id == sender_id) & (Message.receiver_id == receiver_id)) | ((Message.sender_id == receiver_id) & (Message.receiver_id == sender_id))) & (Message.timestamp >= visible_time)).order_by(Message.timestamp.asc()).all()
     return render_template("message.html", messages = messages, current_user_id = sender_id, other_user = other_user) #只返回新消息，前端htmx负责更新页面
     
 @app.route("/clear/<int:user_id>")
@@ -834,17 +838,17 @@ def clear_messages(user_id):
     if not visibility:
         visibility = ChatVisibility(user_id = current_user_id, other_user_id = user_id)
         db.session.add(visibility)
-    visibility.visible_since = dt.datetime.now()
+    visibility.visible_since = dt.datetime.now(dt.UTC).replace(tzinfo=None)
     db.session.commit()
     # find all my msg and 标记为deleted for sender/receiver depend on my身份，真正删除在数据库里保留但不展示(soft delete)
-    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == user_id)) | ((Message.sender_id == user_id) & (Message.receiver_id == current_user_id))).all()
-    for message in messages:
-        if message.sender_id == current_user_id:
-            message.deleted_by_sender = True
-        if message.receiver_id == current_user_id:
-            message.deleted_by_receiver = True
-        if message.deleted_by_sender and message.deleted_by_receiver:
-            db.session.delete(message) #双方都删除了才真正从数据库删除
+    # messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == user_id)) | ((Message.sender_id == user_id) & (Message.receiver_id == current_user_id))).all()
+    # for message in messages:
+    #     if message.sender_id == current_user_id:
+    #         message.deleted_by_sender = True
+    #     if message.receiver_id == current_user_id:
+    #         message.deleted_by_receiver = True
+    #     if message.deleted_by_sender and message.deleted_by_receiver:
+    #         db.session.delete(message) #双方都删除了才真正从数据库删除
     db.session.commit()
     return redirect(url_for("chat", user_id=user_id))
     
@@ -866,7 +870,7 @@ def get_message():
     visibility = ChatVisibility.query.filter_by(user_id = current_user_id, other_user_id = other_user_id).first()
     visible_time = visibility.visible_since if visibility else dt.datetime.min
     # receiver_id = 2 if current_user_id == 1 else 1
-    messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == other_user_id)) | ((Message.sender_id == other_user_id) & (Message.receiver_id == current_user_id)) & (Message.timestamp >= visible_time)).order_by(Message.timestamp.asc()).all()
+    messages = Message.query.filter((((Message.sender_id == current_user_id) & (Message.receiver_id == other_user_id)) | ((Message.sender_id == other_user_id) & (Message.receiver_id == current_user_id))) & (Message.timestamp >= visible_time)).order_by(Message.timestamp.asc()).all()
     return render_template("message.html", messages = messages, current_user_id = current_user_id, other_user = other_user)
 
 @app.route("/delete_message/<int:message_id>")
@@ -889,15 +893,14 @@ def delete_message(message_id):
     #     db.session.delete(message)
     if message.sender_id == current_user_id:
         message.is_deleted = True
-
-    db.session.commit()
+        db.session.commit()
 
     if request.headers.get("HX-Request"):
         other_user_id = message.receiver_id if message.sender_id == current_user_id else message.sender_id
         other_user = db.session.get(User, other_user_id)
         visibility = ChatVisibility.query.filter_by(user_id = current_user_id, other_user_id = other_user_id).first()
         visible_time = visibility.visible_since if visibility else dt.datetime.min
-        messages = Message.query.filter(((Message.sender_id == current_user_id) & (Message.receiver_id == other_user_id)) | ((Message.sender_id == other_user_id) & (Message.receiver_id == current_user_id)) & (Message.timestamp >= visible_time)).order_by(Message.timestamp.asc()).all()
+        messages = Message.query.filter((((Message.sender_id == current_user_id) & (Message.receiver_id == other_user_id)) | ((Message.sender_id == other_user_id) & (Message.receiver_id == current_user_id))) & (Message.timestamp >= visible_time)).order_by(Message.timestamp.asc()).all()
         return render_template("message.html", messages = messages, current_user_id = current_user_id, other_user = other_user)
 
     return redirect(request.referrer)
