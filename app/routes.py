@@ -805,6 +805,7 @@ def chat(user_id):
     other_user = db.session.get(User, user_id)
     # add visibility filter: only show messages after the time when I choose to see this chat (handle the case where I clear chat but not delete, then new msg comes in, I should be able to see the new msg but not the old msg before clear)
     visibility = ChatVisibility.query.filter_by(user_id = current_user_id, other_user_id = user_id).first()
+    # if chat was cleared b4, only show msg after clear time, otherwise show all msg
     visible_time = visibility.visible_since if visibility else dt.datetime.min
     messages = Message.query.filter((((Message.sender_id == current_user_id) & (Message.receiver_id == user_id)) | 
                                     ((Message.sender_id == user_id) & (Message.receiver_id == current_user_id))) & (Message.timestamp >= visible_time)
@@ -858,6 +859,7 @@ def clear_messages(user_id):
         db.session.add(my_visibility)
     my_visibility.visible_since = dt.datetime.now()
     db.session.commit()
+    # permanent delete logic
     their_visibility = ChatVisibility.query.filter_by(user_id = user_id, other_user_id = current_user_id).first()
     if their_visibility:
         earliest_clear_time = min(my_visibility.visible_since, their_visibility.visible_since)
@@ -892,6 +894,7 @@ def get_message():
         message.is_read = True
     db.session.commit()
     visibility = ChatVisibility.query.filter_by(user_id = current_user_id, other_user_id = other_user_id).first()
+    # auto unhide chat
     if visibility and visibility.is_hidden:
         visibility.is_hidden = False
         db.session.commit()
@@ -909,6 +912,7 @@ def delete_message(message_id):
 
     # if not message:
     #     return redirect(request.referrer)
+    # soft delete
     if message and message.sender_id == current_user_id:
             message.is_deleted = True
             db.session.commit()
