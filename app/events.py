@@ -161,6 +161,7 @@ def event_detail(event_id):
                 in_team = participation.team_id is not None
         
         def require_login():
+            print(not current_user)
             if not current_user:
                 return redirect(url_for("login", next = request.url))
 
@@ -175,7 +176,8 @@ def event_detail(event_id):
                 enrolled = enrolled
             )
         elif active_tab == "participants":
-            require_login()
+            if not current_user:
+                return redirect(url_for("login", next = request.url))
             return render_template(
                 "event_detail.html", 
                 event = event, 
@@ -184,7 +186,8 @@ def event_detail(event_id):
                 participants = participants
             )
         elif active_tab == "teams":
-            require_login()
+            if not current_user:
+                return redirect(url_for("login", next = request.url))
             return render_template(
                 "event_detail.html",
                 event = event,
@@ -195,7 +198,8 @@ def event_detail(event_id):
                 in_team = in_team
             )
         elif active_tab == "solo":
-            require_login()
+            if not current_user:
+                return redirect(url_for("login", next = request.url))
             # nx add search box
             search_soloists_query = request.args.get("search_soloists", "").strip()
             p_query = Participation.query.filter_by(event_id = event_id, team_id = None).join(User, Participation.user_id == User.id)
