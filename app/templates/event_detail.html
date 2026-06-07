@@ -92,7 +92,7 @@
             <tbody>
               {% for participant in participants %}
               <tr>
-                <td><a href="{{ url_for('profile', user_id=participant.id) }}" class="link link-secondary">{{ participant.name }}</a></td>
+                <td><a href="{{ url_for('profile', user_id=participant.id) }}" class="link link-secondary link-hover">{{ participant.name }}</a></td>
               </tr>
               {% endfor %}
             </tbody>
