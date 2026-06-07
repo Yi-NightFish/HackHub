@@ -466,7 +466,9 @@ def task_details(team_id, id):
                            task = task,
                            users = team_members,
                            subtasks = subtasks, 
-                           team_id = team_id)
+                           team_id = team_id,
+                           team = task.team,
+                           current_user = db.session.get(User, session["user_id"]))
 
 @app.route("/team/<int:team_id>/task/<int:id>/add_subtask", methods = ["POST"])
 @login_required
