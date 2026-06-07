@@ -27,11 +27,11 @@
 
         <div class="card-actions justify-end">
           {% if event.id in joined_event_ids %}
-          <a href="/event/{{ event.id }}" class="btn btn-outline btn-sm">View Detail</a>
+          <a href="/event/{{ event.id }}" class="btn btn-outline btn-sm transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 hover:bg-primary">View Detail</a>
           {% elif status == 'open' %}
-          <a href="/event/{{ event.id }}" class="btn btn-outline btn-sm">Register Now</a>
+          <a href="/event/{{ event.id }}" class="btn btn-outline btn-sm transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 hover:bg-primary">Register Now</a>
           {% else %}
-          <a href="/event/{{ event.id }}" class="btn btn-outline btn-sm">View Detail</a>
+          <a href="/event/{{ event.id }}" class="btn btn-outline btn-sm transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 hover:bg-primary">View Detail</a>
           {% endif %}
         </div>
       </div>
