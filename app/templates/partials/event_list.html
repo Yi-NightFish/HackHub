@@ -1,57 +1,72 @@
-<div style="margin-bottom: 15px; color: #666; font-size: 0.9em;">
-    Found <strong>{{ events|length }}</strong> matching events on this page
-</div>
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+<div class="space-y-6">
+  <div class="text-sm text-base-content/70">
+    Found <strong class="text-base-content">{{ events|length }}</strong> matching events on this page
+  </div>
+
+  {% if events %}
+  <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
     {% for event in events %}
-    <div style="border: 1px solid #ccc; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); background-color: white; transition: transform 0.2s;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h3 style="margin: 0;">{{ event.title }}</h3>
-            {% set status = event.status %} 
-            <span style="font-size: 0.8em; color: white; background: {% if status == 'open' %}#28a745{% elif status == 'cancelled' %}#dc3545{% elif status == 'completed' %}#6c757d{% elif status == 'ongoing' %}rgb(212, 205, 0){% else %}#17a2b8{% endif %}; padding: 3px 8px; border-radius: 12px;"> {{ status.capitalize() }} </span>
+    {% set status = event.status %}
+    <article class="card bg-base-200 shadow-lg border border-base-200 transition-transform hover:-translate-y-1">
+      <div class="card-body">
+        <div class="flex items-start justify-between gap-4">
+          <h3 class="card-title text-lg">{{ event.title }}</h3>
+          <span class="badge badge-md {% if status == 'open' %}badge-success{% elif status == 'cancelled' %}badge-error{% elif status == 'completed' %}badge-ghost{% elif status == 'ongoing' %}badge-warning{% else %}badge-info{% endif %}">
+            {{ status.capitalize() }}
+          </span>
         </div>
-        <p><strong>Registration Deadline:</strong></p>
-            <p>{{ event.deadline.strftime('%a %Y-%m-%d') }}</p>
-        <p><strong>Organizer:</strong> {{ event.organizer.name }}</p>
-        <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
-            <!-- add register to view details -->
-            {% if event.id in joined_event_ids %}
-                <a href="/event/{{ event.id }}" style="display: inline-block; padding: 10px 20px; background: #7f98ae; color: white; border-radius: 5px; cursor: pointer; text-decoration: none; transition: 0.2s;">View Detail</a>
-            {% elif status == "open" %}
-                <a href="/event/{{ event.id }}" style="display: inline-block; padding: 10px 20px; background: #7f98ae; color: white; border-radius: 5px; cursor: pointer; text-decoration: none; transition: 0.2s;">Register Now</a>
-            {% else %}
-                <a href="/event/{{ event.id }}" style="display: inline-block; padding: 10px 20px; background: #7f98ae; color: white; border-radius: 5px; cursor: pointer; text-decoration: none; transition: 0.2s;">View Detail</a>
-            {% endif %}
-            <!-- <a href="/event/{{ event.id }}" style="display: inline-block; padding: 10px 20px; background: #7f98ae; color: white; border-radius: 5px; cursor: pointer; text-decoration: none; transition: 0.2s;">{{"Register Now" if status == "open" else "View Detail"}}</a> -->
+
+        <p class="text-sm text-base-content/70">
+          <strong>Organizer:</strong> {{ event.organizer.name }}
+        </p>
+        <p class="text-sm text-base-content/70">
+          <strong>Registration Deadline:</strong> {{ event.deadline.strftime('%a %Y-%m-%d') }}
+        </p>
+
+        <div class="divider my-3"></div>
+
+        <div class="card-actions justify-end">
+          {% if event.id in joined_event_ids %}
+          <a href="/event/{{ event.id }}" class="btn btn-outline btn-sm">View Detail</a>
+          {% elif status == 'open' %}
+          <a href="/event/{{ event.id }}" class="btn btn-outline btn-sm">Register Now</a>
+          {% else %}
+          <a href="/event/{{ event.id }}" class="btn btn-outline btn-sm">View Detail</a>
+          {% endif %}
         </div>
-    </div>
-    {% else %}
-    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #fafafa; border-radius: 12px; border: 2px dashed #eee;">
-        <h3 style="color: #333; margin: 15px 0 5px 0;">No events found</h3>
-        <p style="color: #888;">We couldn't find any events matching "{{ search_query }}".</p>
-        <a href="/explore" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #888; color: white; border-radius: 5px; font-weight: bold;">Clear all filters</a>
-    </div>
+      </div>
+    </article>
     {% endfor %}
-    {% if paginate and paginate.pages > 1 %}
-    <div style="margin-top: 30px; display: flex; justify-content: center; gap: 10px; align-items: center;">
-        {% if paginate.has_prev %}
-        <button hx-get="/explore?page={{ paginate.prev_num }}" 
-                hx-target="#event-list" 
-                hx-include="[name='search'], [name='status'], [name='sort']"
-                style="padding: 8px 15px; cursor: pointer;">
-            Previous
-        </button>
-        {% endif %}
+  </div>
+  {% else %}
+  <div class="card bg-base-200 shadow-inner border border-dashed border-base-300 p-8 text-center">
+    <h3 class="text-2xl font-semibold mb-2">No events found</h3>
+    <p class="text-base-content/70 mb-4">We couldn't find any events matching "{{ search_query if search_query is defined else '' }}".</p>
+    <a href="/explore" class="btn btn-secondary">Clear all filters</a>
+  </div>
+  {% endif %}
 
-        <span style="color: #666;">Page {{ paginate.page }} of {{ paginate.pages }}</span>
-
-        {% if paginate.has_next %}
-        <button hx-get="/explore?page={{ paginate.next_num }}" 
-                hx-target="#event-list" 
-                hx-include="[name='search'], [name='status'], [name='sort']"
-                style="padding: 8px 15px; cursor: pointer;">
-            Next
-        </button>
-        {% endif %}
-    </div>
+  {% if paginate and paginate.pages > 1 %}
+  <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+    {% if paginate.has_prev %}
+    <button hx-get="/explore?page={{ paginate.prev_num }}" 
+            hx-target="#event-list" 
+            hx-include="[name='search'], [name='status'], [name='sort']"
+            class="btn btn-sm btn-outline">
+      Previous
+    </button>
     {% endif %}
+
+    <span class="text-sm text-base-content/70">Page {{ paginate.page }} of {{ paginate.pages }}</span>
+
+    {% if paginate.has_next %}
+    <button hx-get="/explore?page={{ paginate.next_num }}" 
+            hx-target="#event-list" 
+            hx-include="[name='search'], [name='status'], [name='sort']"
+            class="btn btn-sm btn-outline">
+      Next
+    </button>
+    {% endif %}
+  </div>
+  {% endif %}
 </div>

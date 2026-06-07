@@ -1,37 +1,90 @@
 {% extends "base.html" %}
 {% block content %}
-<div style="max-width: 1000px; margin: 0 auto; padding: 20px;">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h2>Explore Events</h2>
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+  <!-- Header Section -->
+  <div class="flex flex-col justify-between items-start gap-4 mb-8">
+    <div>
+      <h1 class="text-4xl font-bold">Explore Events</h1>
+      <p class="text-base-content mt-2">Discover and join exciting events</p>
+    </div>
     {% if current_user %}
-    <a href="{{ url_for('create_event') }}" style="background: #007bff; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">Create Event</a>
+    <a href="{{ url_for('create_event') }}" class="btn btn-primary gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+      Create Event
+    </a>
     {% endif %}
   </div>
-  <div style="background: #f4f4f4; padding: 20px; border-radius: 8px; margin-bottom: 30px; display: flex; gap: 15px;">
-    <input type="text" name="search" placeholder="Search events..." value="{{ search_query }}" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" hx-get="/explore" hx-trigger="keyup changed delay:500ms" hx-target="#event-list" hx-include="[name='status'], [name='sort']" hx-swap="innerHTML" list = "search-history">
-    
-    <datalist id="search-history">
+
+  <!-- Filter Section -->
+  <div class="card bg-base-200 shadow-lg mb-8">
+    <div class="card-body">
+      <div class="grid grid-cols-3 gap-4">
+        <!-- Search Input -->
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-semibold">Search Events</span>
+          </label>
+          <input type="text" 
+                  name="search" 
+                  placeholder="Search by event name..." 
+                  value="{{ search_query }}" 
+                  class="input input-bordered w-full"
+                  hx-get="/explore" 
+                  hx-trigger="keyup changed delay:500ms" 
+                  hx-target="#event-list" 
+                  hx-include="[name='status'], [name='sort']" 
+                  hx-swap="innerHTML"
+                  list="search-history" />
+          <datalist id="search-history">
             {% for word in history %}
-                <option value="{{ word }}">
+            <option value="{{ word }}">
             {% endfor %}
-        </datalist>
+          </datalist>
+        </div>
 
-    <select name="status" style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" hx-get="/explore" hx-trigger="change" hx-target="#event-list" hx-include="[name='search'], [name='sort']" hx-swap="innerHTML">
-      <option value="all" {% if status_filter == "all" %}selected{% endif %}>All Status</option>
-      <option value="open" {% if status_filter == "open" %}selected{% endif %}>Open</option>
-      <option value="cancelled" {% if status_filter == "cancelled" %}selected{% endif %}>Cancelled</option>
-      <option value="completed" {% if status_filter == "completed" %}selected{% endif %}>Completed</option>
-      <option value="ongoing" {% if status_filter == "ongoing" %}selected{% endif %}>Ongoing</option>
-    </select>
+        <!-- Status Filter -->
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-semibold">Status</span>
+          </label>
+          <select name="status" 
+                  class="select select-bordered w-full"
+                  hx-get="/explore" 
+                  hx-trigger="change" 
+                  hx-target="#event-list" 
+                  hx-include="[name='search'], [name='sort']" 
+                  hx-swap="innerHTML">
+            <option value="all" {% if status_filter == "all" %}selected{% endif %}>All Status</option>
+            <option value="open" {% if status_filter == "open" %}selected{% endif %}>Open</option>
+            <option value="cancelled" {% if status_filter == "cancelled" %}selected{% endif %}>Cancelled</option>
+            <option value="completed" {% if status_filter == "completed" %}selected{% endif %}>Completed</option>
+            <option value="ongoing" {% if status_filter == "ongoing" %}selected{% endif %}>Ongoing</option>
+          </select>
+        </div>
 
-    <select name="sort" style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" hx-get="/explore" hx-trigger="change" hx-target="#event-list" hx-include="[name='search'], [name='status']" hx-swap="innerHTML">
-        <option value="newest" {% if sort_by == "newest" %}selected{% endif %}>Newest</option>
-        <option value="oldest" {% if sort_by == "oldest" %}selected{% endif %}>Oldest</option>
-    </select>
+        <!-- Sort Filter -->
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-semibold">Sort By</span>
+          </label>
+          <select name="sort" 
+                  class="select select-bordered w-full"
+                  hx-get="/explore" 
+                  hx-trigger="change" 
+                  hx-target="#event-list" 
+                  hx-include="[name='search'], [name='status']" 
+                  hx-swap="innerHTML">
+            <option value="newest" {% if sort_by == "newest" %}selected{% endif %}>Newest</option>
+            <option value="oldest" {% if sort_by == "oldest" %}selected{% endif %}>Oldest</option>
+          </select>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <div id="event-list">
+  <!-- Events List -->
+  <div id="event-list">
     {% include "partials/event_list.html" %}
-    </div>
+  </div>
 </div>
 {% endblock %}
