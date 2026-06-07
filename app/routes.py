@@ -200,12 +200,20 @@ def logout():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    if "user_id" not in session:
-        return redirect("/login")
     user = db.session.get(User, session["user_id"])
-    # return f"Welcome {user.email} ---> ID: {user.id}"
-    return redirect("/")
-
+    joined_events = Participation.query.filter_by(user_id = user.id).all()
+    joined_teams = Participation.query.filter(Participation.user_id == user.id,
+                                              Participation.team_id != None).all()
+    tasks = Task.query.filter_by(assigned_to = user.id).all()
+    overdue_tasks = [t for t in tasks if not t.is_done and t.deadline and t.deadline < dt.datetime.now()]
+    return render_template("dashboard.html",
+                           current_user = user,
+                           user = user,
+                           joined_events = joined_events,
+                           joined_teams = joined_teams,
+                           tasks = tasks,
+                           overdue_tasks = overdue_tasks)
+    
 @app.route("/forget", methods=["GET", "POST"])
 def forget():
     if request.method == "POST":

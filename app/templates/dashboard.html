@@ -1,0 +1,57 @@
+{% extends "base.html" %} 
+    {% block title %}
+        Dashboard 
+    {% endblock %}
+
+    {% block css %} 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"> 
+    {% endblock %} 
+
+{% block content %}
+
+<div class="dashboard-container">
+
+    <div class="welcome-card">
+        <h1>Welcome Back</h1>
+        <h2>{{ user.name or user.email }}</h2>
+        <p>Manage your events, teams and tasks in one place.</p>
+    </div>
+
+    <div class="stats-grid">
+        <a href="{{ url_for('explore') }}" class="stat-card">
+            <h3>Events</h3>
+            <p>{{ joined_events|length }}</p>
+        </a>
+
+        <a href="{{ url_for('teams') }}" class="stat-card">
+            <h3>Teams</h3>
+            <p>{{ joined_teams|length }}</p>
+        </a>
+
+        <div class="stat-card">
+            <h3>Tasks</h3>
+            <p>{{ tasks|length }}</p>
+        </div>
+    </div>
+
+    <div class="dashboard-section">
+        <h2>Overdue Tasks</h2>
+
+        {% for task in overdue_tasks %}
+        <div class="overdue-item">
+            <strong>{{ task.title }}</strong>
+
+            {% if task.deadline %}
+            <small>
+                Due: {{ task.deadline.strftime('%d %b %Y') }}
+            </small>
+            {% endif %}
+        </div>
+        {% else %}
+        <p>No overdue tasks</p>
+        {% endfor %}
+    </div>
+    
+</div>
+
+{% endblock %}
