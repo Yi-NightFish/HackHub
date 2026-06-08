@@ -1074,3 +1074,19 @@ def delete_screenshot(team_id, screenshot_index):
         project.screenshots_link = json.dumps(screenshots) if screenshots else None
         db.session.commit()
     return redirect(url_for('project_page', team_id = team.id))
+
+# nx - organizer management system------------------------------------------------------------------------------
+@app.route("/organizer/dashboard")
+@login_required
+def organizer_dashboard():
+    current_user_id = session.get("user_id")
+    current_user = db.session.get(User, current_user_id)
+    if not current_user.is_organizer: #只有organizer能访问这个dashboard
+        return "Unauthorized", 403
+    participants = User.query.order_by(User.id.asc()).all()
+    all_teams = team_query = db.session.query(Team).join(Event).filter(Event.is_active == True).all()
+    solo_participants = Participation.query.filter(Participation.team_id == None).all()
+    solo_user_ids = {p.user_id for p in solo_participants}
+    soloist = User.query.filter(User.id.in_(solo_user_ids)).all()
+    stats = {"total_participants": len(participants), "total_teams": len(all_teams), "total_soloists": len(soloist)}
+    return render_template("organizer_dashboard.html", stats=stats, participants=participants, teams=all_teams, soloists=soloist, current_user=current_user)
