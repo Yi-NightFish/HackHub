@@ -75,15 +75,35 @@
             </thead>
             <tbody>
                 {% for team in teams %}
-                <tr style="border-bottom: 1px solid #eee;">
+                <tr style="border-bottom: 1px solid #eee; {% if team.event and team.event.cancelled %} background-color: #f8f9fa; color: #8c96a3; {% endif %}">
                     <td style="padding: 12px;">
-                        <a href="{{ url_for('team_detail', team_id=team.id) }}" style="color: #007bff; text-decoration: none; font-weight: bold;">
-                            {{ team.name }}
-                        </a>
+                        {% if team.event and team.event.cancelled %}
+                            <span style="text-decoration: line-through; font-weight: bold; color: #adb5bd;">{{ team.name }}</span>
+                            <span style="background: #e9ecef; color: #495057; padding: 2px 6px; border-radius: 4px; font-size: 0.75em; margin-left: 5px; font-weight: bold;">Cancelled</span>
+                        {% else %}
+                            <a href="{{ url_for('team_detail', team_id=team.id) }}" style="color: #007bff; text-decoration: none; font-weight: bold;">
+                                {{ team.name }}
+                            </a>
+                        {% endif %}
                     </td>
                     <td style="padding: 12px;"><code style="background: #fff5f5; color: #c92a2a; padding: 2px 6px; border-radius: 4px; font-weight: bold;">{{ team.team_code }}</code></td>
                     <td style="padding: 12px; font-size: 0.9em; color: #495057;">
-                        {{ team.event.title if team.event else "Unknown Event" }}
+                        <span style="font-weight: bold;"></span>{{ team.event.title if team.event else "Unknown Event" }}</span>
+                        <div style="margin-top: 4px;">
+                            {% if team.event %}
+                                {% if team.event.cancelled %}
+                                    <span style="color: #721c24; background: #f8d7da; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; font-weight: bold;">Event Cancelled</span>
+                                {% elif team.event.status == "open" %}
+                                    <span style="color: #155724; background: #d4edda; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; font-weight: bold;">Open</span>
+                                {% elif team.event.status == "ongoing" %}
+                                    <span style="color: #856404; background: #fff3cd; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; font-weight: bold;">Ongoing</span>
+                                {% else %}
+                                    <span style="color: #383d41; background: #e2e3e5; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; font-weight: bold;">Completed</span>
+                                {% endif %}
+                            {% else %}
+                                <span style="color: #bbb; font-style: italic;">No Event Info</span>
+                            {% endif %}
+                        </div>
                     </td>
                     <td style="padding: 12px; color: #2b2b2b;">
                         {% set leader_found = [] %}
