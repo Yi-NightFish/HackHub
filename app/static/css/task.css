@@ -1,191 +1,217 @@
+/* ==========================================================================
+   1. Base Global Reset & Layout Configuration
+   ========================================================================== */
 body {
     font-family: Arial, sans-serif;
     background: #f5f7fb;
     margin: 0;
-    padding: 20px;
+    padding: 0;
     color: #111;
 }
 
 .container {
-    max-width: 1400px;
-    margin: auto;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 24px 24px 24px; /* Removed top padding because header is fixed */
+    box-sizing: border-box;
 }
-/* nx */
+
+h1 {
+    font-size: 24px; /* Smaller, streamlined font size */
+    font-weight: 900;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+/* ==========================================================================
+   2. Header Ribbon
+   ========================================================================== */
 .task-page-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #f5f7fb; /* Matches background to blend seamlessly when fixed */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    padding: 15px 0; /* Add back padding inside the sticky header area */
+    margin-bottom: 16px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
     width: 100%;
 }
-.task-page-header h1 {
-    margin: 0;
-    font-size: 42px;
-    font-weight: 900;
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
+
 .task-search-box {
-    width: 100%;
-    max-width: 300px;
-    padding: 10px 14px;
-    border: 2px solid black;
-    border-radius: 12px;
-    font-size: 14px;
+    width: 220px; /* Reduced width to save valuable layout workspace */
+    padding: 8px 12px;
+    border: 2px solid #000000;
+    border-radius: 10px;
+    font-size: 13px;
     outline: none;
     margin: 0;
-}
-/* wy */
-/* Header */
-h1 {
-    font-size: 64px;
-    font-weight: bold;
-    margin: 0;
-    margin-bottom: 20px;
-}
-
-/* Layout */
-.task-layout {
-    display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 20px;
-    align-items: start;
-}
-
-/* Create Task Panel */
-.create-task-panel {
-    background: white;
-    border: 2px solid black;
-    border-radius: 12px;
-    padding: 20px;
-}
-
-/* Form layout */
-.form-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 14px;
-}
-
-label {
-    font-size: 14px;
-    margin-bottom: 6px;
-}
-
-/* Inputs */
-input,
-select,
-textarea {
-    width: 100%;
-    padding: 10px 12px;
-    border: 2px solid black;
-    border-radius: 10px;
-    font-size: 14px;
     box-sizing: border-box;
-    background: white;
+    background: #ffffff;
 }
 
-textarea {
-    resize: vertical;
-    min-height: 70px;
-}
-
-/* Button */
-.create-btn {
-    width: 100%;
-    background: #a5b4fc;
-    border: 2px solid black;
-    color: black;
-    font-weight: bold;
-    padding: 12px;
-    border-radius: 12px;
+/* Minimalist Icon-Only Add Button */
+.open-creation-btn {
+    background-color: #2563eb;
+    color: #ffffff;
+    border: 2px solid #000000;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 18px;
     cursor: pointer;
-    margin-top: 15px;
-}
-
-button:hover {
-    transform: translateY(-1px);
-}
-
-/* Right side */
-.task-main {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
 }
 
-/* Filter bar */
-.filter-bar {
+.open-creation-btn:hover {
+    background-color: #1d4ed8;
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0px #000000;
+}
+
+/* Container to align arrow and title side-by-side */
+.header-title-area {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    background: white;
-    border: 2px solid black;
-    border-radius: 16px;
-    padding: 12px 16px;
+    align-items: center;
+    gap: 30px;
 }
 
-.filter-link {
+/* Minimalist Back to Team Button styling */
+.back-team-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     text-decoration: none;
-    padding: 6px 14px;
-    border-radius: 14px;
-    font-size: 13px;
+    color: #000000;
+    font-size: 18px;
     font-weight: bold;
-    color: black;
+    width: 32px;
+    height: 32px;
+    border: 2px solid #000000;
+    border-radius: 8px;
+    background: #ffffff;
+    transition: all 0.1s ease;
 }
 
-.filter-link.active {
-    outline: 2px solid black;
+.back-team-btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0px #000000;
+    background-color: #f1f5f9;
 }
 
-/* Status colors */
-.filter-wishlist,
-.status-wishlist {
-    background: #d1d5db;
+/* ==========================================================================
+   3. Single Screen Layout Configuration
+   ========================================================================== */
+.task-layout {
+    width: 100%;
+    overflow: hidden;
 }
 
-.filter-to-do,
-.status-to-do {
-    background: #c4b5fd;
+.task-main {
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.filter-in-progress,
-.status-in-progress {
-    background: #c7d2fe;
+.kanban-board {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 10px; /* Tight, compact spacing between lanes */
+    align-items: flex-start;
+    width: 100%;
 }
 
-.filter-in-review,
-.status-in-review {
-    background: #fbcfe8;
-}
-
-.filter-complete,
-.status-complete {
-    background: #bbf7d0;
-}
-
-/* Scroll */
-.task-scroll-area {
-    max-height: 700px;
-    overflow-y: auto;
-    padding-right: 6px;
-}
-
-/* Cards */
-.task-card-list {
+.kanban-column {
+    flex: 1; /* Fluid flexible width scales intelligently to fit 100% of any desktop view */
+    min-width: 0; /* Prevents flex children from overflowing their boxes */
+    background-color: #f8fafc;
+    border-radius: 12px;
+    border: 2px solid #000000;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    max-height: 78vh; /* Keeps individual lanes contained vertically inside your window */
 }
 
+/* ==========================================================================
+   4. Kanban Column Elements
+   ========================================================================== */
+.column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom: 2px solid #000000;
+}
+
+.column-header h2 {
+    margin: 0;
+    font-size: 13px; /* Downscaled text */
+    font-weight: 800;
+    color: #1e293b;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.column-add-btn {
+    background: transparent;
+    border: none;
+    color: #000000;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.column-add-btn:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Status Column Themes */
+.status-wishlist { background-color: #e2e8f0; }
+.status-to-do { background-color: #ddd6fe; }
+.status-in-progress { background-color: #fef08a; }
+.status-in-review { background-color: #fbcfe8; }
+.status-complete { background-color: #bbf7d0; }
+
+.kanban-cards-dropzone {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Snug spacing for multi-card lists */
+    overflow-y: auto;
+}
+
+/* ==========================================================================
+   5. Compact Task Cards & Layouts
+   ========================================================================== */
 .task-card {
-    background: white;
-    border: 2px solid black;
-    border-radius: 16px;
-    padding: 20px;
-    transition: transform 0.15s ease;
+    background-color: #ffffff;
+    border: 2px solid #000000;
+    border-radius: 10px;
+    padding: 10px 12px; /* Reduced to balance negative room density */
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .task-card:hover {
-    transform: translateY(-2px);
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0px #000000;
 }
 
 .task-card-link {
@@ -196,20 +222,50 @@ button:hover {
 
 .task-card h3 {
     margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 22px;
+    margin-bottom: 6px;
+    font-size: 14px; /* Crisp, readable, scaled down heading */
+    font-weight: 800;
+    line-height: 1.2;
 }
 
 .task-card p {
-    margin: 6px 0;
-    font-size: 14px;
+    margin: 4px 0;
+    font-size: 12px; /* Smaller metadata typography footprint */
+    color: #334155;
 }
 
-/* Actions */
+.desc-preview {
+    font-size: 11px;
+    color: #64748b;
+    margin: 4px 0;
+}
+
+.card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    margin-bottom: 6px;
+}
+
+.kanban-status-select {
+    width: 100%;
+    padding: 4px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 6px;
+    border: 2px solid #000000;
+    background-color: #ffffff;
+    color: #111111;
+    cursor: pointer;
+    box-sizing: border-box;
+    margin-top: 4px;
+}
+
 .task-actions {
     display: flex;
-    gap: 8px;
-    margin-top: 12px;
+    gap: 6px;
+    margin-top: 8px;
 }
 
 .task-actions form {
@@ -218,42 +274,40 @@ button:hover {
 
 .task-actions button {
     width: 100%;
-    padding: 6px;
-    border-radius: 10px;
-    border: 2px solid black;
+    padding: 4px;
+    border-radius: 6px;
+    border: 2px solid #000000;
     font-weight: bold;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 11px;
+    background: #ffffff;
 }
 
-/* Badges */
+.task-actions button:hover {
+    background-color: #f8fafc;
+}
+
+/* ==========================================================================
+   6. UI Badges, Alerts, Empty Fallbacks
+   ========================================================================== */
 .badge,
 .status-badge {
     display: inline-block;
-    padding: 5px 12px;
-    border-radius: 12px;
-    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 10px;
     font-weight: bold;
-    color: black;
+    color: #000000;
+    border: 1px solid #000000;
 }
 
-/* Priority */
-.high {
-    background: #fecaca;
-}
+.high { background: #fee2e2; }
+.medium { background: #fef3c7; }
+.low { background: #dcfce7; }
 
-.medium {
-    background: #fde68a;
-}
-
-.low {
-    background: #bbf7d0;
-}
-
-/* Overdue */
 .overdue-card {
-    border: 3px solid #dc2626;
-    background: #fee2e2;
+    border: 2px solid #dc2626;
+    background: #fff5f5;
 }
 
 .overdue-text {
@@ -261,25 +315,238 @@ button:hover {
     font-weight: bold;
 }
 
-/* Empty */
-.empty {
+.empty, .empty-column-text {
     text-align: center;
-    color: #666;
-    padding: 25px;
+    color: #94a3b8;
+    padding: 16px 4px;
+    font-size: 11px;
+    font-style: italic;
+    margin: 0;
 }
 
-/* Scrollbar */
-.task-scroll-area::-webkit-scrollbar {
-    width: 8px;
+/* ==========================================================================
+   7. Sidebar Drawer UI
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.3);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    justify-content: flex-end;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease-in-out;
 }
 
-.task-scroll-area::-webkit-scrollbar-track {
-    background: #f3f4f6;
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.minimal-sidebar-window {
+    width: 380px;
+    max-width: 90vw;
+    height: 100%;
+    background-color: #ffffff;
+    box-shadow: -6px 0 30px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.25s ease-in-out;
+    box-sizing: border-box;
+    border-left: 2px solid #000000;
+}
+
+.modal-overlay.active .minimal-sidebar-window {
+    transform: translateX(0);
+}
+
+/* ==========================================================================
+   8. Custom Scrollbar Handling
+   ========================================================================== */
+.kanban-cards-dropzone::-webkit-scrollbar {
+    width: 4px; /* Thin scrollbar layout footprint */
+}
+
+.kanban-cards-dropzone::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.kanban-cards-dropzone::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
     border-radius: 10px;
 }
 
-.task-scroll-area::-webkit-scrollbar-thumb {
-    background: #fed7aa;
+.kanban-cards-dropzone::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ==========================================================================
+   9. Sidebar Drawer UI (Clean Brutalist Minimalism)
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.2); /* Soft dimmed background layer */
+    backdrop-filter: blur(2px);
+    z-index: 1000;
+    display: flex;
+    justify-content: flex-end;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.minimal-sidebar-window {
+    width: 380px;
+    max-width: 85vw;
+    height: 100%;
+    background-color: #ffffff;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.2s ease-in-out;
+    box-sizing: border-box;
+    border-left: 2px solid #000000;
+}
+
+.modal-overlay.active .minimal-sidebar-window {
+    transform: translateX(0);
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #000000;
+    padding-bottom: 12px;
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 900;
+    color: #000000;
+}
+
+.close-sidebar-btn {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: #000000;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+}
+
+.close-sidebar-btn:hover {
+    color: #64748b;
+}
+
+/* Sidebar Input Elements Styling */
+.sidebar-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 4px;
+}
+
+.sidebar-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sidebar-form label {
+    font-size: 12px;
+    font-weight: 800;
+    color: #000000;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Universal fields style rule override for the sidebar form elements */
+.sidebar-form input,
+.sidebar-form select,
+.sidebar-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #000000;
     border-radius: 10px;
-    border: 1px solid black;
+    font-size: 13px;
+    font-weight: 600;
+    color: #111111;
+    box-sizing: border-box;
+    background: #ffffff;
+    outline: none;
+    box-shadow: none !important; /* Strips shadows entirely */
+}
+
+/* Re-apply arrow handling cleanly for nested select components in form fields */
+.sidebar-form select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px;
+    padding-right: 32px;
+}
+
+.sidebar-form textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.sidebar-form input:focus,
+.sidebar-form select:focus,
+.sidebar-form textarea:focus {
+    border-color: #2563eb;
+}
+
+.sidebar-form .form-submit-row {
+    margin-top: auto; /* Forces the submit section to stick neatly at the bottom */
+    padding-top: 16px;
+    border-top: 2px solid #000000;
+}
+
+.sidebar-form .create-btn {
+    width: 100%;
+    background-color: #10b981;
+    color: #ffffff;
+    font-weight: bold;
+    border: 2px solid #000000;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 2px 2px 0px #000000;
+    transition: all 0.15s ease;
+}
+
+.sidebar-form .create-btn:hover {
+    background-color: #059669;
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0px #000000;
 }

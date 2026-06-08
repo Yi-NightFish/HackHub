@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-Task Details
+Task Kanban Board
 {% endblock %}
 
 {% block css %}
@@ -10,149 +10,129 @@ Task Details
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="task-page-header">
-            <h1>{{ team.name }}</h1>
-            <input type="text" name="searchtasks" placeholder="Search tasks..." hx-get="{{ url_for('tasks', team_id=team.id) }}" hx-trigger="keyup changed delay:300ms" hx-target="#task-list-container" hx-swap="innerHTML" class="task-search-box"/>
-        </div>
-        
-        <div class="task-layout">
+<div class="task-page-header">
+    <div class="header-title-area">
+        <a href="{{ url_for('teams') }}" class="back-team-btn" title="Back to Teams">←</a>
+        <h1>{{ team.name }}</h1>
+    </div>
+    <div class="header-actions">
+        <input type="text" name="searchtasks" placeholder="Search board..." hx-get="{{ url_for('tasks', team_id=team.id) }}" hx-trigger="keyup changed delay:300ms" hx-target="#kanban-board-container" hx-swap="innerHTML" class="task-search-box"/>
+        <button class="open-creation-btn" onclick="openCreateModal()" title="Create Task">＋</button>
+    </div>
+</div>
 
-            <!-- Create Task Panel -->
-            <div class="create-task-panel">
-                <form method="POST">
-                    {{ form.hidden_tag() }}
+    <div class="task-layout">
+        <div class="task-main">
+            <div class="kanban-board" id="kanban-board-container">
 
-                    <div>{{ form.title.label() }}{{ form.title() }}</div>
-                    <div>{{ form.description.label() }}{{ form.description() }}</div>
-                    <div>{{ form.assigned_to.label() }}{{ form.assigned_to() }}</div>
-                    <div>{{ form.deadline.label() }}{{ form.deadline() }}</div>
-                    <div>{{ form.priority.label() }}{{ form.priority() }}</div>
-                    <div>{{ form.status.label() }}{{ form.status() }}</div>
+                {% for column_status in ["Wishlist", "To Do", "In Progress", "In Review", "Complete"] %}
+                <div class="kanban-column">
+                    <div class="column-header status-{{ column_status|lower|replace(' ', '-') }}">
+                        <h2>{{ column_status }}</h2>
+                        <button class="column-add-btn" onclick="openCreateModal('{{ column_status }}')"
+                            title="Add task to {{ column_status }}">+</button>
+                    </div>
 
-                    <div>{{ form.submit(class="create-btn") }}</div>
-                </form><br>
-                <a href="{{ url_for('team_detail', team_id=team.id) }}" class="button">← Back to Team</a>
-            </div>
-
-            <!-- Task Main Section -->
-            <div class="task-main">
-
-                <!-- Filter Bar -->
-                <div class="filter-bar">
-                    <a class="filter-link {% if status_filter == 'all' %}active{% endif %}"
-                        href="{{ url_for('tasks', team_id=team.id, status='all') }}">
-                        All
-                    </a>
-
-                    <a class="filter-link {% if status_filter == 'Wishlist' %}active{% endif %}"
-                        href="{{ url_for('tasks', team_id=team.id, status='Wishlist') }}">
-                        Wishlist
-                    </a>
-
-                    <a class="filter-link {% if status_filter == 'To Do' %}active{% endif %}"
-                        href="{{ url_for('tasks', team_id=team.id, status='To Do') }}">
-                        To Do
-                    </a>
-
-                    <a class="filter-link {% if status_filter == 'In Progress' %}active{% endif %}"
-                        href="{{ url_for('tasks', team_id=team.id, status='In Progress') }}">
-                        In Progress
-                    </a>
-
-                    <a class="filter-link {% if status_filter == 'In Review' %}active{% endif %}"
-                        href="{{ url_for('tasks', team_id=team.id, status='In Review') }}">
-                        In Review
-                    </a>
-
-                    <a class="filter-link {% if status_filter == 'Complete' %}active{% endif %}"
-                        href="{{ url_for('tasks', team_id=team.id, status='Complete') }}">
-                        Complete
-                    </a>
-                </div>
-
-                <!-- Task Scroll Area -->
-                <div class="task-scroll-area">
-                    <div class="task-card-list" id="task-list-container">
-                        <!-- Task list starts here -->
+                    <div class="kanban-cards-dropzone">
+                        {% set column_has_tasks = false %}
                         {% for task in tasks %}
-                        {% set is_overdue = (not task.is_done) and (task.status in ['To Do', 'In Progress']) and task.deadline and task.deadline < datetime.datetime.now() %}
+                        {% if task.status == column_status %}
+                        {% set column_has_tasks = true %}
 
-                        <div class="task-card {% if is_overdue %}overdue-card{% endif %}">
-                            <!-- Clickable Task Card -->
-                            <a class="task-card-link" href="{{ url_for('task_details', team_id=task.team_id, id=task.id) }}">
+                        {% set is_overdue = (not task.is_done) and (task.status in ['To Do', 'In Progress']) and
+                        task.deadline and task.deadline < datetime.datetime.now() %} <div
+                            class="task-card {% if is_overdue %}overdue-card{% endif %}">
+                            <a class="task-card-link" href="{{ url_for('task_details', team_id=team.id, id=task.id) }}">
                                 <h3>{{ task.title }}</h3>
-
-                                <p>
-                                    <strong>Assigned:</strong>
-                                    {% if task.assigned_user %}
-                                        {{ task.assigned_user.name }}
-                                    {% else %}
-                                        No assignee
-                                    {% endif %}
-                                </p>
-
-                                <p>
-                                    <strong>Priority:</strong>
-                                    {% if task.priority %}
-                                        <span class="badge {{ task.priority|lower }}">
-                                            {{ task.priority }}
-                                        </span>
-                                    {% else %}
-                                        No priority
-                                    {% endif %}
-                                </p>
-
-                                <p>
-                                    <strong>Deadline:</strong>
-                                    {% if task.deadline %}
-                                        {{ task.deadline.strftime('%d %b %Y') }}
-                                    {% else %}
-                                        No deadline
-                                    {% endif %}
-                                </p>
-
+                                <p><strong>Assigned:</strong> {{ task.assigned_user.name if task.assigned_user else 'No
+                                    assignee' }}</p>
+                                <p><strong>Priority:</strong> {% if task.priority %}<span
+                                        class="badge {{ task.priority|lower }}">{{ task.priority }}</span>{% else %}No
+                                    priority{% endif %}</p>
+                                <p><strong>Deadline:</strong> {{ task.deadline.strftime('%d %b %Y') if task.deadline
+                                    else 'No deadline' }}</p>
                                 {% if is_overdue %}
-                                    <p class="overdue-text">Overdue</p>
+                                <p class="overdue-text">Overdue</p>
                                 {% endif %}
-
-                                <p>
-                                    <span class="status-badge status-{{ task.status|lower|replace(' ', '-') }}">
-                                        {{ task.status }}
-                                    </span>
-                                </p>
                             </a>
 
-                            <!-- Task Actions -->
-                            <div class="task-actions">
-                                <!-- Toggle Done -->
-                                <form method="POST" action="{{ url_for('toggle_task', team_id=task.team_id, id=task.id) }}">
-                                    <button type="submit">
-                                        {% if task.is_done %}
-                                            Undo
-                                        {% else %}
-                                            Done
-                                        {% endif %}
-                                    </button>
-                                </form>
+                            <div class="kanban-quick-actions">
+                                <select name="value" hx-post="{{ url_for('autosave_task', id=task.id) }}"
+                                    hx-trigger="change" hx-vals='{"field":"status"}' hx-target="body"
+                                    hx-swap="outerHTML" class="kanban-status-select">
+                                    <option value="Wishlist" {% if task.status=="Wishlist" %}selected{% endif %}>Move
+                                        to: Wishlist</option>
+                                    <option value="To Do" {% if task.status=="To Do" %}selected{% endif %}>Move to: To
+                                        Do</option>
+                                    <option value="In Progress" {% if task.status=="In Progress" %}selected{% endif %}>
+                                        Move to: In Progress</option>
+                                    <option value="In Review" {% if task.status=="In Review" %}selected{% endif %}>Move
+                                        to: In Review</option>
+                                    <option value="Complete" {% if task.status=="Complete" %}selected{% endif %}>Move
+                                        to: Complete</option>
+                                </select>
+                            </div>
 
-                                <!-- Delete Task -->
-                                <form method="POST" action="{{ url_for('delete_task', team_id=task.team_id, id=task.id) }}">
-                                    <button type="submit" onclick="return confirm('Delete this task?')">
-                                        Delete
-                                    </button>
+                            <div class="task-actions">
+                                <form method="POST" action="{{ url_for('toggle_task', team_id=team.id, id=task.id) }}">
+                                    <button type="submit">{% if task.is_done %}Undo{% else %}Done{% endif %}</button>
+                                </form>
+                                <form method="POST" action="{{ url_for('delete_task', team_id=team.id, id=task.id) }}">
+                                    <button type="submit" onclick="return confirm('Delete this task?')">Delete</button>
                                 </form>
                             </div>
-                        </div>
-
-                        {% else %}
-                            <p class="empty">No tasks found.</p>
-                        {% endfor %}
-                        <!-- Task list ends here -->
                     </div>
-                </div>
+                    {% endif %}
+                    {% endfor %}
 
+                    {% if not column_has_tasks %}
+                    <p class="empty-column-text">No tasks</p>
+                    {% endif %}
+                </div>
             </div>
+            {% endfor %}
+
         </div>
     </div>
+</div>
+</div>
+
+<div class="modal-overlay" id="createTaskModal" onclick="closeCreateModal(event)">
+    <div class="minimal-sidebar-window" onclick="event.stopPropagation()">
+        <div class="sidebar-header">
+            <h2>New Task</h2>
+            <button class="close-sidebar-btn" onclick="closeCreateModal(event)">✕</button>
+        </div>
+        <form method="POST" class="sidebar-form">
+            {{ form.hidden_tag() }}
+            <div class="form-group">{{ form.title.label() }}{{ form.title(placeholder="Task Title...") }}</div>
+            <div class="form-group">{{ form.description.label() }}{{ form.description(rows=4, placeholder="Describe details...") }}</div>
+            <div class="form-group">{{ form.assigned_to.label() }}{{ form.assigned_to() }}</div>
+            <div class="form-group">{{ form.deadline.label() }}{{ form.deadline() }}</div>
+            <div class="form-group">{{ form.priority.label() }}{{ form.priority() }}</div>
+            <div class="form-group">{{ form.status.label(id="status-field-label") }}{{
+                form.status(id="creation-status-select") }}</div>
+            <div class="form-submit-row">
+                {{ form.submit(class="create-btn") }}
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openCreateModal(presetStatus = '') {
+        const modal = document.getElementById('createTaskModal');
+        const statusSelect = document.getElementById('creation-status-select');
+
+        if (presetStatus && statusSelect) {
+            statusSelect.value = presetStatus;
+        }
+        modal.classList.add('active');
+    }
+
+    function closeCreateModal(event) {
+        if (event) event.preventDefault();
+        document.getElementById('createTaskModal').classList.remove('active');
+    }
+</script>
 {% endblock %}
