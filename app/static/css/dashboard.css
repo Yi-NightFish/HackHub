@@ -275,3 +275,37 @@ body{
 .clickable-row-box:hover .inline-link-btn {
     background: #4338ca;
 }
+
+/* Enables smooth transitional page movement instead of an instant hard jump cut */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Base structural panels prepare for quick flash updates */
+.dashboard-section, .column-box {
+    transition: background-color 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+/* Lights up the clicked section brightly */
+.dashboard-section:target, .column-box:target {
+    animation: glowPanelPulse 1.8s cubic-bezier(0.25, 1, 0.5, 1);
+    outline: none;
+}
+
+@keyframes glowPanelPulse {
+    0% {
+        background-color: #f0f7ff; /* Clean light blue tint flash */
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.3);
+        transform: translateY(-2px);
+    }
+    40% {
+        background-color: #f0f7ff;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.3);
+        transform: translateY(-2px);
+    }
+    100% {
+        background-color: transparent; /* Smoothly transitions back to native style definitions */
+        box-shadow: none;
+        transform: translateY(0);
+    }
+}

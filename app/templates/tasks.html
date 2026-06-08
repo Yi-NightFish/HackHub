@@ -17,7 +17,7 @@ Task Kanban Board
     </div>
     <div class="header-actions">
         <input type="text" name="searchtasks" placeholder="Search board..." hx-get="{{ url_for('tasks', team_id=team.id) }}" hx-trigger="keyup changed delay:300ms" hx-target="#kanban-board-container" hx-swap="innerHTML" class="task-search-box"/>
-        <button class="open-creation-btn" onclick="openCreateModal()" title="Create Task">＋</button>
+        <button class="open-creation-btn" onclick="openCreateModal()" title="Create Task">+</button>
     </div>
 </div>
 
@@ -86,7 +86,6 @@ Task Kanban Board
                     {% endfor %}
 
                     {% if not column_has_tasks %}
-                    <p class="empty-column-text">No tasks</p>
                     {% endif %}
                 </div>
             </div>

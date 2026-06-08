@@ -17,20 +17,28 @@ Dashboard
         <p>Manage your events, teams and tasks in one place.</p>
     </div>
 
-    <div class="stats-grid">
+<div class="stats-grid">
+    <a href="#joined-events-target" class="stat-card-link" style="text-decoration: none; color: inherit; display: block;">
         <div class="stat-card">
             <h4>Joined Events</h4>
             <p>{{ joined_events|length }}</p>
         </div>
+    </a>
+
+    <a href="#joined-teams-target" class="stat-card-link" style="text-decoration: none; color: inherit; display: block;">
         <div class="stat-card">
             <h4>Joined Teams</h4>
             <p>{{ joined_teams|length }}</p>
         </div>
+    </a>
+
+    <a href="#active-workspaces-target" class="stat-card-link" style="text-decoration: none; color: inherit; display: block;">
         <div class="stat-card">
-            <h4>Assigned Tasks</h4>
-            <p>{{ tasks|length }}</p>
+            <h4>Active Workspace</h4>
+            <p>{{ joined_teams|length }}</p>
         </div>
-    </div>
+    </a>
+</div>
 
     <div class="dashboard-section">
         <h2>Overdue Tasks</h2>
@@ -50,9 +58,9 @@ Dashboard
         </div>
     </div>
 
-    <div class="dashboard-two-columns">
+<div class="dashboard-two-columns">
         
-        <div class="dashboard-section column-box">
+        <div id="joined-teams-target" class="dashboard-section column-box">
             <h2>Joined Teams</h2>
             <div class="list-container">
                 {% for p in joined_teams %}
@@ -67,7 +75,7 @@ Dashboard
             </div>
         </div>
 
-        <div class="dashboard-section column-box">
+        <div id="joined-events-target" class="dashboard-section column-box">
             <h2>Joined Events</h2>
             <div class="list-container">
                 {% for p in joined_events %}
@@ -84,7 +92,7 @@ Dashboard
 
     </div>
 
-    <div class="dashboard-section">
+<div id="active-workspaces-target" class="dashboard-section">
         <h2>Active Workspaces</h2>
         <div class="list-container">
             {% for p in joined_teams %}
