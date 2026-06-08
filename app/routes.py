@@ -1081,8 +1081,8 @@ def delete_screenshot(team_id, screenshot_index):
 def organizer_dashboard():
     current_user_id = session.get("user_id")
     current_user = db.session.get(User, current_user_id)
-    if not current_user.is_organizer: #只有organizer能访问这个dashboard
-        return "Unauthorized", 403
+    # if not current_user.is_organizer: #只有organizer能访问这个dashboard
+    #     return "Unauthorized", 403 # 如果要分user is organizer, models need to add is_organizer field
     participants = User.query.order_by(User.id.asc()).all()
     all_teams = team_query = db.session.query(Team).join(Event).filter(Event.is_active == True).all()
     solo_participants = Participation.query.filter(Participation.team_id == None).all()
