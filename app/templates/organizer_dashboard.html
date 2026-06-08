@@ -14,7 +14,11 @@
         </div>
         <div style="flex: 1; background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 8px; padding: 20px; text-align: center;">
             <h3 style="margin: 0; color: #1b5e20;">Active Teams</h3>
-            <p style="font-size: 2.5em; font-weight: bold; margin: 10px 0 0 0;">{{ stats.total_teams }}</p>
+            <p style="font-size: 2.5em; font-weight: bold; margin: 10px 0 0 0;">{{ stats.total_active_teams }}</p>
+        </div>
+        <div style="flex: 1; background: #f1f3f5; border: 1px solid #ced4da; border-radius: 8px; padding: 20px; text-align: center;">
+            <h3 style="margin: 0; color: #495057;">Cancelled Teams</h3>
+            <p style="font-size: 2.5em; font-weight: bold; margin: 10px 0 0 0;">{{ stats.total_cancelled_teams }}</p>
         </div>
         <div style="flex: 1; background: #fff3e0; border: 1px solid #ffcc80; border-radius: 8px; padding: 20px; text-align: center;">
             <h3 style="margin: 0; color: #e65100;">Solo Participants</h3>
@@ -88,7 +92,7 @@
                     </td>
                     <td style="padding: 12px;"><code style="background: #fff5f5; color: #c92a2a; padding: 2px 6px; border-radius: 4px; font-weight: bold;">{{ team.team_code }}</code></td>
                     <td style="padding: 12px; font-size: 0.9em; color: #495057;">
-                        <span style="font-weight: bold;"></span>{{ team.event.title if team.event else "Unknown Event" }}</span>
+                        <span style="font-weight: bold;">{{ team.event.title if team.event else "Unknown Event" }}</span>
                         <div style="margin-top: 4px;">
                             {% if team.event %}
                                 {% if team.event.cancelled %}
@@ -120,7 +124,8 @@
                     <td style="padding: 12px;">
                         {% set current_size = team.members|length %}
                         <span style="font-weight: bold; padding: 3px 8px; border-radius: 20px; font-size: 0.9em;
-                            {% if current_size >= team.max_members %} background: #d4edda; color: #155724; 
+                            {%if team.event and team.event.cancelled %} background: #e2e8f0; color: #718096;
+                            {% elif current_size >= team.max_members %} background: #d4edda; color: #155724; 
                             {% elif current_size <= 1 %} background: #f8d7da; color: #721c24; 
                             {% else %} background: #fff3cd; color: #856404; {% endif %}">
                             {{ current_size }} / {{ team.max_members }}
@@ -128,9 +133,9 @@
                     </td>
                     <td style="padding: 12px;">
                         {% if team.project_submitted %}
-                            <span style="color: #28a745; font-weight: bold;">✓ Submitted</span>
+                            <span style="font-weight: bold; {% if team.event and team.event.cancelled %} color: #adb5bd; text-decoration: line-through; {% else %} color: #28a745; {% endif %}">✓ Submitted</span>
                         {% else %}
-                            <span style="color: #dc3545; font-style: italic;">✗ Pending</span>
+                            <span style="font-style: italic; {% if team.event and team.event.cancelled %} color: #ced4da; {% else %} color: #dc3545; {% endif %}">✗ Pending</span>
                         {% endif %}
                     </td>
                 </tr>

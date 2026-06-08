@@ -1084,10 +1084,12 @@ def organizer_dashboard():
     # if not current_user.is_organizer: #只有organizer能访问这个dashboard
     #     return "Unauthorized", 403 # 如果要分user is organizer, models need to add is_organizer field
     participants = User.query.order_by(User.id.asc()).all()
-    # all_teams = db.session.query(Team).join(Event).filter(Event.cancelled == False).all()
     all_teams = Team.query.all()
+    active_teams_list = [t for t in all_teams if not (t.event and t.event.cancelled)]
+    cancelled_teams_list = [t for t in all_teams if t.event and t.event.cancelled]
+    # soloist是指没有加入任何team的participant
     solo_participants = Participation.query.filter(Participation.team_id == None).all()
     solo_user_ids = {p.user_id for p in solo_participants}
     soloist = User.query.filter(User.id.in_(solo_user_ids)).all()
-    stats = {"total_participants": len(participants), "total_teams": len(all_teams), "total_soloists": len(soloist)}
+    stats = {"total_participants": len(participants), "total_active_teams": len(active_teams_list), "total_cancelled_teams": len(cancelled_teams_list), "total_soloists": len(soloist)}
     return render_template("organizer_dashboard.html", stats=stats, participants=participants, teams=all_teams, soloists=soloist, current_user=current_user)
