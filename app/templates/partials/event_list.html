@@ -7,7 +7,7 @@
   <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
     {% for event in events %}
     {% set status = event.status %}
-    <article class="card bg-base-200 shadow-lg border border-base-200 transition-transform hover:-translate-y-1">
+    <article class="card bg-base-200 shadow-lg border border-base-200 transition-transform hover:-translate-y-1 {% if event.id in joined_event_ids %} bg-primary/10 {% else %} bg-base-200 {% endif %}">
       <div class="card-body">
         <div class="flex items-start justify-between gap-4">
           <h3 class="card-title text-lg">{{ event.title }}</h3>

@@ -92,7 +92,7 @@
             <tbody>
               {% for participant in participants %}
               <tr>
-                <td><a href="{{ url_for('profile', user_id=participant.id) }}" class="link link-secondary link-hover">{{ participant.name }}</a></td>
+                <td><a href="{{ url_for('profile', user_id=participant.id) }}" class="link link-primary link-hover">{{ participant.name }}</a></td>
               </tr>
               {% endfor %}
             </tbody>
@@ -124,7 +124,7 @@
       {% for team in teams %}
       <div class="card bg-base-100 shadow border border-base-200">
         <div class="card-body">
-          <h3 class="card-title"><a href="{{ url_for('team_detail', team_id=team.id) }}" class="link link-primary">{{ team.name }}</a></h3>
+          <h3 class="card-title"><a href="{{ url_for('team_detail', team_id=team.id) }}" class="link link-primary link-hover">{{ team.name }}</a></h3>
           <p><strong>Motto:</strong> {{ team.motto or '-' }}</p>
           <p><strong>Members:</strong> {{ team.members|length }} / {{ team.max_members }}</p>
           <p><strong>Project:</strong> {{ team.project_idea or 'N/A' }}</p>
