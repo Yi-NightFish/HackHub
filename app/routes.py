@@ -1091,5 +1091,16 @@ def organizer_dashboard():
     solo_participants = Participation.query.filter(Participation.team_id == None).all()
     solo_user_ids = {p.user_id for p in solo_participants}
     soloist = User.query.filter(User.id.in_(solo_user_ids)).all()
+    # track team progress
+    team_progress = {}
+    for team in all_teams:
+        total_tasks = Task.query.filter_by(team_id = team.id).count()
+        completed_tasks = Task.query.filter_by(team_id = team.id, is_done = True).count()
+        if total_tasks > 0:
+            progress = int((completed_tasks / total_tasks) * 100)
+        else:
+            progress = 0
+        team_progress[team.id] = {"progress": progress, "completed_tasks": completed_tasks, "total_tasks": total_tasks}
+    # 看dashboard上display的数据
     stats = {"total_participants": len(participants), "total_active_teams": len(active_teams_list), "total_cancelled_teams": len(cancelled_teams_list), "total_soloists": len(soloist)}
-    return render_template("organizer_dashboard.html", stats=stats, participants=participants, teams=all_teams, soloists=soloist, current_user=current_user)
+    return render_template("organizer_dashboard.html", stats=stats, participants=participants, teams=all_teams, soloists=soloist, current_user=current_user, team_progress=team_progress)

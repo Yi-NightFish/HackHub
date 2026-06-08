@@ -74,6 +74,7 @@
                     <th style="padding: 12px;">Event Status</th>
                     <th style="padding: 12px;">Leader</th>
                     <th style="padding: 12px;">Pax</th>
+                    <th style="padding: 12px;">Task Progress</th>
                     <th style="padding: 12px;">Project Info</th>
                 </tr>
             </thead>
@@ -124,12 +125,35 @@
                     <td style="padding: 12px;">
                         {% set current_size = team.members|length %}
                         <span style="font-weight: bold; padding: 3px 8px; border-radius: 20px; font-size: 0.9em;
-                            {%if team.event and team.event.cancelled %} background: #e2e8f0; color: #718096;
+                            {% if team.event and team.event.cancelled %} background: #e2e8f0; color: #718096;
                             {% elif current_size >= team.max_members %} background: #d4edda; color: #155724; 
                             {% elif current_size <= 1 %} background: #f8d7da; color: #721c24; 
                             {% else %} background: #fff3cd; color: #856404; {% endif %}">
                             {{ current_size }} / {{ team.max_members }}
                         </span>
+                    </td>
+                    <td style="padding: 12px;">
+                        {% set prog = team_progress[team.id] %}
+                        
+                        {% if team.event and team.event.cancelled %}
+                            <div style="font-size: 0.8em; color: #8c96a3; margin-bottom: 4px;">Track Frozen</div>
+                            <div style="width: 100%; background-color: #e9ecef; border-radius: 6px; height: 10px; overflow: hidden;">
+                                <div style="width: {{ prog.progress }}%; background-color: #adb5bd; height: 100%;"></div>
+                            </div>
+                        {% else %}
+                            <div style="font-size: 0.8em; color: #495057; margin-bottom: 4px; display: flex; justify-content: space-between;">
+                                <span>{{ prog.completed_tasks }}/{{ prog.total_tasks }} Tasks</span>
+                                <strong>{{ prog.progress }}%</strong>
+                            </div>
+                            
+                            <div style="width: 100%; background-color: #e9ecef; border-radius: 6px; height: 10px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);">
+                                <div style="width: {{ prog.progress }}%; height: 100%; transition: width 0.3s ease;
+                                    {% if prog.progress >= 80 %} background-color: #28a745;
+                                    {% elif prog.progress >= 40 %} background-color: #ffc107;
+                                    {% else %} background-color: #dc3545; {% endif %}">
+                                </div>
+                            </div>
+                        {% endif %}
                     </td>
                     <td style="padding: 12px;">
                         {% if team.project_submitted %}
