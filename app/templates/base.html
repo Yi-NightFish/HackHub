@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-theme = "dark">
+<html data-theme = "bumblebee">
     <head>
         <title>{% block title %}{% endblock %}</title>
         <meta charset = "utf-8">
@@ -9,20 +9,21 @@
         </style>
         <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jdenticon@3.3.0/dist/jdenticon.min.js" async
+                integrity="sha384-LfouGM03m83ArVtne1JPk926e3SGD0Tz8XHtW2OKGsgeBU/UfR0Fa8eX+UlwSSAZ" crossorigin="anonymous">
+        </script>
     </head>
 
-    <body>
-        <div class = "sticky top-0 z-50 tabs tabs-border tabs-lg mb-2">
-            <a href = '{{url_for("home")}}' class = "tab font-bold tab-active text-primary">Home</a>
+    <body class="w-screen min-h-screen bg-base-200">
+        <div class = "sticky top-0 z-50 tabs tabs-lift tabs-lg mb-2 bg-base-100">
+            <a href = '{{url_for("home")}}' class = "tab font-bold tab-active bg-base-200">Home</a>
             <a href = '{{ url_for("explore") }}' class = "tab text-neutral-content font-semibold">Events</a>
             {% if current_user %}
-                <a href = '{{url_for("profile", user_id = current_user.id)}}' class = "tab text-neutral-content font-semibold">Profile</a>
-                <!-- <a href='{{ url_for("teams") }}'>Teams</a>
-                <a href='{{ url_for("chat_home") }}'>Chats</a> -->
-                <a href = '{{url_for("logout")}}' class = "tab text-neutral-content font-semibold">Log Out</a>
+                <a href = '{{url_for("profile", user_id = current_user.id)}}' class = "tab text-neutral-content font-bold">Profile</a>
+                <a href = '{{url_for("logout")}}' class = "tab text-neutral-content font-bold">Log Out</a>
             {% else %}
-                <a href = '{{url_for("login")}}' class = "tab text-neutral-content font-semibold">Login</a>
-                <a href = '{{url_for("register")}}' class = "tab text-neutral-content font-semibold">Sign Up</a>
+                <a href = '{{url_for("login")}}' class = "tab text-neutral-content font-bold">Login</a>
+                <a href = '{{url_for("register")}}' class = "tab text-neutral-content font-bold">Sign Up</a>
             {% endif %}
         </div>
 

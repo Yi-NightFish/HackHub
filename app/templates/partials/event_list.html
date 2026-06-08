@@ -7,35 +7,49 @@
   <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
     {% for event in events %}
     {% set status = event.status %}
-    <article class="card bg-base-200 shadow-lg border border-base-200 transition-transform hover:-translate-y-1 {% if event.id in joined_event_ids %} bg-primary/10 {% else %} bg-base-200 {% endif %}">
+    <div class="card rounded-3xl {% if event.id in joined_event_ids %} bg-base-100/80 {% else %} bg-base-100 {% endif %} shadow-lg border border-base-300 transition-transform hover:-translate-y-1">
       <div class="card-body">
         <div class="flex items-start justify-between gap-4">
-          <h3 class="card-title text-lg">{{ event.title }}</h3>
+          <h3 class="card-title text-2xl text-base-content font-bold">{{ event.title }}</h3>
           <span class="badge badge-md {% if status == 'open' %}badge-success{% elif status == 'cancelled' %}badge-error{% elif status == 'completed' %}badge-ghost{% elif status == 'ongoing' %}badge-warning{% else %}badge-info{% endif %}">
             {{ status.capitalize() }}
           </span>
         </div>
-
-        <p class="text-sm text-base-content/70">
-          <strong>Organizer:</strong> {{ event.organizer.name }}
+        <div class="divider my-1"></div>
+        <p class="flex flex-row items-center gap-2 text-sm text-base-content/70">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="w-5 h-5" stroke="currentColor" fill="currentColor">
+            <path d="M128 0C110.3 0 96 14.3 96 32l0 32-32 0C28.7 64 0 92.7 0 128l0 48 448 0 0-48c0-35.3-28.7-64-64-64l-32 0 0-32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 32-128 0 0-32c0-17.7-14.3-32-32-32zM0 224L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-192-448 0z"/>
+          </svg>
+          <span>{{ event.deadline.strftime('%a %Y-%m-%d') }}</span>
         </p>
-        <p class="text-sm text-base-content/70">
-          <strong>Registration Deadline:</strong> {{ event.deadline.strftime('%a %Y-%m-%d') }}
+        <p class="flex flex-row items-center gap-2 text-sm text-base-content/70">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-5 h-5" stroke="currentColor" fill="currentColor"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+            <path d="M504.4 132.5c-4.5 10.5-18.4 9.8-24.9 .4-27.8-40-66.1-72.2-111-92.6-10.4-4.7-13.7-18.3-4.1-24.6 15-9.9 33-15.7 52.3-15.7 52.6 0 95.2 42.6 95.2 95.2 0 13.2-2.7 25.8-7.6 37.3zm-471.9 .4c-6.5 9.4-20.5 10.1-24.9-.4-4.9-11.5-7.6-24.1-7.6-37.3 0-52.6 42.6-95.2 95.2-95.2 19.3 0 37.3 5.8 52.3 15.7 9.6 6.3 6.3 19.9-4.1 24.6-44.8 20.4-83.1 52.6-111 92.6zM390.2 467.4C352.8 495.4 306.3 512 256 512s-96.8-16.6-134.1-44.6L86.6 502.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l35.2-35.2C48.6 384.8 32 338.3 32 288 32 164.3 132.3 64 256 64S480 164.3 480 288c0 50.3-16.6 96.8-44.6 134.2l35.2 35.2c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0l-35.2-35.2zM280 184c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l56 56c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-49-49 0-94.1z"/>
+          </svg>
+          <span>{{ event.deadline.strftime('%I:%M %p') }}</span>
         </p>
+        <div class="divider my-1"></div>
+        <div class="flex flex-row items-center gap-3 text-sm font-medium text-base-content/80 mb-2">
+          <div class="avatar transition-transform duration-200 hover:scale-105">
+            <div class="w-9 h-9 rounded-full bg-base-100 border-2 border-base-300 shadow-sm p-1 flex items-center justify-center">
+              <svg data-jdenticon-value="{{ event.organizer.name }}" class="w-full h-full"></svg>
+            </div>
+          </div>
+          
+          <a href='{{ url_for("profile", user_id=event.organizer.id) }}' class="link link-hover font-semibold transition-transform duration-200 hover:scale-105">{{ event.organizer.name }}</a>
+        </div>
 
-        <div class="divider my-3"></div>
-
-        <div class="card-actions justify-end">
+        <div class="card-actions">
           {% if event.id in joined_event_ids %}
-          <a href="/event/{{ event.id }}" class="btn btn-outline btn-sm transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 hover:bg-primary">View Detail</a>
+          <a href="/event/{{ event.id }}" class="btn btn-soft btn-primary w-full">View Detail</a>
           {% elif status == 'open' %}
-          <a href="/event/{{ event.id }}" class="btn btn-outline btn-sm transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 hover:bg-primary">Register Now</a>
+          <a href="/event/{{ event.id }}" class="btn btn-soft btn-primary w-full">Register Now</a>
           {% else %}
-          <a href="/event/{{ event.id }}" class="btn btn-outline btn-sm transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 hover:bg-primary">View Detail</a>
+          <a href="/event/{{ event.id }}" class="btn btn-soft btn-primary w-full">View Detail</a>
           {% endif %}
         </div>
       </div>
-    </article>
+    </div>
     {% endfor %}
   </div>
   {% else %}

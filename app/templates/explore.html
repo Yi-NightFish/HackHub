@@ -7,20 +7,14 @@
       <h1 class="text-4xl font-bold">Explore Events</h1>
       <p class="text-base-content mt-2">Discover and join exciting events</p>
     </div>
-    {% if current_user %}
-    <a href="{{ url_for('create_event') }}" class="btn btn-primary gap-2">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-      Create Event
-    </a>
-    {% endif %}
   </div>
 
   <!-- Filter Section -->
-  <div class="card bg-base-200 shadow-lg mb-8">
+  <div class="card bg-base-200 mb-8">
     <div class="card-body">
-      <div class="grid grid-cols-3 gap-4">
+      <div class="flex gap-4 align-center">
         <!-- Search Input -->
-        <div class="form-control">
+        <div class="flex-1 form-control">
           <label class="label">
             <span class="label-text font-semibold">Search Events</span>
           </label>
@@ -43,7 +37,7 @@
         </div>
 
         <!-- Status Filter -->
-        <div class="form-control">
+        <div class="flex-1 form-control">
           <label class="label">
             <span class="label-text font-semibold">Status</span>
           </label>
@@ -63,7 +57,7 @@
         </div>
 
         <!-- Sort Filter -->
-        <div class="form-control">
+        <div class="flex-1 form-control">
           <label class="label">
             <span class="label-text font-semibold">Sort By</span>
           </label>
@@ -78,6 +72,16 @@
             <option value="oldest" {% if sort_by == "oldest" %}selected{% endif %}>Oldest</option>
           </select>
         </div>
+        
+        {% if current_user %}
+        <div class="divider divider-horizontal text-xs">OR</div>
+        <div class="flex-1 flex items-end">
+          <a href="{{ url_for('create_event') }}" class="btn btn-primary gap-2 w-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+            Create Event
+          </a>
+        </div>
+        {% endif %}
       </div>
     </div>
   </div>
