@@ -15,12 +15,18 @@
     </head>
 
     <body class="w-screen min-h-screen bg-base-200">
-        <div class = "sticky top-0 z-50 tabs tabs-lift tabs-lg mb-2 bg-base-100">
+        <div class = "sticky top-0 z-50 tabs tabs-lift tabs-lg mb-2 bg-base-100 flex justify-start">
             <a href = '{{url_for("home")}}' class = "tab font-bold tab-active bg-base-200">Home</a>
             <a href = '{{ url_for("explore") }}' class = "tab text-neutral-content font-semibold">Events</a>
             {% if current_user %}
-                <a href = '{{url_for("profile", user_id = current_user.id)}}' class = "tab text-neutral-content font-bold">Profile</a>
                 <a href = '{{url_for("logout")}}' class = "tab text-neutral-content font-bold">Log Out</a>
+                <div class="avatar flex-1 flex items-center justify-end pr-8">
+                    <div class="w-9 h-9 rounded-full border-1 border-neutral/30 shadow-sm p-1 bg-base-100 transition duration-200 hover:scale-105">
+                        <a href = '{{url_for("profile", user_id = current_user.id)}}'>
+                            <svg data-jdenticon-value="{{ current_user.name }}" class="w-full h-full"></svg>
+                        </a>
+                    </div>
+                </div>
             {% else %}
                 <a href = '{{url_for("login")}}' class = "tab text-neutral-content font-bold">Login</a>
                 <a href = '{{url_for("register")}}' class = "tab text-neutral-content font-bold">Sign Up</a>
