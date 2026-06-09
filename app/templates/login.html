@@ -4,19 +4,32 @@
 
 {% block content %}
 <div class="max-w-md mx-auto">
-    <div class="card bg-base-200 shadow-lg">
+    <div class="card bg-base-200 shadow-lg m-0">
         <div class="card-body">
             <h2 class="card-title">Log In</h2>
-
-            <form method="POST" class="space-y-4">
+            <form method="POST" class="space-y-4 mb-2">
                 <div class="form-control">
-                    <label class="label"><span class="label-text">Email</span></label>
-                    <input type="email" id="email" name="email" required class="input input-bordered w-full" />
+                    <label class="input validator w-full border-2">
+                        <svg class="h-5 opacity-50" xmlns="http://w3.org" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <input type="email" required placeholder="Email" class="w-full" id="login-identifier" name="email"/>
+                    </label>
+                    <label class="opacity-50 text-xs">
+                        <input type="checkbox" class="toggle toggle-xs" 
+                               onChange="
+                                    const input = document.getElementById('login-identifier');
+                                    input.placeholder = this.checked ? 'Username' : 'Email';
+                                    input.type = this.checked ? 'text' : 'email';
+                                    input.name = this.checked ? 'username' : 'email'
+                               " />
+                        Use username
+                    </label>
                 </div>
 
                 <div class="form-control">
-                    <label class="label"><span class="label-text">Password</span></label>
-                    <input type="password" id="password" name="password" required class="input input-bordered w-full" />
+                    <label class="input validator w-full border-2">
+                        <svg class="h-[1em] opacity-50" xmlns="http://w3.org" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        <input type="password" required placeholder="Password" name="password"/>
+                    </label>
                 </div>
 
                 <div class="flex items-center justify-between">

@@ -173,9 +173,13 @@ def verify_register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.form["email"]
+        email = request.form.get("email", None)
+        if not email:
+            username = request.form.get("username")
+            user = User.query.filter_by(name=username).first()
+        else:
+            user = User.query.filter_by(email=email).first()
         password = request.form["password"]
-        user = User.query.filter_by(email=email).first()
 
         if user and check_password_hash(user.password, password):
             session["user_id"] = user.id
