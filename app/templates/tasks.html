@@ -14,7 +14,7 @@ Task Kanban Board
 
 <div class="task-page-header">
     <div class="header-title-area">
-        <a href="{{ url_for('teams') }}" class="back-team-btn" title="Back to Teams">←</a>
+        <a href="{{ url_for('team_detail', team_id=team.id) }}" class="back-team-btn" title="Back to Teams">←</a>
         <h1>{{ team.name }}</h1>
     </div>
     <div class="header-actions">
