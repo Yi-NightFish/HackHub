@@ -1,217 +1,192 @@
-/* ==========================================================================
-   1. Base Global Reset & Layout Configuration
-   ========================================================================== */
-body {
-    font-family: Arial, sans-serif;
-    background: #f5f7fb;
-    margin: 0;
-    padding: 0;
-    color: #111;
+:root {
+    --bg-page: #f4f6fc;
+    --card-bg: #ffffff;
+    --column-bg: #f8fafc;
+    --border-light: #e2e8f0;
+    --text-dark: #0f172a;
+    --text-muted: #475569;
+    --accent-blue: #3b82f6;
+    --accent-green: #10b981;
+    --accent-red: #ef4444;
+    --accent-yellow: #f59e0b;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --radius-lg: 1rem;
+    --radius-md: 0.75rem;
+    --radius-sm: 0.5rem;
 }
 
-.container {
-    width: 100%;
-    margin: 0 auto;
-    padding: 0 24px 24px 24px; /* Removed top padding because header is fixed */
+* {
     box-sizing: border-box;
 }
 
-h1 {
-    font-size: 24px; /* Smaller, streamlined font size */
-    font-weight: 900;
+body {
+    background: var(--bg-page);
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     margin: 0;
-    letter-spacing: -0.5px;
+    color: var(--text-dark);
 }
 
-/* ==========================================================================
-   2. Header Ribbon
-   ========================================================================== */
+/* ----- HEADER ----- */
 .task-page-header {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: #f5f7fb; /* Matches background to blend seamlessly when fixed */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 0; /* Add back padding inside the sticky header area */
-    margin-bottom: 16px;
-    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
-    width: 100%;
+    background: white;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--border-light);
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.header-title-area {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.back-team-btn {
+    font-size: 1.5rem;
+    text-decoration: none;
+    color: var(--text-muted);
+    transition: color 0.2s;
+    line-height: 1;
+}
+
+.back-team-btn:hover {
+    color: var(--accent-blue);
+}
+
+.header-title-area h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 600;
 }
 
 .header-actions {
     display: flex;
+    gap: 0.8rem;
     align-items: center;
-    gap: 10px;
 }
 
 .task-search-box {
-    width: 220px; /* Reduced width to save valuable layout workspace */
-    padding: 8px 12px;
-    border: 2px solid #000000;
-    border-radius: 10px;
-    font-size: 13px;
-    outline: none;
-    margin: 0;
-    box-sizing: border-box;
-    background: #ffffff;
+    padding: 0.6rem 1rem;
+    border-radius: 40px;
+    border: 1px solid var(--border-light);
+    background: white;
+    width: 240px;
+    font-size: 0.9rem;
+    transition: all 0.2s;
 }
 
-/* Minimalist Icon-Only Add Button */
-.open-creation-btn {
-    background-color: #2563eb;
-    color: #ffffff;
-    border: 2px solid #000000;
+.task-search-box:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+}
+
+.open-creation-btn, .column-add-btn {
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: 40px;
     width: 36px;
     height: 36px;
-    padding: 0;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 18px;
+    font-size: 1.4rem;
+    font-weight: 500;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s ease;
-}
-
-.open-creation-btn:hover {
-    background-color: #1d4ed8;
-    transform: translate(-1px, -1px);
-    box-shadow: 3px 3px 0px #000000;
-}
-
-/* Container to align arrow and title side-by-side */
-.header-title-area {
-    display: flex;
-    align-items: center;
-    gap: 30px;
-}
-
-/* Minimalist Back to Team Button styling */
-.back-team-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    text-decoration: none;
-    color: #000000;
-    font-size: 18px;
-    font-weight: bold;
-    width: 32px;
-    height: 32px;
-    border: 2px solid #000000;
-    border-radius: 8px;
-    background: #ffffff;
-    transition: all 0.1s ease;
+    transition: background 0.2s, transform 0.1s;
 }
 
-.back-team-btn:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 3px 3px 0px #000000;
-    background-color: #f1f5f9;
+.open-creation-btn:hover, .column-add-btn:hover {
+    background: #2563eb;
+    transform: scale(1.02);
 }
 
-/* ==========================================================================
-   3. Single Screen Layout Configuration
-   ========================================================================== */
+/* ----- KANBAN LAYOUT ----- */
 .task-layout {
-    width: 100%;
-    overflow: hidden;
-}
-
-.task-main {
-    width: 100%;
-    box-sizing: border-box;
+    padding: 1.5rem 1.5rem 2rem;
 }
 
 .kanban-board {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    gap: 10px; /* Tight, compact spacing between lanes */
-    align-items: flex-start;
-    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.25rem;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .kanban-board {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
 }
 
 .kanban-column {
-    flex: 1; /* Fluid flexible width scales intelligently to fit 100% of any desktop view */
-    min-width: 0; /* Prevents flex children from overflowing their boxes */
-    background-color: #f8fafc;
-    border-radius: 12px;
-    border: 2px solid #000000;
-    display: flex;
-    flex-direction: column;
-    max-height: 78vh; /* Keeps individual lanes contained vertically inside your window */
+    background: var(--column-bg);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(2px);
+    transition: box-shadow 0.2s;
 }
 
-/* ==========================================================================
-   4. Kanban Column Elements
-   ========================================================================== */
+.kanban-column:hover {
+    box-shadow: var(--shadow-md);
+}
+
 .column-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 12px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    border-bottom: 2px solid #000000;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-light);
 }
 
 .column-header h2 {
     margin: 0;
-    font-size: 13px; /* Downscaled text */
-    font-weight: 800;
-    color: #1e293b;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    color: var(--text-dark);
 }
 
-.column-add-btn {
-    background: transparent;
-    border: none;
-    color: #000000;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    line-height: 1;
-    padding: 2px 6px;
-    border-radius: 4px;
-}
-
-.column-add-btn:hover {
-    background-color: rgba(0, 0, 0, 0.08);
-}
-
-/* Status Column Themes */
-.status-wishlist { background-color: #e2e8f0; }
-.status-to-do { background-color: #ddd6fe; }
-.status-in-progress { background-color: #fef08a; }
-.status-in-review { background-color: #fbcfe8; }
-.status-complete { background-color: #bbf7d0; }
+.status-wishlist h2 { color: #8b5cf6; }
+.status-to-do h2 { color: #3b82f6; }
+.status-in-progress h2 { color: #f59e0b; }
+.status-in-review h2 { color: #ec489a; }
+.status-complete h2 { color: #10b981; }
 
 .kanban-cards-dropzone {
-    padding: 10px;
+    min-height: 350px;
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Snug spacing for multi-card lists */
-    overflow-y: auto;
+    gap: 0.75rem;
 }
 
-/* ==========================================================================
-   5. Compact Task Cards & Layouts
-   ========================================================================== */
+/* ----- TASK CARD ----- */
 .task-card {
-    background-color: #ffffff;
-    border: 2px solid #000000;
-    border-radius: 10px;
-    padding: 10px 12px; /* Reduced to balance negative room density */
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
 }
 
 .task-card:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 3px 3px 0px #000000;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: #cbd5e1;
+}
+
+.overdue-card {
+    border-left: 4px solid var(--accent-red);
+    background: #fff8f8;
 }
 
 .task-card-link {
@@ -220,333 +195,179 @@ h1 {
     display: block;
 }
 
-.task-card h3 {
-    margin-top: 0;
-    margin-bottom: 6px;
-    font-size: 14px; /* Crisp, readable, scaled down heading */
-    font-weight: 800;
-    line-height: 1.2;
+.task-card-link h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dark);
 }
 
-.task-card p {
-    margin: 4px 0;
-    font-size: 12px; /* Smaller metadata typography footprint */
-    color: #334155;
+.task-card-link p {
+    margin: 0.3rem 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
 }
 
-.desc-preview {
-    font-size: 11px;
-    color: #64748b;
-    margin: 4px 0;
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
 }
 
-.card-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 10px;
-    margin-bottom: 6px;
+.badge.high { background: #fee2e2; color: #b91c1c; }
+.badge.medium { background: #fef3c7; color: #b45309; }
+.badge.low { background: #dcfce7; color: #15803d; }
+
+.overdue-text {
+    color: var(--accent-red);
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+.kanban-quick-actions {
+    margin-top: 0.8rem;
 }
 
 .kanban-status-select {
     width: 100%;
-    padding: 4px 6px;
-    font-size: 11px;
-    font-weight: 600;
-    border-radius: 6px;
-    border: 2px solid #000000;
-    background-color: #ffffff;
-    color: #111111;
+    padding: 0.4rem 0.6rem;
+    border-radius: 20px;
+    border: 1px solid var(--border-light);
+    background: white;
+    font-size: 0.75rem;
     cursor: pointer;
-    box-sizing: border-box;
-    margin-top: 4px;
 }
 
 .task-actions {
     display: flex;
-    gap: 6px;
-    margin-top: 8px;
-}
-
-.task-actions form {
-    flex: 1;
+    gap: 0.5rem;
+    margin-top: 0.8rem;
 }
 
 .task-actions button {
-    width: 100%;
-    padding: 4px;
-    border-radius: 6px;
-    border: 2px solid #000000;
-    font-weight: bold;
+    background: #e2e8f0;
+    border: none;
+    padding: 0.3rem 0.8rem;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: 500;
     cursor: pointer;
-    font-size: 11px;
-    background: #ffffff;
+    transition: 0.1s;
+}
+
+.task-actions form:first-child button {
+    background: var(--accent-green);
+    color: white;
+}
+
+.task-actions form:last-child button {
+    background: #f1f5f9;
+    color: var(--text-muted);
 }
 
 .task-actions button:hover {
-    background-color: #f8fafc;
+    filter: brightness(0.95);
 }
 
-/* ==========================================================================
-   6. UI Badges, Alerts, Empty Fallbacks
-   ========================================================================== */
-.badge,
-.status-badge {
-    display: inline-block;
-    padding: 2px 6px;
-    border-radius: 6px;
-    font-size: 10px;
-    font-weight: bold;
-    color: #000000;
-    border: 1px solid #000000;
-}
-
-.high { background: #fee2e2; }
-.medium { background: #fef3c7; }
-.low { background: #dcfce7; }
-
-.overdue-card {
-    border: 2px solid #dc2626;
-    background: #fff5f5;
-}
-
-.overdue-text {
-    color: #dc2626;
-    font-weight: bold;
-}
-
-.empty, .empty-column-text {
+.empty-column {
     text-align: center;
-    color: #94a3b8;
-    padding: 16px 4px;
-    font-size: 11px;
-    font-style: italic;
-    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    padding: 1rem;
+    background: #f1f5f9;
+    border-radius: var(--radius-sm);
 }
 
-/* ==========================================================================
-   7. Sidebar Drawer UI
-   ========================================================================== */
+/* ----- MODAL (PURE CSS) ----- */
+#create-modal-toggle {
+    display: none;
+}
+
 .modal-overlay {
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(15, 23, 42, 0.3);
-    backdrop-filter: blur(4px);
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(3px);
     z-index: 1000;
-    display: flex;
-    justify-content: flex-end;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s ease-in-out;
+    justify-content: center;
+    align-items: center;
 }
 
-.modal-overlay.active {
-    opacity: 1;
-    pointer-events: auto;
+#create-modal-toggle:checked ~ .modal-overlay {
+    display: flex;
 }
 
 .minimal-sidebar-window {
-    width: 380px;
-    max-width: 90vw;
-    height: 100%;
-    background-color: #ffffff;
-    box-shadow: -6px 0 30px rgba(0, 0, 0, 0.08);
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    transform: translateX(100%);
-    transition: transform 0.25s ease-in-out;
-    box-sizing: border-box;
-    border-left: 2px solid #000000;
-}
-
-.modal-overlay.active .minimal-sidebar-window {
-    transform: translateX(0);
-}
-
-/* ==========================================================================
-   8. Custom Scrollbar Handling
-   ========================================================================== */
-.kanban-cards-dropzone::-webkit-scrollbar {
-    width: 4px; /* Thin scrollbar layout footprint */
-}
-
-.kanban-cards-dropzone::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.kanban-cards-dropzone::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 10px;
-}
-
-.kanban-cards-dropzone::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
-
-/* ==========================================================================
-   9. Sidebar Drawer UI (Clean Brutalist Minimalism)
-   ========================================================================== */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(15, 23, 42, 0.2); /* Soft dimmed background layer */
-    backdrop-filter: blur(2px);
-    z-index: 1000;
-    display: flex;
-    justify-content: flex-end;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease-in-out;
-}
-
-.modal-overlay.active {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.minimal-sidebar-window {
-    width: 380px;
-    max-width: 85vw;
-    height: 100%;
-    background-color: #ffffff;
-    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.05);
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    transform: translateX(100%);
-    transition: transform 0.2s ease-in-out;
-    box-sizing: border-box;
-    border-left: 2px solid #000000;
-}
-
-.modal-overlay.active .minimal-sidebar-window {
-    transform: translateX(0);
+    background: white;
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 500px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 1.5rem;
+    box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2);
 }
 
 .sidebar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #000000;
-    padding-bottom: 12px;
-}
-
-.sidebar-header h2 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 900;
-    color: #000000;
+    margin-bottom: 1.5rem;
 }
 
 .close-sidebar-btn {
-    background: transparent;
+    background: none;
     border: none;
-    font-size: 20px;
-    font-weight: bold;
-    color: #000000;
+    font-size: 1.5rem;
     cursor: pointer;
-    padding: 4px;
-    line-height: 1;
+    color: var(--text-muted);
+    transition: color 0.2s;
 }
 
 .close-sidebar-btn:hover {
-    color: #64748b;
+    color: var(--accent-red);
 }
 
-/* Sidebar Input Elements Styling */
-.sidebar-form {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    overflow-y: auto;
-    flex: 1;
-    padding-right: 4px;
+.form-group {
+    margin-bottom: 1rem;
 }
 
-.sidebar-form .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+.form-group label {
+    display: block;
+    font-weight: 500;
+    font-size: 0.8rem;
+    margin-bottom: 0.3rem;
+    color: var(--text-dark);
 }
 
-.sidebar-form label {
-    font-size: 12px;
-    font-weight: 800;
-    color: #000000;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-/* Universal fields style rule override for the sidebar form elements */
-.sidebar-form input,
-.sidebar-form select,
-.sidebar-form textarea {
+.form-group input, .form-group select, .form-group textarea {
     width: 100%;
-    padding: 10px 12px;
-    border: 2px solid #000000;
-    border-radius: 10px;
-    font-size: 13px;
+    padding: 0.6rem;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+}
+
+.create-btn {
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    padding: 0.7rem;
+    border-radius: 40px;
+    width: 100%;
     font-weight: 600;
-    color: #111111;
-    box-sizing: border-box;
-    background: #ffffff;
-    outline: none;
-    box-shadow: none !important; /* Strips shadows entirely */
-}
-
-/* Re-apply arrow handling cleanly for nested select components in form fields */
-.sidebar-form select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 12px;
-    padding-right: 32px;
-}
-
-.sidebar-form textarea {
-    resize: vertical;
-    min-height: 80px;
-}
-
-.sidebar-form input:focus,
-.sidebar-form select:focus,
-.sidebar-form textarea:focus {
-    border-color: #2563eb;
-}
-
-.sidebar-form .form-submit-row {
-    margin-top: auto; /* Forces the submit section to stick neatly at the bottom */
-    padding-top: 16px;
-    border-top: 2px solid #000000;
-}
-
-.sidebar-form .create-btn {
-    width: 100%;
-    background-color: #10b981;
-    color: #ffffff;
-    font-weight: bold;
-    border: 2px solid #000000;
-    padding: 12px;
-    border-radius: 10px;
     cursor: pointer;
-    font-size: 14px;
-    box-shadow: 2px 2px 0px #000000;
-    transition: all 0.15s ease;
+    transition: background 0.2s;
 }
 
-.sidebar-form .create-btn:hover {
-    background-color: #059669;
-    transform: translate(-1px, -1px);
-    box-shadow: 3px 3px 0px #000000;
+.create-btn:hover {
+    background: #2563eb;
 }

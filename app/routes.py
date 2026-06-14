@@ -427,12 +427,11 @@ def autosave_task(id):
         if field == "status":
             task.is_done = (value == "Complete")
     if str(old_value) != str(new_value):
-        add_task_activity(
-            task.id,
-            f"changed {field} from '{old_value}' to '{new_value}'"
-        )
+        add_task_activity(task.id, f"changed {field} from '{old_value}' to '{new_value}'")    
     db.session.commit()
-    return "Saved"
+    team = task.team
+    tasks = Task.query.filter_by(team_id = team.id).all()
+    return render_template("partials/kanban_board.html", tasks = tasks, team = team, datetime = dt)
 
 @app.route("/team/<int:team_id>/task/<int:id>/details", methods = ["GET", "POST"])
 @login_required
