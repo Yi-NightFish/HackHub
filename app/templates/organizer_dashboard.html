@@ -6,6 +6,22 @@
     <h1 style="border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 30px;">
         Organizer Management Console
     </h1>
+    
+    <div style="background: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; border-radius: 8px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between;">
+        <div>
+            <label style="font-weight: bold; color: #495057; margin-right: 10px; font-size: 1.1em;">📍 Managing Event:</label>
+            <select onchange="location = this.value;" style="padding: 8px 16px; border-radius: 6px; border: 1px solid #ced4da; font-size: 1em; font-weight: bold; color: #212529; background-color: #fff;">
+                {% for e in my_all_events %}
+                    <option value="{{ url_for('organizer_dashboard', event_id=e.id) }}" {% if e.id == current_event.id %}selected{% endif %}>
+                        {{ e.title }} {% if e.cancelled %}(Cancelled){% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <span style="font-size: 0.9em; background: #343a40; color: #fff; padding: 6px 12px; border-radius: 20px; font-weight: bold;">
+            Organizer: {{ current_user.name or current_user.email }}
+        </span>
+    </div>
 
     <div style="display: flex; gap: 20px; margin-bottom: 30px;">
         <div style="flex: 1; background: #e3f2fd; border: 1px solid #90caf9; border-radius: 8px; padding: 20px; text-align: center;">
