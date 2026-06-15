@@ -1110,5 +1110,5 @@ def organizer_dashboard(event_id):
         team_progress[team.id] = {"progress": progress, "completed_tasks": completed_tasks, "total_tasks": total_tasks}
     my_all_events = Event.query.filter_by(organizer_id=current_user_id).all()
     # 看dashboard上display的数据
-    stats = {"total_participants": len(participants), "total_active_teams": len(active_teams_list), "total_cancelled_teams": len(cancelled_teams_list), "total_soloists": len(soloist)}
+    stats = {"total_participants": len(participants), "total_active_teams": len(active_teams_list), "total_soloists": len(soloist)} #  "total_cancelled_teams": len(cancelled_teams_list),
     return render_template("organizer_dashboard.html", stats = stats, participants = participants, teams = all_teams, soloists = soloist, current_user = current_user, team_progress = team_progress, current_event = event, my_all_events = my_all_events)
