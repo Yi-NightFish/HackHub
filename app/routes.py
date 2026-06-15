@@ -905,7 +905,12 @@ def get_message():
     visible_time = visibility.visible_since if visibility else dt.datetime.min
     # receiver_id = 2 if current_user_id == 1 else 1
     messages = Message.query.filter((((Message.sender_id == current_user_id) & (Message.receiver_id == other_user_id)) | ((Message.sender_id == other_user_id) & (Message.receiver_id == current_user_id))) & (Message.timestamp >= visible_time)).order_by(Message.timestamp.asc()).all()
-    return render_template("message.html", messages = messages, current_user_id = current_user_id, other_user = other_user)
+    def get_current_user():
+        user_id = session.get("user_id", None)
+        if user_id:
+            return db.session.get(User, user_id)
+        return None
+    return render_template("message.html", messages = messages, current_user_id = current_user_id, other_user = other_user, current_user=get_current_user())
 
 @app.route("/delete_message/<int:message_id>")
 @login_required
