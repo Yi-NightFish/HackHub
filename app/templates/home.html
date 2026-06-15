@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}HackHub – Beginner‑Friendly Hackathon Platform{% endblock %}
+{% block title %}HackHub - Beginner-Friendly Hackathon Platform{% endblock %}
 
 {% block css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
@@ -12,14 +12,11 @@
     <div class="container hero-grid">
         <div class="hero-text">
             <h1>Your launchpad into hackathons</h1>
-            <p>Join beginner‑friendly events, find teammates, build projects, and level up — all in one place.</p>
+            <p>Join beginner-friendly events, find teammates, build projects, and level up — all in one place.</p>
             <div class="hero-buttons">
                 <a href="{{ url_for('explore') }}" class="btn btn-primary">Explore hackathons</a>
                 <a href="{{ url_for('create_event') }}" class="btn btn-outline">Host an event</a>
             </div>
-        </div>
-        <div class="hero-image">
-            🚀✨
         </div>
     </div>
 </section>
@@ -36,7 +33,7 @@
             <h3>{{ event.title }}</h3>
             <div class="event-detail">
                 {% if event.start_time %}{{ event.start_time.strftime('%d %b %Y') }}{% else %}TBD{% endif %}
-                {% if event.end_time %} – {{ event.end_time.strftime('%d %b %Y') }}{% endif %}
+                {% if event.end_time %} - {{ event.end_time.strftime('%d %b %Y') }}{% endif %}
             </div>
             <div class="event-detail">
                 {{ event.participants|length if event.participants else 0 }} participants

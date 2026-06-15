@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}FAQ | HackHub{% endblock %}
+
+{% block content %}
+<div class="container faq-container">
+    <h1 class="page-title">Frequently Asked Questions</h1>
+    <div class="faq-list">
+        <div class="faq-item">
+            <h3>What is HackHub?</h3>
+            <p>HackHub is a beginner-friendly platform that helps students discover hackathons, form teams, manage tasks, and showcase projects - all in one place.</p>
+        </div>
+        <div class="faq-item">
+            <h3>Do I need a team to join a hackathon?</h3>
+            <p>No! You can join events as a solo participant. Use the “Solo” tab on any event page to find other solo participants and form a team together.</p>
+        </div>
+        <div class="faq-item">
+            <h3>How do I create or join a team?</h3>
+            <p>After joining an event, go to the “Teams” tab. You can create a new team (you'll get a unique team code) or enter an existing team code to join.</p>
+        </div>
+        <div class="faq-item">
+            <h3>What can I do in the team workspace?</h3>
+            <p>Each team has a shared task board, and a project page (where you can add screenshots, GitHub links, tech stack).</p>
+        </div>
+        <div class="faq-item">
+            <h3>How do I submit my project?</h3>
+            <p>Use the “Project” tab inside your team workspace to add your project title, description, tech stack, demo link, GitHub repo, and screenshots. Organisers will see it at the end of the event.</p>
+        </div>
+        <div class="faq-item">
+            <h3>I forgot my password. What should I do?</h3>
+            <p>Click “Forgot password?” on the login page. You'll receive an OTP via email to reset your password.</p>
+        </div>
+        <div class="faq-item">
+            <h3>Is HackHub free?</h3>
+            <p>Yes! HackHub is completely free for both participants and organisers.</p>
+        </div>
+        <div class="faq-item">
+            <h3>How can I host my own hackathon?</h3>
+            <p>Click “Host an event” on the homepage or navigate to “Create Event” from your dashboard. Fill in the details (title, description, dates, deadline) and you're ready to go.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .faq-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+    }
+    .page-title {
+        font-size: 2.2rem;
+        margin-bottom: 2rem;
+        color: #1e293b;
+    }
+    .faq-item {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.2rem 1.5rem;
+        margin-bottom: 1.2rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        border: 1px solid #e2e8f0;
+    }
+    .faq-item h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: #0f172a;
+    }
+    .faq-item p {
+        color: #475569;
+        line-height: 1.5;
+        margin: 0;
+    }
+</style>
+{% endblock %}

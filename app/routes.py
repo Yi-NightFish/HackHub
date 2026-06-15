@@ -1,4 +1,4 @@
-from flask import render_template, request, url_for, redirect, session, make_response, current_app
+from flask import render_template, request, url_for, redirect, session, make_response, current_app, flash
 import random
 import string
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -1095,3 +1095,40 @@ def delete_screenshot(team_id, screenshot_index):
         project.screenshots_link = json.dumps(screenshots) if screenshots else None
         db.session.commit()
     return redirect(url_for('project_page', team_id = team.id))
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+from flask_mail import Message as MailMessage
+from app import mail
+import os
+
+@app.route("/feedback", methods = ["GET", "POST"])
+@login_required
+def feedback():
+    if request.method == "POST":
+        message = request.form.get("message")
+        if not message:
+            flash("Please enter a message.", "error")
+            return redirect(url_for("feedback"))
+        user = db.session.get(User, session.get("user_id"))
+        user_info = f"{user.name or user.email} (ID: {user.id})" if user else "Anonymous"
+        msg = MailMessage(subject = "New Feedback from HackHub",
+                          recipients = [os.getenv('MAIL_USERNAME')],
+                          body = f"From: {user_info}\n\nMessage:\n{message}")
+        try:
+            mail.send(msg)
+            flash("Thank you! Your feedback has been sent.", "success")
+        except Exception as e:
+            flash(f"Failed to send: {str(e)}", "error")
+        return redirect(url_for("feedback"))
+    return render_template("feedback.html")
+
+@app.route("/faq")
+def faq():
+    return render_template("faq.html")
+
+@app.route("/help")
+def help_page():
+    return render_template("help.html")

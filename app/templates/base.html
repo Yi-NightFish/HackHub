@@ -1,67 +1,191 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>{% block title %}{% endblock %}</title>
-        <meta charset = "utf-8">
-        <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-        {% block css %}
-        {% endblock %}
 
-        <style>
-            body{
-                margin: 0px;
-                padding: 0px;
-                font-family: Arial, sans-serif;
+<head>
+    <title>{% block title %}HackHub{% endblock %}</title>
+    <meta charset="utf-8">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    {% block css %}{% endblock %}
+
+    <style>
+        /* Global reset & base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navigation bar */
+        #navigation {
+            background-color: white;
+            padding: 12px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        #navigation a {
+            padding: 8px 16px;
+            color: #1e293b;
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 30px;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        #navigation a:hover {
+            background-color: #eef2ff;
+            color: #3b82f6;
+        }
+
+        /* Main content area */
+        .main-content {
+            flex: 1;
+            max-width: 1280px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Links */
+        a {
+            text-decoration: none;
+        }
+
+        /* ----- Minimal Footer (only HackHub brand, 4 links, copyright) ----- */
+        .footer {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #cbd5e1;
+            margin-top: 3rem;
+            padding: 2rem 1.5rem;
+            border-top: 1px solid #334155;
+        }
+
+        .footer-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2rem;
+            text-align: center;
+        }
+
+        .footer-brand .brand-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #ffffff, #a5f3fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .footer-copyright {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 0.25rem;
+        }
+
+        /* Desktop: brand left, links center, copyright right */
+        @media (min-width: 768px) {
+            .footer-inner {
+                flex-direction: row;
+                justify-content: space-between;
+                text-align: left;
             }
-
-            #navigation{
-                margin: 0 auto 20px;
-                background-color: #f9f9f9;
-                padding: 16px 20px;
-                border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                display: flex;
-                flex-wrap: wrap;
-                gap: 12px;
-                align-items: center;
+            .footer-brand {
+                flex: 1;
+                text-align: left;
             }
-
-            #navigation a{
-                padding: 10px 14px;
-                color: #007bff;
-                border-radius: 4px;
-                transition: background-color 0.2s ease, color 0.2s ease;
+            .footer-links {
+                flex: 2;
+                justify-content: center;
             }
-
-            #navigation a:hover,
-            #navigation a:focus{
-                background-color: rgba(0, 123, 255, 0.1);
-                text-decoration: none;
+            .footer-copyright {
+                flex: 1;
+                text-align: right;
             }
+        }
 
-            a, a:visited{
-                text-decoration: none;
-                color: #007bff;
+        /* Mobile: stack everything */
+        @media (max-width: 767px) {
+            .footer-links {
+                gap: 1.2rem;
             }
-        </style>
-    </head>
+            .footer-inner {
+                gap: 0.8rem;
+            }
+        }
+    </style>
+</head>
 
-    <body>
-        <div id = "navigation">
-            <a href = '{{url_for("home")}}'>Home</a>
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            <a href = '{{ url_for("explore") }}'>Events</a>
-            {% if current_user %}
-                <a href = '{{url_for("profile", user_id = current_user.id)}}'>Profile</a>
-                <!-- <a href='{{ url_for("teams") }}'>Teams</a>
-                <a href='{{ url_for("chat_home") }}'>Chats</a> -->
-                <a href = '{{url_for("logout")}}'>Log Out</a>
-            {% else %}
-                <a href = '{{url_for("login")}}'>Login</a>
-            {% endif %}
+<body>
+    <div id="navigation">
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('explore') }}">Events</a>
+        {% if current_user %}
+            <a href="{{ url_for('profile', user_id=current_user.id) }}">Profile</a>
+            <a href="{{ url_for('logout') }}">Log Out</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+        {% endif %}
+    </div>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <span class="brand-name">HACKHUB</span>
+            </div>
+            <div class="footer-links">
+                <a href="{{ url_for('about') }}">About</a>
+                <a href="{{ url_for('faq') }}">FAQ</a>
+                <a href="{{ url_for('feedback') }}">Feedback</a>
+            </div>
+            <div class="footer-copyright">
+                © 2026 HackHub, Inc. All rights reserved.
+            </div>
         </div>
+    </footer>
+</body>
 
-        {% block content %}
-        {%  endblock %}
-    </body>
 </html>
