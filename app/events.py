@@ -219,7 +219,7 @@ def event_detail(event_id):
                     leader_team_full = leader_team_member_count >= leader_team.max_members
             # htmx search soloists
             if request.headers.get("HX-Request"):
-                return render_template("partials/soloists_list.html", soloists = soloists, leader_team = leader_team, leader_team_member_count = leader_team_member_count, leader_team_full = leader_team_full)
+                return render_template("partials/soloists_list.html", event = event, soloists = soloists, leader_team = leader_team, leader_team_member_count = leader_team_member_count, leader_team_full = leader_team_full)
             # not htmx
             return render_template(
                 "event_detail.html",

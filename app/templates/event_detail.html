@@ -108,7 +108,7 @@
       Showing <strong>{{ soloists|length }}</strong> {% if soloists|length == 1 %}soloist{% else %}soloists{% endif %} looking for a team
     </div>
     <!--nx add sololist search box -->
-    <input type="text" name="search_soloists" placeholder="Search soloists by name or skills..." value="{{ search_soloists_query or '' }}" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 20px;" hx-get="/event/{{ event.id }}?tab=solo" hx-trigger="keyup changed delay:500ms" hx-target="#soloists-list" hx-swap="innerHTML">
+    <input type="text" name="search_soloists" placeholder="Search soloists by name or skills..." value="{{ search_soloists_query or '' }}" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 20px;" hx-get="/event/{{ event.id }}?tab=solo" hx-trigger="keyup changed delay:300ms" hx-target="#soloists-list" hx-swap="innerHTML" >
     <div id="soloists-list">
       {% include "partials/soloists_list.html" %}
     </div>
