@@ -134,7 +134,9 @@ def allowed_file(filename):
 # Main routes
 @app.route("/")
 def home():
-    return render_template("home.html", current_user = db.session.get(User, session["user_id"]) if session.get("user_id", None) else None)
+    now = dt.datetime.now()
+    featured_events = Event.query.filter(Event.start_time > now).limit(3).all()
+    return render_template('home.html', featured_events=featured_events, now=now)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
