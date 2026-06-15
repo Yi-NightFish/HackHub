@@ -51,7 +51,7 @@
                     <td style="padding: 12px; font-size: 0.9em; color: #666;">{{ p.skills or "Not specified yet" }}</td>
                     <td style="padding: 12px;">
                         {% if p.github_link %}
-                            <a href="{{ p.github_link }}" target="_blank" style="color: #007bff; text-decoration: none;">View GitHub ↗</a>
+                            <a href="{{ p.github_link }}" target="_blank" style="color: #007bff; text-decoration: none;">View GitHub</a>
                         {% else %}
                             <span style="color: #bbb; font-style: italic;">No Link</span>
                         {% endif %}
@@ -75,7 +75,7 @@
                     <th style="padding: 12px;">Leader</th>
                     <th style="padding: 12px;">Pax</th>
                     <th style="padding: 12px;">Task Progress</th>
-                    <th style="padding: 12px;">Project Info</th>
+                    <!-- <th style="padding: 12px;">Project Info</th> -->
                 </tr>
             </thead>
             <tbody>
@@ -155,13 +155,13 @@
                             </div>
                         {% endif %}
                     </td>
-                    <td style="padding: 12px;">
+                    <!-- <td style="padding: 12px;">
                         {% if team.project_submitted %}
                             <span style="font-weight: bold; {% if team.event and team.event.cancelled %} color: #adb5bd; text-decoration: line-through; {% else %} color: #28a745; {% endif %}">✓ Submitted</span>
                         {% else %}
                             <span style="font-style: italic; {% if team.event and team.event.cancelled %} color: #ced4da; {% else %} color: #dc3545; {% endif %}">✗ Pending</span>
                         {% endif %}
-                    </td>
+                    </td> -->
                 </tr>
                 {% endfor %}
             </tbody>
