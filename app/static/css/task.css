@@ -371,3 +371,26 @@ body {
 .create-btn:hover {
     background: #2563eb;
 }
+
+
+.progress-container {
+    width: 90%;
+    background-color: #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.progress-fill {
+    width: var(--progress-width, 0%);
+    background-color: #28a745;
+    height: 20px;
+    border-radius: 8px;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    margin-top: 8px;
+    font-size: 14px;
+    text-align: center; 
+}

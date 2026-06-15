@@ -366,10 +366,20 @@ def tasks(team_id):
     # tasks = query.all()
         # nx
     tasks_results = query.all()
+    total_tasks = len(tasks_results)
+    completed_tasks = len([t for t in tasks_results if t.is_done])
+    percentage = int((completed_tasks / total_tasks) * 100) if total_tasks > 0 else 0
     if request.headers.get("HX-Request"):
         return render_template("partials/task_list.html", tasks = tasks_results, datetime = dt)
     # wy
-    return render_template("tasks.html", form = form, tasks = tasks_results, datetime = dt, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]), team = team)
+    return render_template("tasks.html", 
+                           form = form,
+                           tasks = tasks_results,
+                           datetime = dt,
+                           status_filter = status_filter,
+                           current_user = db.session.get(User, session["user_id"]), 
+                           team = team,
+                           percentage = percentage)
 
 @app.route("/task/<int:id>/toggle", methods = ["POST"])
 @login_required
