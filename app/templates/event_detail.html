@@ -75,23 +75,41 @@
       {% if current_user %}
         {% if participants %}
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {% for participant in participants %}
-            <!-- Card border set to primary -->
-            <a href="{{ url_for('profile', user_id=participant.id) }}" class="group card card-side card-compact bg-base-200 border border-base-200 transition-all duration-300 hover:border-primary hover:scale-105">
+            <a href="{{ url_for('profile', user_id=participant.id) }}" class="group card card-side card-compact bg-base-200 border-3 border-base-300 transition-all duration-300 hover:border-primary hover:bg-base-100 hover:-translate-y-1">
               <div class="card-body flex-row items-center justify-between w-full p-4">
                 
                 <div class="flex items-center gap-3">
                   <!-- Fixed alignment issue by enforcing consistent inner-flex centering and matching values -->
                   <div class="avatar placeholder items-center justify-center">
                     <div class="w-10 h-10 rounded-full border border-neutral/30 shadow-sm bg-base-100 flex items-center justify-center overflow-hidden transition duration-200 group-hover:scale-105">
-                      <!-- Fixed variable mapping to render the current loop iteration participant identity instead of current user -->
-                      <svg data-jdenticon-value="{{ participant.name }}" class="w-full h-full"></svg>
+                      <svg data-jdenticon-value="{{ participant.name }}" class="w-full h-full m-1"></svg>
                     </div>
                   </div>
-                  <span class="font-semibold text-base-content group-hover:text-primary transition-colors">
-                    {{ participant.name }}
-                  </span>
+                  <div class="flex flex-col">
+                    <div class="flex items-center gap-2">
+                      <span class="font-semibold text-base-content group-hover:text-primary transition-colors">
+                        {{ participant.name }}
+                      </span>
+                    </div>
+                    {# Determine team membership for this event: show team link or 'Sololist' #}
+                    {% set _team_name = None %}
+                    {% set _team_id = None %}
+                    {% for membership in participant.team_memberships %}
+                      {% if membership.event_id == event.id and membership.team_id %}
+                        {% set _team_name = membership.team.name %}
+                        {% set _team_id = membership.team.id %}
+                      {% endif %}
+                    {% endfor %}
+                    <span class="text-xs text-base-content/50">
+                      {% if _team_name %}
+                        Member of {{ _team_name }}
+                      {% else %}
+                        Sololist
+                      {% endif %}
+                    </span>
+                  </div>
                 </div>
 
                 <!-- Right side arrow indicator with bg-primary and a white SVG icon inside -->
@@ -149,20 +167,33 @@
         {% if teams %}
           <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
             {% for team in teams %}
-              <div class="card bg-base-200 shadow border border-base-300 max-w-sm mx-auto w-full transition-all hover:shadow-md">
-                <div class="card-body p-5">
-                  <h3 class="card-title text-base mb-2">
-                    <a href="{{ url_for('team_detail', team_id=team.id) }}" class="link link-primary link-hover">
-                      {{ team.name }}
-                    </a>
-                  </h3>
-                  <div class="space-y-1 text-sm text-base-content/80">
-                    <p><strong class="text-base-content font-semibold">Motto:</strong> {{ team.motto or '-' }}</p>
-                    <p><strong class="text-base-content font-semibold">Members:</strong> {{ team.members|length }} / {{ team.max_members }}</p>
-                    <p><strong class="text-base-content font-semibold">Project:</strong> <span class="italic">{{ team.project_idea or 'N/A' }}</span></p>
+              <a href="{{ url_for('team_detail', team_id=team.id) }}" class="group card card-compact bg-base-200 border-2 border-base-300 shadow-sm transition-all duration-300 hover:bg-base-100 hover:border-primary hover:shadow-md hover:-translate-y-1">
+                <div class="card-body flex-row items-center justify-between w-full p-5 gap-4">
+                  
+                  <!-- Left side content (Pushed to fill space using flex-1) -->
+                  <div class="min-w-0 flex-1">
+                    <h3 class="card-title text-md mb-2">
+                      <span class="font-bold text-base-content group-hover:text-primary transition-colors line-clamp-1">
+                        {{ team.name }}
+                      </span>
+                    </h3>
+                    
+                    <div class="space-y-1.5 text-xs text-base-content/80">
+                      <p class="truncate"><strong class="font-semibold text-base-content/90">Motto:</strong> {{ team.motto or '-' }}</p>
+                      <p class="truncate"><strong class="font-semibold text-base-content/90">Members:</strong> <span class="badge badge-sm badge-ghost font-mono">{{ team.members|length }} / {{ team.max_members }}</span></p>
+                      <p class="truncate"><strong class="font-semibold text-base-content/90">Project:</strong> <span class="italic text-base-content/70">{{ team.project_idea or 'N/A' }}</span></p>
+                    </div>
                   </div>
+
+                  <!-- Right side arrow indicator (Perfectly isolated and static sizing) -->
+                  <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-content flex items-center justify-center opacity-0 -translate-x-2 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-x-0 shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                  </div>
+
                 </div>
-              </div>
+              </a>
             {% endfor %}
           </div>
         {% else %}
