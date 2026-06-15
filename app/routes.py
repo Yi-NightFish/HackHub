@@ -1076,21 +1076,28 @@ def delete_screenshot(team_id, screenshot_index):
     return redirect(url_for('project_page', team_id = team.id))
 
 # nx - organizer management system------------------------------------------------------------------------------
-@app.route("/organizer/dashboard")
+@app.route("/organizer/<int:event_id>/dashboard")
 @login_required
-def organizer_dashboard():
+def organizer_dashboard(event_id):
     current_user_id = session.get("user_id")
     current_user = db.session.get(User, current_user_id)
     # if not current_user.is_organizer: #只有organizer能访问这个dashboard
     #     return "Unauthorized", 403 # 如果要分user is organizer, models need to add is_organizer field
-    participants = User.query.order_by(User.id.asc()).all()
-    all_teams = Team.query.all()
+    event = db.session.get(Event, event_id)
+    if not event or event.organizer_id != current_user_id:
+        return "Unauthorized! You are not the organizer of this event.", 403
+    # participants = User.query.order_by(User.id.asc()).all()
+    all_teams = Team.query.filter(Team.event_id == event_id).all()
     active_teams_list = [t for t in all_teams if not (t.event and t.event.cancelled)]
     cancelled_teams_list = [t for t in all_teams if t.event and t.event.cancelled]
     # soloist是指没有加入任何team的participant
-    solo_participants = Participation.query.filter(Participation.team_id == None).all()
+    solo_participants = Participation.query.filter_by(event_id = event_id, team_id = None).all()
     solo_user_ids = {p.user_id for p in solo_participants}
-    soloist = User.query.filter(User.id.in_(solo_user_ids)).all()
+    soloist = User.query.filter(User.id.in_(solo_user_ids)).all() if solo_user_ids else []
+    # filter for participants who are either in active teams or are soloists (not in any team)
+    team_user_ids = {m.user_id for t in all_teams for m in t.members}
+    my_total_student_ids = team_user_ids.union(solo_user_ids)
+    participants = User.query.filter(User.id.in_(my_total_student_ids)).order_by(User.id.asc()).all() if my_total_student_ids else []
     # track team progress
     team_progress = {}
     for team in all_teams:
@@ -1101,6 +1108,7 @@ def organizer_dashboard():
         else:
             progress = 0
         team_progress[team.id] = {"progress": progress, "completed_tasks": completed_tasks, "total_tasks": total_tasks}
+    my_all_events = Event.query.filter_by(organizer_id=current_user_id).all()
     # 看dashboard上display的数据
     stats = {"total_participants": len(participants), "total_active_teams": len(active_teams_list), "total_cancelled_teams": len(cancelled_teams_list), "total_soloists": len(soloist)}
-    return render_template("organizer_dashboard.html", stats=stats, participants=participants, teams=all_teams, soloists=soloist, current_user=current_user, team_progress=team_progress)
+    return render_template("organizer_dashboard.html", stats = stats, participants = participants, teams = all_teams, soloists = soloist, current_user = current_user, team_progress = team_progress, current_event = event, my_all_events = my_all_events)
