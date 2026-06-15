@@ -1140,7 +1140,7 @@ def export_participants_csv(event_id):
     # Create a response with the CSV data
     response = make_response(output.getvalue())
     response.headers["Content-Disposition"] = f"attachment; filename=participants_{event_id}.csv"
-    response.headers["Content-Type"] = "text/csv"; charset = "utf-8"
+    response.headers["Content-Type"] = "text/csv; charset = utf-8"
     return response
 
 @app.route("/organizer/<int:event_id>/export/teams")
