@@ -1128,10 +1128,12 @@ def export_participants_csv(event_id):
     participants = User.query.join(Participation).filter(Participation.event_id == event_id).distinct().all()
 
     # Create a CSV string
+    #stringio is a temporary memory file in RAM
     output = StringIO()
-    # Add BOM to support Excel opening UTF-8 CSV correctly
+    # Add BOM(byte order mark) to support Excel opening UTF-8 CSV correctly
     output.write('\ufeff')
     writer = csv.writer(output)
+    #write in a row in the csv file, the first row is the header
     writer.writerow(["ID", "Name", "Email", "University", "Skills Stack", "GitHub"])
 
     for participant in participants:
@@ -1139,7 +1141,9 @@ def export_participants_csv(event_id):
 
     # Create a response with the CSV data
     response = make_response(output.getvalue())
+    #force download with a filename, and set content type to csv
     response.headers["Content-Disposition"] = f"attachment; filename=participants_{event_id}.csv"
+    # tell the browser this is a csv file and use utf-8 encoding
     response.headers["Content-Type"] = "text/csv; charset = utf-8"
     return response
 
