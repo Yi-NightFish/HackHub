@@ -1100,28 +1100,25 @@ def delete_screenshot(team_id, screenshot_index):
 def about():
     return render_template("about.html")
 
-from flask_mail import Message as MailMessage
-from app import mail
-import os
-
 @app.route("/feedback", methods = ["GET", "POST"])
 @login_required
 def feedback():
     if request.method == "POST":
         message = request.form.get("message")
         if not message:
+            if request.headers.get('HX-Request'):
+                return '<div id="feedback-container">Please enter a message. <button hx-get="/feedback" ...>Go back</button></div>'
             flash("Please enter a message.", "error")
             return redirect(url_for("feedback"))
-        user = db.session.get(User, session.get("user_id"))
-        user_info = f"{user.name or user.email} (ID: {user.id})" if user else "Anonymous"
-        msg = MailMessage(subject = "New Feedback from HackHub",
-                          recipients = [os.getenv('MAIL_USERNAME')],
-                          body = f"From: {user_info}\n\nMessage:\n{message}")
-        try:
-            mail.send(msg)
-            flash("Thank you! Your feedback has been sent.", "success")
-        except Exception as e:
-            flash(f"Failed to send: {str(e)}", "error")
+        if request.headers.get('HX-Request'):
+            return '''
+                <div id="feedback-container" style="max-width:600px; margin:2rem auto; text-align:center; ...">
+                    <h2>Thank you!</h2>
+                    <p>Your feedback has been sent.</p>
+                    <button hx-get="/feedback" hx-target="#feedback-container" hx-swap="outerHTML">Send another</button>
+                </div>
+            '''
+        flash("Thank you! Your feedback has been sent.", "success")
         return redirect(url_for("feedback"))
     return render_template("feedback.html")
 
