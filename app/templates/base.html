@@ -1,76 +1,189 @@
 <!DOCTYPE html>
-<html data-theme = "bumblebee">
-    <head>
-        <title>{% block title %}{% endblock %}</title>
-        <meta charset = "utf-8">
-        <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-        {% block css %}
-        {% endblock %}
-        </style>
-        <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
-        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-        <script src="https://cdn.jsdelivr.net/npm/jdenticon@3.3.0/dist/jdenticon.min.js" async
-                integrity="sha384-LfouGM03m83ArVtne1JPk926e3SGD0Tz8XHtW2OKGsgeBU/UfR0Fa8eX+UlwSSAZ" crossorigin="anonymous">
-        </script>
-        <script>
-            function tryJdenticonUpdate() {
-                if (window.jdenticon && typeof jdenticon.update === 'function') {
-                    try { jdenticon.update(); } catch (e) { console.warn('jdenticon update failed', e); }
-                }
+<html>
+
+<head>
+    <title>{% block title %}HackHub{% endblock %}</title>
+    <meta charset="utf-8">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    {% block css %}{% endblock %}
+
+    <style>
+        /* Global reset & base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navigation bar */
+        #navigation {
+            background-color: white;
+            padding: 12px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        #navigation a {
+            padding: 8px 16px;
+            color: #1e293b;
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 30px;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        #navigation a:hover {
+            background-color: #eef2ff;
+            color: #3b82f6;
+        }
+
+        /* Main content area */
+        .main-content {
+            flex: 1;
+            max-width: 1280px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Links */
+        a {
+            text-decoration: none;
+        }
+
+        /* ----- Minimal Footer (only HackHub brand, 4 links, copyright) ----- */
+        .footer {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #cbd5e1;
+            margin-top: 3rem;
+            padding: 2rem 1.5rem;
+            border-top: 1px solid #334155;
+        }
+
+        .footer-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2rem;
+            text-align: center;
+        }
+
+        .footer-brand .brand-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #ffffff, #a5f3fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .footer-copyright {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 0.25rem;
+        }
+
+        /* Desktop: brand left, links center, copyright right */
+        @media (min-width: 768px) {
+            .footer-inner {
+                flex-direction: row;
+                justify-content: space-between;
+                text-align: left;
             }
+            .footer-brand {
+                flex: 1;
+                text-align: left;
+            }
+            .footer-links {
+                flex: 2;
+                justify-content: center;
+            }
+            .footer-copyright {
+                flex: 1;
+                text-align: right;
+            }
+        }
 
-            document.addEventListener('DOMContentLoaded', function() {
-                tryJdenticonUpdate();
-            });
+        /* Mobile: stack everything */
+        @media (max-width: 767px) {
+            .footer-links {
+                gap: 1.2rem;
+            }
+            .footer-inner {
+                gap: 0.8rem;
+            }
+        }
+    </style>
+</head>
 
-            // Re-render jdenticon avatars after HTMX swaps content (pagination, partial updates)
-                document.addEventListener('htmx:afterSwap', function(evt) {
-                    tryJdenticonUpdate();
+<body>
+    <div id="navigation">
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('explore') }}">Events</a>
+        {% if current_user %}
+            <a href="{{ url_for('profile', user_id=current_user.id) }}">Profile</a>
+            <a href="{{ url_for('logout') }}">Log Out</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+        {% endif %}
+    </div>
 
-                    // Fallback: if update didn't populate SVGs, generate SVGs manually
-                    try {
-                        if (window.jdenticon && typeof jdenticon.toSvg === 'function') {
-                            document.querySelectorAll('svg[data-jdenticon-value]').forEach(function(svg){
-                                // If svg is empty (no rendered paths), replace with generated SVG
-                                if (!svg.innerHTML.trim()) {
-                                    var val = svg.getAttribute('data-jdenticon-value') || '';
-                                    var size = Math.max(svg.clientWidth, svg.clientHeight) || 64;
-                                    try {
-                                        var newSvg = jdenticon.toSvg(val, size);
-                                        // Replace the element preserving outer container
-                                        var wrapper = document.createElement('div');
-                                        wrapper.innerHTML = newSvg;
-                                        svg.replaceWith(wrapper.firstElementChild);
-                                    } catch (e) {
-                                        // ignore per-element failures
-                                    }
-                                }
-                            });
-                        }
-                    } catch (e) {
-                        console.warn('jdenticon fallback failed', e);
-                    }
-                });
-        </script>
-    </head>
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
 
-    <body class="w-screen min-h-screen bg-base-200 overflow-x-hidden">
-        <div class = "sticky top-0 z-50 tabs tabs-lift tabs-lg mb-2 bg-base-100 flex justify-start">
-            <a href = '{{url_for("home")}}' class = "tab font-bold tab-active bg-base-200">Home</a>
-            <a href = '{{ url_for("explore") }}' class = "tab text-neutral-content font-semibold">Events</a>
-            {% if current_user %}
-                <a href = '{{url_for("logout")}}' class = "tab text-neutral-content font-bold">Log Out</a>
-                <div class="avatar flex-1 flex items-center justify-end pr-8">
-                    <div class="w-9 h-9 rounded-full border-1 border-neutral/30 shadow-sm p-1 bg-base-100 transition duration-200 hover:scale-105">
-                        <a href = '{{url_for("profile", user_id = current_user.id)}}'>
-                            <svg data-jdenticon-value="{{ current_user.name }}" class="w-full h-full"></svg>
-                        </a>
-                    </div>
-                </div>
-            {% else %}
-                <a href = '{{url_for("login")}}' class = "tab text-neutral-content font-bold">Login</a>
-                <a href = '{{url_for("register")}}' class = "tab text-neutral-content font-bold">Sign Up</a>
-            {% endif %}
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <span class="brand-name">HACKHUB</span>
+            </div>
+            <div class="footer-links">
+                <a href="{{ url_for('about') }}">About</a>
+                <a href="{{ url_for('faq') }}">FAQ</a>
+                <a href="{{ url_for('feedback') }}">Feedback</a>
+            </div>
+            <div class="footer-copyright">
+                © 2026 HackHub, Inc. All rights reserved.
+            </div>
         </div>
     </footer>
 </body>

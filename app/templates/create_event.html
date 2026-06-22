@@ -1,109 +1,150 @@
 {% extends "base.html" %}
 
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team.css') }}">
+{% endblock %}
+
 {% block content %}
-<div class="container mx-auto px-4 py-8 max-w-4xl">
-  <div class="flex flex-col gap-4 mb-8">
-    <div>
-      <h1 class="text-4xl font-bold">Create New Event</h1>
-      <p class="text-base-content/70 mt-2">Use the form below to add a new event.</p>
-    </div>
-  </div>
+<div class="team-page">
+    <h1 class="team-title">Create New Event</h1>
 
-  <div class="card bg-base-200 shadow-xl border border-base-300">
-    <div class="card-body gap-6">
-      <form method="POST" class="grid gap-6" novalidate>
+    <form class="form-box" method="POST" novalidate>
         {{ form.hidden_tag() }}
-
-        <div class="form-control w-full">
-          <label class="label">
-            <span class="label-text font-semibold">Event Title</span>
-          </label>
-          {% if form.title.errors %}
-            {{ form.title(class="input input-bordered input-error w-full") }}
-            <label class="label">
-              <span class="label-text-alt text-error">
-                {% for error in form.title.errors %}{{ error }} {% endfor %}
-              </span>
-            </label>
-          {% else %}
-            {{ form.title(class="input input-bordered w-full", required="") }}
-          {% endif %}
+        
+        <div class="form-group">
+            {{ form.title.label }}
+            {% if form.title.errors %}
+                {{ form.title(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.title.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.title(class="form-control", required="") }}
+            {% endif %}
         </div>
 
-        <div class="form-control w-full">
-          <label class="label">
-            <span class="label-text font-semibold">Description</span>
-          </label>
-          {% if form.description.errors %}
-            {{ form.description(class="textarea textarea-bordered textarea-error h-32 w-full", rows="5", required="") }}
-            <label class="label">
-              <span class="label-text-alt text-error">
-                {% for error in form.description.errors %}{{ error }} {% endfor %}
-              </span>
-            </label>
-          {% else %}
-            {{ form.description(class="textarea textarea-bordered h-32 w-full", rows="5", required="") }}
-          {% endif %}
+        <div class="form-group">
+            {{ form.description.label }}
+            {% if form.description.errors %}
+                {{ form.description(class="form-control is-invalid", rows="5", required="") }}
+                <div class="invalid-feedback">
+                    {% for error in form.description.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.description(class="form-control", rows="5", required="") }}
+            {% endif %}
         </div>
 
-        <div class="grid gap-4 md:grid-cols-2">
-          <div class="form-control w-full">
-            <label class="label">
-              <span class="label-text font-semibold">Registration Deadline</span>
-            </label>
+        <div class="form-group">
+            {{ form.deadline.label }}
+            <small class="form-text text-muted">Registration deadline must be before the event starts</small>
             {% if form.deadline.errors %}
-              {{ form.deadline(class="input input-bordered input-error w-full", type="datetime-local", required="") }}
-              <label class="label">
-                <span class="label-text-alt text-error">
-                  {% for error in form.deadline.errors %}{{ error }} {% endfor %}
-                </span>
-              </label>
+                {{ form.deadline(class="form-control is-invalid", type="datetime-local", required="") }}
+                <div class="invalid-feedback">
+                    {% for error in form.deadline.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
             {% else %}
-              {{ form.deadline(class="input input-bordered w-full", type="datetime-local", required="") }}
+                {{ form.deadline(class="form-control", type="datetime-local", required="") }}
             {% endif %}
-            <span class="text-sm text-base-content/60">Must be before the event start time.</span>
-          </div>
+        </div>
 
-          <div class="form-control w-full">
-            <label class="label">
-              <span class="label-text font-semibold">Event Start</span>
-            </label>
+        <div class="form-group">
+            {{ form.start_time.label }}
             {% if form.start_time.errors %}
-              {{ form.start_time(class="input input-bordered input-error w-full", type="datetime-local", required="") }}
-              <label class="label">
-                <span class="label-text-alt text-error">
-                  {% for error in form.start_time.errors %}{{ error }} {% endfor %}
-                </span>
-              </label>
+                {{ form.start_time(class="form-control is-invalid", type="datetime-local", required="") }}
+                <div class="invalid-feedback">
+                    {% for error in form.start_time.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
             {% else %}
-              {{ form.start_time(class="input input-bordered w-full", type="datetime-local", required="") }}
+                {{ form.start_time(class="form-control", type="datetime-local", required="") }}
             {% endif %}
-          </div>
         </div>
 
-        <div class="form-control w-full">
-          <label class="label">
-            <span class="label-text font-semibold">Event End</span>
-          </label>
-          {% if form.end_time.errors %}
-            {{ form.end_time(class="input input-bordered input-error w-full", type="datetime-local", required="") }}
-            <label class="label">
-              <span class="label-text-alt text-error">
-                {% for error in form.end_time.errors %}{{ error }} {% endfor %}
-              </span>
-            </label>
-          {% else %}
-            {{ form.end_time(class="input input-bordered w-full", type="datetime-local", required="") }}
-          {% endif %}
-          <span class="text-sm text-base-content/60">End time should come after the start time.</span>
+        <div class="form-group">
+            {{ form.end_time.label }}
+            <small class="form-text text-muted">Event end time must be after the start time</small>
+            {% if form.end_time.errors %}
+                {{ form.end_time(class="form-control is-invalid", type="datetime-local", required="") }}
+                <div class="invalid-feedback">
+                    {% for error in form.end_time.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.end_time(class="form-control", type="datetime-local", required="") }}
+            {% endif %}
         </div>
 
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          {{ form.submit(class="btn btn-primary w-full sm:w-auto") }}
-          <a href="{{ url_for('explore') }}" class="btn btn-outline w-full sm:w-auto">Cancel</a>
-        </div>
-      </form>
+        {{ form.submit(class="team-btn") }}
+    </form>
+
+    <div class="team-actions">
+        <a class="back-link team-btn" href="{{ url_for('explore') }}">Cancel</a>
     </div>
-  </div>
 </div>
+
+<style>
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: bold;
+        font-size: 15px;
+    }
+
+    .form-group input[type="text"],
+    .form-group textarea,
+    .form-group input[type="datetime-local"],
+    .form-group input[type="number"] {
+        width: 100%;
+        padding: 10px 12px;
+        border: 2px solid black;
+        border-radius: 8px;
+        font-size: 14px;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group textarea:focus,
+    .form-group input[type="datetime-local"]:focus,
+    .form-group input[type="number"]:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+
+    .invalid-feedback {
+        color: #dc3545;
+        font-size: 13px;
+        margin-top: 4px;
+        display: block;
+    }
+
+    .form-text {
+        display: block;
+        margin-top: 4px;
+        font-size: 12px;
+        color: #666;
+    }
+
+    .back-link {
+        display: inline-block;
+    }
+</style>
 {% endblock %}

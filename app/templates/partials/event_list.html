@@ -1,145 +1,57 @@
-<div class="space-y-6">
-  <div class="text-sm text-base-content/70 font-medium">
-    Found <strong class="text-base-content font-bold">{{ events|length }}</strong> matching events
-  </div>
-
-  {% if events %}
-  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 auto-rows-max p-1">
+<div style="margin-bottom: 15px; color: #666; font-size: 0.9em;">
+    Found <strong>{{ events|length }}</strong> matching events on this page
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
     {% for event in events %}
-    {% set status = event.status %}
-    
-    {% if loop.index0 % 3 == 0 %}
-      {% set tech_color = "text-blue-600" %}
-      {% set glow_ring = "ring-blue-500/20 bg-blue-50" %}
-    {% elif loop.index0 % 3 == 1 %}
-      {% set tech_color = "text-purple-600" %}
-      {% set glow_ring = "ring-purple-500/20 bg-purple-50" %}
+    <div style="border: 1px solid #ccc; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); background-color: white; transition: transform 0.2s;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin: 0;">{{ event.title }}</h3>
+            {% set status = event.status %} 
+            <span style="font-size: 0.8em; color: white; background: {% if status == 'open' %}#28a745{% elif status == 'cancelled' %}#dc3545{% elif status == 'completed' %}#6c757d{% elif status == 'ongoing' %}rgb(212, 205, 0){% else %}#17a2b8{% endif %}; padding: 3px 8px; border-radius: 12px;"> {{ status.capitalize() }} </span>
+        </div>
+        <p><strong>Registration Deadline:</strong></p>
+            <p>{{ event.deadline.strftime('%a %Y-%m-%d') }}</p>
+        <p><strong>Organizer:</strong> {{ event.organizer.name }}</p>
+        <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+            <!-- add register to view details -->
+            {% if event.id in joined_event_ids %}
+                <a href="/event/{{ event.id }}" style="display: inline-block; padding: 10px 20px; background: #7f98ae; color: white; border-radius: 5px; cursor: pointer; text-decoration: none; transition: 0.2s;">View Detail</a>
+            {% elif status == "open" %}
+                <a href="/event/{{ event.id }}" style="display: inline-block; padding: 10px 20px; background: #7f98ae; color: white; border-radius: 5px; cursor: pointer; text-decoration: none; transition: 0.2s;">Register Now</a>
+            {% else %}
+                <a href="/event/{{ event.id }}" style="display: inline-block; padding: 10px 20px; background: #7f98ae; color: white; border-radius: 5px; cursor: pointer; text-decoration: none; transition: 0.2s;">View Detail</a>
+            {% endif %}
+            <!-- <a href="/event/{{ event.id }}" style="display: inline-block; padding: 10px 20px; background: #7f98ae; color: white; border-radius: 5px; cursor: pointer; text-decoration: none; transition: 0.2s;">{{"Register Now" if status == "open" else "View Detail"}}</a> -->
+        </div>
+    </div>
     {% else %}
-      {% set tech_color = "text-emerald-600" %}
-      {% set glow_ring = "ring-emerald-500/20 bg-emerald-50" %}
-    {% endif %}
-    
-    <div class="bg-base-100 rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.12)] transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border border-base-200 group flex flex-col">
-      
-      <div class="h-36 bg-base-100 relative overflow-hidden flex items-center justify-center border-b border-base-200">
-        
-        <svg class="absolute inset-0 w-full h-full {{ tech_color }} transition-transform duration-700 ease-out group-hover:scale-105" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="card-grid-{{ loop.index0 }}" width="14" height="14" patternUnits="userSpaceOnUse">
-              <path d="M 14 0 L 0 0 0 14" fill="none" stroke="currentColor" stroke-width="1" class="opacity-[0.15]"/>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#card-grid-{{ loop.index0 }})" />
-          
-          <g opacity="0.6" stroke="currentColor" stroke-width="1.5" fill="none" class="transition-all duration-300 group-hover:opacity-90">
-            <path d="M88%,25% l-12,0 M88%,25% l12,0 M88%,25% l0,-12 M88%,25% l0,12" stroke-width="1.25"/>
-            <circle cx="88%" cy="25%" r="5" stroke-width="1.25" />
-            <circle cx="12%" cy="70%" r="3.5" fill="currentColor"/>
-            <path d="M12%,70% L28,70 L38,60" stroke-width="1.25" stroke-dasharray="3 2"/>
-          </g>
-        </svg>
-        
-        <div class="w-14 h-14 bg-base-100 shadow-md rounded-2xl transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 border border-base-200/80 z-10 flex items-center justify-center ring-4 {{ glow_ring }} {{ tech_color }}">
-          {% if loop.index0 % 3 == 0 %}
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.25" stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          {% elif loop.index0 % 3 == 1 %}
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.25" stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.63 8.41m5.96 5.96a14.96 14.96 0 01-5.96-5.96m5.96 5.96l-7.46 7.46m-1.52-1.52l3.43-3.43m-6.4 2.28l-.75-.75a.75.75 0 010-1.06l1.15-1.15h3.43M17 7.5a1.25 1.25 0 11-2.5 0 1.25 1.25 0 012.5 0z" />
-            </svg>
-          {% else %}
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.25" stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v3m0 0h.01m-.01 0H12m0-3a3 3 0 003-3V9a3 3 0 10-6 0v6a3 3 0 003 3zm6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          {% endif %}
-        </div>
-      </div>
-
-      <div class="p-5 flex flex-col flex-1 relative z-10 bg-base-100">
-        <div class="flex gap-2 items-center mb-3">
-          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider
-            {% if status == 'open' %}bg-success/10 text-success animate-pulse
-            {% elif status == 'cancelled' %}bg-error/10 text-error
-            {% elif status == 'completed' %}bg-info/10 text-info
-            {% elif status == 'ongoing' %}bg-warning/10 text-warning animate-pulse
-            {% endif %}">
-            {{ status }}
-          </span>
-        </div>
-
-        <h2 class="text-lg font-extrabold text-base-content mb-4 line-clamp-2 group-hover:text-primary transition-colors min-h-[3.5rem]">
-          {{ event.title if event.title else "Untitled Event" }}
-        </h2>
-
-        <div class="space-y-2.5 text-sm text-base-content/70 font-semibold mb-6">
-          <div class="flex items-center gap-2.5">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span>{{ event.deadline.strftime('%b %d, %Y') }}</span>
-          </div>
-          <div class="flex items-center gap-2.5">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>{{ event.deadline.strftime('%I:%M %p') }}</span>
-          </div>
-        </div>
-
-        <div class="pt-4 mt-auto border-t border-base-200">
-          {% if event.id in joined_event_ids %}
-          <a href="/event/{{ event.id }}" class="btn btn-outline btn-sm w-full font-bold tracking-wide text-base-content/80 hover:bg-base-200">
-            View Details
-          </a>
-          {% elif status == 'open' %}
-          <a href="/event/{{ event.id }}" class="btn btn-sm w-full font-black tracking-wide bg-primary text-primary-content border-none hover:bg-primary-focus shadow-lg shadow-primary/20 rounded-xl">
-            Register Now
-          </a>
-          {% else %}
-          <a href="/event/{{ event.id }}" class="btn btn-outline btn-sm w-full font-bold tracking-wide text-base-content/80 hover:bg-base-200">
-            View Details
-          </a>
-          {% endif %}
-        </div>
-      </div>
+    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #fafafa; border-radius: 12px; border: 2px dashed #eee;">
+        <h3 style="color: #333; margin: 15px 0 5px 0;">No events found</h3>
+        <p style="color: #888;">We couldn't find any events matching "{{ search_query }}".</p>
+        <a href="/explore" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #888; color: white; border-radius: 5px; font-weight: bold;">Clear all filters</a>
     </div>
     {% endfor %}
-  </div>
-  {% else %}
-  <div class="bg-base-200/50 border border-base-300 rounded-2xl p-8 text-center max-w-xl mx-auto my-6 relative z-10">
-    <svg xmlns="http://www.w3.org/2000/xl" class="h-12 w-12 text-base-content/30 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-    <p class="text-base-content text-md font-bold mb-1">No events found</p>
-    <p class="text-sm text-base-content/60 mb-5">{% if search_query %}Try adjusting your search filters.{% else %}Check back soon for upcoming events!{% endif %}</p>
-    <a href="/explore" class="btn btn-primary btn-sm border-none text-primary-content rounded-xl">
-      Clear Filters & Browse
-    </a>
-  </div>
-  {% endif %}
+    {% if paginate and paginate.pages > 1 %}
+    <div style="margin-top: 30px; display: flex; justify-content: center; gap: 10px; align-items: center;">
+        {% if paginate.has_prev %}
+        <button hx-get="/explore?page={{ paginate.prev_num }}" 
+                hx-target="#event-list" 
+                hx-include="[name='search'], [name='status'], [name='sort']"
+                style="padding: 8px 15px; cursor: pointer;">
+            Previous
+        </button>
+        {% endif %}
 
-  {% if paginate and paginate.pages > 1 %}
-  <div class="mt-12 flex flex-wrap items-center justify-center gap-3 relative z-10">
-    {% if paginate.has_prev %}
-    <button hx-get="/explore?page={{ paginate.prev_num }}" 
-            hx-target="#event-list" 
-            hx-include="[name='search'], [name='status'], [name='sort']"
-            class="btn btn-sm btn-outline border-base-300 text-base-content/80 hover:bg-base-200">
-      Previous
-    </button>
+        <span style="color: #666;">Page {{ paginate.page }} of {{ paginate.pages }}</span>
+
+        {% if paginate.has_next %}
+        <button hx-get="/explore?page={{ paginate.next_num }}" 
+                hx-target="#event-list" 
+                hx-include="[name='search'], [name='status'], [name='sort']"
+                style="padding: 8px 15px; cursor: pointer;">
+            Next
+        </button>
+        {% endif %}
+    </div>
     {% endif %}
-
-    <span class="text-sm font-bold text-base-content/60 px-4 py-2">Page {{ paginate.page }} of {{ paginate.pages }}</span>
-
-    {% if paginate.has_next %}
-    <button hx-get="/explore?page={{ paginate.next_num }}" 
-            hx-target="#event-list" 
-            hx-include="[name='search'], [name='status'], [name='sort']"
-            class="btn btn-sm btn-outline border-base-300 text-base-content/80 hover:bg-base-200">
-      Next
-    </button>
-    {% endif %}
-  </div>
-  {% endif %}
 </div>
