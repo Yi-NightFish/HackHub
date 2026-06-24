@@ -2,307 +2,262 @@
 
 {% block css %}
 <script src="https://unpkg.com/htmx.org@1.9.12"></script>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/team.css') }}">
 {% endblock %}
 
 {% block content %}
+<!-- Main Canvas Wrapper with hard #F0EFE9 color background and engineering x-y line grid matrix -->
+<div class="relative w-full min-h-screen p-4 pb-28 font-mono text-black bg-[#F0EFE9] overflow-x-hidden" 
+     style="background-image: linear-gradient(rgba(0,0,0,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.12) 1px, transparent 1px); background-size: 40px 40px;">
 
-<div class="team-page">
+    <!-- Main Dynamic Interface Container -->
+    <div class="relative container mx-auto z-10">
 
-    {% if team.leader_id == current_user.id %}
-        <input
-            class="team-title-input"
-            name="value"
-            value="{{ team.name }}"
-            hx-post="{{ url_for('autosave_team', team_id=team.id) }}"
-            hx-trigger="change"
-            hx-vals='{"field":"name"}'
-            hx-swap="none"
-        >
-    {% else %}
-        <h1 class="team-title">{{ team.name }}</h1>
-    {% endif %}
-
-    <div class="detail-box">
-
-        <p><strong>Motto:</strong></p>
-
-        {% if team.leader_id == current_user.id %}
-            <input
-                name="value"
-                value="{{ team.motto or '' }}"
-                hx-post="{{ url_for('autosave_team', team_id=team.id) }}"
-                hx-trigger="change"
-                hx-vals='{"field":"motto"}'
-                hx-swap="none"
-            >
-        {% else %}
-            <p>{{ team.motto or "-" }}</p>
-        {% endif %}
-
-        <p><strong>Roles Needed:</strong></p>
-
-        {% if team.leader_id == current_user.id %}
-            <input
-                name="value"
-                value="{{ team.roles or '' }}"
-                hx-post="{{ url_for('autosave_team', team_id=team.id) }}"
-                hx-trigger="change"
-                hx-vals='{"field":"roles"}'
-                hx-swap="none"
-            >
-        {% else %}
-            <p>{{ team.roles or "-" }}</p>
-        {% endif %}
-
-        <p><strong>Project Idea:</strong></p>
-
-        {% if team.leader_id == current_user.id %}
-            <textarea
-                name="value"
-                hx-post="{{ url_for('autosave_team', team_id=team.id) }}"
-                hx-trigger="change"
-                hx-vals='{"field":"project_idea"}'
-                hx-swap="none"
-            >{{ team.project_idea or '' }}</textarea>
-        {% else %}
-            <p>{{ team.project_idea or "-" }}</p>
-        {% endif %}
-
-        <p><strong>Team Code:</strong> {{ team.team_code }}</p>
-
-        <p>
-            <strong>Members:</strong>
-
-            {{ team.members|length }} /
-
+        <!-- Header Block using daisyUI Card structure with raw hard-shadow styling -->
+        <header class="card bg-base-100 rounded-none border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 mb-8">
             {% if team.leader_id == current_user.id %}
-                <input
-                    class="member-limit-input"
-                    type="number"
-                    min="1"
-                    max="6"
-                    name="value"
-                    value="{{ team.max_members }}"
-                    hx-post="{{ url_for('autosave_team', team_id=team.id) }}"
-                    hx-trigger="change"
-                    hx-vals='{"field":"max_members"}'
-                    hx-swap="none"
-                >
+                <div class="form-control w-full">
+                    <label class="label pt-0">
+                        <span class="label-text-alt uppercase font-black tracking-wider text-black">Squad Name // Click to edit</span>
+                    </label>
+                    <input
+                        class="input input-lg rounded-none border-4 border-black bg-base-100 text-black font-black uppercase shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:outline-none focus:translate-x-[-2px] focus:translate-y-[-2px] focus:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all"
+                        name="value"
+                        value="{{ team.name }}"
+                        hx-post="{{ url_for('autosave_team', team_id=team.id) }}"
+                        hx-trigger="change"
+                        hx-vals='{"field":"name"}'
+                        hx-swap="none"
+                    >
+                </div>
             {% else %}
-                {{ team.max_members }}
+                <h1 class="text-3xl font-black uppercase tracking-tight text-black">{{ team.name }}</h1>
             {% endif %}
-        </p>
+        </header>
 
-        {% if invite_link %}
-        <p>
-            <strong>Invite Link:</strong>
-            <a href="{{ invite_link }}" target="_blank">
-                {{ invite_link }}
-            </a>
-        </p>
-        {% endif %}
+        <!-- Main Content Split Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Dossier Block (Left Column) -->
+            <main class="lg:col-span-2 card bg-base-100 rounded-none border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 h-fit">
+                <h2 class="text-xl font-black uppercase border-b-4 border-black pb-3 mb-6">Core Profile</h2>
+                
+                <!-- Motto Input/Display -->
+                <div class="form-control mb-4">
+                    <label class="label pt-0">
+                        <span class="badge rounded-none border-2 border-black bg-black text-white font-black uppercase text-xs p-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]">Motto</span>
+                    </label>
+                    {% if team.leader_id == current_user.id %}
+                        <input class="input rounded-none border-2 border-black/30 bg-base-100 text-black font-bold shadow-[3px_3px_0px_0px_rgba(0,0,0,0.15)] focus:border-black focus:outline-none focus:translate-x-[-2px] focus:translate-y-[-2px] focus:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all"
+                            name="value" value="{{ team.motto or '' }}"
+                            hx-post="{{ url_for('autosave_team', team_id=team.id) }}" hx-trigger="change"
+                            hx-vals='{"field":"motto"}' hx-swap="none" placeholder="No official proclamation...">
+                    {% else %}
+                        <div class="p-3 bg-zinc-100 border-2 border-black/30 font-bold text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.15)]">{{ team.motto or "-" }}</div>
+                    {% endif %}
+                </div>
 
-        {% if qr_code %}
-        <div class="qr-box">
-            <p><strong>Scan to Open Team:</strong></p>
-            <img src="{{ qr_code }}" alt="Team QR Code" class="team-qr">
-        </div>
-        {% endif %}
+                <!-- Roles Needed -->
+                <div class="form-control mb-4">
+                    <label class="label pt-0">
+                        <span class="badge rounded-none border-2 border-black bg-black text-white font-black uppercase text-xs p-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]">Wanted Personnel</span>
+                    </label>
+                    {% if team.leader_id == current_user.id %}
+                        <input class="input rounded-none border-2 border-black/30 bg-base-100 text-black font-bold shadow-[3px_3px_0px_0px_rgba(0,0,0,0.15)] focus:border-black focus:outline-none focus:translate-x-[-2px] focus:translate-y-[-2px] focus:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all"
+                            name="value" value="{{ team.roles or '' }}"
+                            hx-post="{{ url_for('autosave_team', team_id=team.id) }}" hx-trigger="change"
+                            hx-vals='{"field":"roles"}' hx-swap="none" placeholder="e.g., Designer, Database Architect...">
+                    {% else %}
+                        <div class="p-3 bg-zinc-100 border-2 border-black/30 font-bold text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.15)]">{{ team.roles or "-" }}</div>
+                    {% endif %}
+                </div>
 
-    </div>
+                <!-- Project Idea -->
+                <div class="form-control mb-6">
+                    <label class="label pt-0">
+                        <span class="badge rounded-none border-2 border-black bg-black text-white font-black uppercase text-xs p-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]">Project Directive</span>
+                    </label>
+                    {% if team.leader_id == current_user.id %}
+                        <textarea class="textarea rounded-none border-2 border-black/30 bg-base-100 text-black min-h-[120px] font-bold shadow-[3px_3px_0px_0px_rgba(0,0,0,0.15)] focus:border-black focus:outline-none focus:translate-x-[-2px] focus:translate-y-[-2px] focus:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all"
+                            name="value" hx-post="{{ url_for('autosave_team', team_id=team.id) }}" hx-trigger="change"
+                            hx-vals='{"field":"project_idea"}' hx-swap="none" placeholder="Detail your application outline...">{{ team.project_idea or '' }}</textarea>
+                    {% else %}
+                        <div class="p-3 bg-zinc-100 border-2 border-black/30 font-bold text-black whitespace-pre-wrap shadow-[3px_3px_0px_0px_rgba(0,0,0,0.15)]">{{ team.project_idea or "-" }}</div>
+                    {% endif %}
+                </div>
 
-    <h2>Team Members</h2>
+                <!-- Footprint Data Strip utilizing a low-saturation soft gray block -->
+                <div class="alert bg-zinc-200 rounded-none border-4 border-black font-bold flex flex-wrap justify-between items-center gap-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black">
+                    <div class="text-sm">
+                        <span>Team Code:</span> 
+                        <span class="badge bg-base-100 text-black rounded-none border-2 border-black select-all font-bold p-2 ml-1">{{ team.team_code }}</span>
+                    </div>
+                    <div class="text-sm flex items-center gap-2">
+                        <span>Members:</span> 
+                        <span class="font-black text-lg underline decoration-2">{{ team.members|length }}</span> /
+                        {% if team.leader_id == current_user.id %}
+                            <input class="input input-sm rounded-none border-2 border-black w-16 text-center font-black bg-base-100 text-black focus:outline-none"
+                                type="number" min="1" max="6" name="value" value="{{ team.max_members }}"
+                                hx-post="{{ url_for('autosave_team', team_id=team.id) }}" hx-trigger="change"
+                                hx-vals='{"field":"max_members"}' hx-swap="none">
+                        {% else %}
+                            <span class="font-black text-lg">{{ team.max_members }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </main>
 
-    <div id="member-list">
+            <!-- Sidebar Panel (Right Column) -->
+            <aside class="flex flex-col gap-6">
 
-        {% for member in team.members %}
-
-        <div class="member-row" id="member-{{ member.user_id }}">
-
-            <a
-                href="{{ url_for('profile', user_id=member.user_id) }}"
-                hx-boost="false"
-            >
-                {{ member.user.name or member.user.email }}
-            </a>
-
-            -
-            {{ member.roles or "Member" }}
-
-            {% if team.leader_id == current_user.id and member.user_id != team.leader_id %}
-
-            <form
-                hx-post="{{ url_for('remove_member', team_id=team.id, user_id=member.user_id) }}"
-                hx-target="#member-{{ member.user_id }}"
-                hx-swap="outerHTML"
-            >
-                <button type="submit">Remove</button>
-            </form>
-
-            {% endif %}
-
-        </div>
-
-        {% else %}
-
-        <p>No members yet.</p>
-
-        {% endfor %}
-
-    </div>
-
-    {% if team.leader_id == current_user.id %}
-
-    <div class="team-actions">
-
-        <form method="POST" action="{{ url_for('delete_team', team_id=team.id) }}">
-            <button class="danger" type="submit">
-                Delete Team
-            </button>
-        </form>
-
-    </div>
-
-    <h2>Change Leader</h2>
-
-    <div class="detail-box">
-
-        <form method="POST" action="{{ url_for('change_leader', team_id=team.id) }}">
-
-            <label>Choose New Leader</label>
-
-            <select name="new_leader_id" required>
-
-                {% for member in team.members %}
-
-                    {% if member.user_id != current_user.id %}
-
-                    <option value="{{ member.user_id }}">
-                        {{ member.user.name or member.user.email }}
-                    </option>
-
+                <!-- Link & QR Gateway Block -->
+                {% if invite_link or qr_code %}
+                <div class="card bg-base-100 rounded-none border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 space-y-4">
+                    <h2 class="text-lg font-black uppercase border-b-4 border-black pb-2 mb-2">Gate Access</h2>
+                    
+                    {% if invite_link %}
+                    <div class="form-control w-full">
+                        <label class="label pt-0 pl-0">
+                            <span class="badge bg-black text-white rounded-none font-bold text-xs border border-black px-2 py-3">INVITE LINK</span>
+                        </label>
+                        <div class="p-3 bg-zinc-100 border-2 border-black/30 font-bold text-xs break-all text-neutral-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] select-all">
+                            <a class="hover:underline font-black" href="{{ invite_link }}" target="_blank">{{ invite_link }}</a>
+                        </div>
+                    </div>
                     {% endif %}
 
-                {% endfor %}
+                    {% if qr_code %}
+                    <div class="flex flex-col gap-2 pt-2">
+                        <span class="text-xs font-black uppercase tracking-wider text-black">Access Matrix:</span>
+                        <div class="w-32 p-2 bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                            <img class="w-full object-contain" src="{{ qr_code }}" alt="Team QR Code">
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <!-- Roster Widget (Muted Stone tone replacing high-saturation yellow) -->
+                <div class="card bg-stone-200 text-black rounded-none border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6">
+                    <h2 class="text-lg font-black uppercase border-b-4 border-black pb-2 mb-4">The Roster</h2>
+                    <div id="member-list" class="space-y-3">
+                        {% for member in team.members %}
+                        <div class="flex justify-between items-center bg-base-100 text-black p-3 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]" id="member-{{ member.user_id }}">
+                            <div class="flex flex-col max-w-[65%]">
+                                <a class="font-black text-sm link link-hover truncate text-black" href="{{ url_for('profile', user_id=member.user_id) }}" hx-boost="false">
+                                    {{ member.user.name or member.user.email }}
+                                </a>
+                                <span class="badge badge-sm bg-black text-white rounded-none font-bold uppercase p-2 mt-1 w-fit border border-black">{{ member.roles or "Operative" }}</span>
+                            </div>
 
-            </select>
+                            {% if team.leader_id == current_user.id and member.user_id != team.leader_id %}
+                            <form hx-post="{{ url_for('remove_member', team_id=team.id, user_id=member.user_id) }}" hx-target="#member-{{ member.user_id }}" hx-swap="outerHTML">
+                                <button class="btn btn-xs bg-zinc-300 rounded-none border-2 border-black text-black font-bold uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-zinc-400 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all" type="submit">Eject</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <p class="text-xs italic font-bold">No active agents assigned.</p>
+                        {% endfor %}
+                    </div>
+                </div>
 
-            <button type="submit">
-                Change Leader
-            </button>
+                <!-- Command Controls Block (Muted Slate tone replacing high-saturation pink) -->
+                <div class="card bg-slate-200 text-black rounded-none border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6">
+                    <h2 class="text-lg font-black uppercase border-b-4 border-black pb-2 mb-4">Actions Deck</h2>
+                    
+                    <div id="join-action" class="space-y-4">
+                        {% if team.leader_id == current_user.id %}
+                            
+                            <!-- Pending Approvals Module -->
+                            <div>
+                                <h3 class="font-black text-xs uppercase tracking-wider mb-2">Reqeusts:</h3>
+                                <div class="space-y-2">
+                                    {% for request in pending_requests %}
+                                    <div class="p-3 border-2 border-black bg-base-100 text-black flex justify-between items-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                                        <a class="font-bold link link-hover text-xs truncate max-w-[45%] text-black" href="{{ url_for('profile', user_id=request.user.id) }}" hx-boost="false">
+                                            {{ request.user.name or request.user.email }}
+                                        </a>
+                                        <div class="flex gap-1">
+                                            <form method="POST" action="{{ url_for('approve_join_request', request_id=request.id) }}">
+                                                <button class="btn btn-xs bg-stone-300 rounded-none border-2 border-black text-black font-bold shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-none" type="submit">OK</button>
+                                            </form>
+                                            <form method="POST" action="{{ url_for('reject_join_request', request_id=request.id) }}">
+                                                <button class="btn btn-xs bg-zinc-300 rounded-none border-2 border-black text-black font-bold shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-none" type="submit">NO</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <p class="text-xs italic font-bold opacity-80">No request yet.</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
 
-        </form>
+                            <div class="border-t-2 border-dashed border-black opacity-40 my-2"></div>
 
-        <p class="small-text">
-            Leader must transfer leadership before leaving the team.
-        </p>
+                            <!-- Abdication Command -->
+                            <form method="POST" action="{{ url_for('change_leader', team_id=team.id) }}" class="form-control">
+                                <label class="label pt-0">
+                                    <span class="label-text-alt font-black uppercase text-black">Transfer Control</span>
+                                </label>
+                                <div class="flex gap-2">
+                                    <select class="select select-sm rounded-none border-2 border-black bg-base-100 text-black font-bold flex-grow focus:outline-none" name="new_leader_id" required>
+                                        {% for member in team.members %}
+                                            {% if member.user_id != current_user.id %}
+                                            <option value="{{ member.user_id }}">
+                                                {{ member.user.name or member.user.email }}
+                                            </option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                    <button class="btn btn-sm bg-neutral text-white rounded-none border-2 border-black uppercase font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all" type="submit">Yield</button>
+                                </div>
+                            </form>
+                            
+                            <div class="border-t-2 border-dashed border-black opacity-40 my-2"></div>
+
+                            <!-- Destroy System -->
+                            <form method="POST" action="{{ url_for('delete_team', team_id=team.id) }}">
+                                <button class="btn bg-zinc-400 rounded-none border-4 border-black text-black w-full uppercase font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:bg-zinc-500 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all" type="submit">Scuttle Squad</button>
+                            </form>
+
+                        {% elif is_member %}
+                            <form method="POST" action="{{ url_for('leave_team', team_id=team.id) }}">
+                                <button class="btn bg-zinc-400 rounded-none border-4 border-black text-black w-full uppercase font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:bg-zinc-500 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all" type="submit">Resign Position</button>
+                            </form>
+                        {% else %}
+                            {% if existing_request %}
+                                <button class="btn btn-disabled rounded-none border-2 border-black text-black opacity-50 w-full uppercase font-black" disabled>Awaiting Handshake...</button>
+                            {% elif team.members|length >= team.max_members %}
+                                <button class="btn btn-disabled rounded-none border-2 border-black text-black opacity-50 w-full uppercase font-black" disabled>Cluster Full</button>
+                            {% elif not member_of_other_team %}
+                                <form hx-post="{{ url_for('request_join_team', team_id=team.id) }}" hx-target="#join-action" hx-swap="outerHTML">
+                                    <button class="btn bg-stone-300 rounded-none border-4 border-black text-black w-full font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-stone-400 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all" type="submit">Request Access Signature</button>
+                                </form>
+                            {% else %}
+                                <button class="btn btn-disabled rounded-none border-2 border-black text-black opacity-50 w-full uppercase font-black text-xs" disabled>Bound To Secondary Node</button>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+            </aside>
+        </div>
+
+        <!-- Persistent Navigation Footer utilizing low-saturation functional actions -->
+        <footer class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-6xl navbar bg-base-100 rounded-none border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] justify-between px-4 z-50">
+            <div class="flex gap-4">
+                <form method="POST" action="{{ url_for('tasks', team_id=team.id) }}">
+                    <button class="btn bg-zinc-300 rounded-none border-2 border-black text-black btn-sm md:btn-md font-black uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-zinc-400 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all" type="submit">View Tasks</button>
+                </form>
+                <form method="GET" action="{{ url_for('project_page', team_id=team.id) }}">
+                    <button class="btn bg-stone-300 rounded-none border-2 border-black text-black btn-sm md:btn-md font-black uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-stone-400 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all" type="submit">Open Project</button>
+                </form>
+            </div>
+            <a class="btn btn-ghost rounded-none font-black text-xs uppercase text-black" href="{{ url_for('teams') }}">
+                ← Main Terminal
+            </a>
+        </footer>
 
     </div>
-
-    <h2>Join Requests</h2>
-
-    {% for request in pending_requests %}
-
-    <div class="member-row">
-
-        <a
-            href="{{ url_for('profile', user_id=request.user.id) }}"
-            hx-boost="false"
-        >
-            {{ request.user.name or request.user.email }}
-        </a>
-
-        <form
-            method="POST"
-            action="{{ url_for('approve_join_request', request_id=request.id) }}"
-        >
-            <button type="submit">Approve</button>
-        </form>
-
-        <form
-            method="POST"
-            action="{{ url_for('reject_join_request', request_id=request.id) }}"
-        >
-            <button type="submit">Reject</button>
-        </form>
-
-    </div>
-
-    {% else %}
-
-    <p>No pending requests.</p>
-
-    {% endfor %}
-
-    {% elif is_member %}
-
-    <div class="team-actions">
-
-        <form method="POST" action="{{ url_for('leave_team', team_id=team.id) }}">
-            <button type="submit">
-                Leave Team
-            </button>
-        </form>
-
-    </div>
-
-    {% else %}
-
-    <div class="team-actions" id="join-action">
-
-        {% if existing_request %}
-
-        <button disabled>
-            Request Sent
-        </button>
-
-        {% elif team.members|length >= team.max_members %}
-
-        <button disabled>
-            Team Full
-        </button>
-
-        {% elif not member_of_other_team %}
-
-        <form
-            hx-post="{{ url_for('request_join_team', team_id=team.id) }}"
-            hx-target="#join-action"
-            hx-swap="outerHTML"
-        >
-            <button type="submit">
-                Request to Join
-            </button>
-        </form>
-
-        {% else %}
-
-        <button disabled>
-            Already in another team
-        </button>
-
-        {% endif %}
-
-    </div>
-
-    {% endif %}
-
-    <div class="team-actions">
-
-        <form method="POST" action="{{ url_for('tasks', team_id=team.id) }}">
-            <button type="submit">Tasks</button>
-        </form>
-
-        <form method="GET" action="{{ url_for('project_page', team_id=team.id) }}">
-            <button type="submit">Project</button>
-        </form>
-
-    </div>
-
-    <a class="back-link" href="{{ url_for('teams') }}">
-        Back to Teams
-    </a>
-
 </div>
-
 {% endblock %}
