@@ -9,20 +9,15 @@
 
   <!-- Neo-Brutalist Geometric Background Shapes -->
   <div class="absolute inset-0 pointer-events-none overflow-hidden z-0 select-none">
-    <!-- Grid Blueprint Texture -->
-    <div class="absolute inset-0 opacity-[0.08]" 
-         style="background-image: linear-gradient(to right, black 2px, transparent 2px), linear-gradient(to bottom, black 2px, transparent 2px); background-size: 40px 40px;">
-    </div>
-    
     <!-- Giant Tilted Decorative Rectangle Right -->
-    <div class="absolute top-12 -right-16 w-80 h-80 bg-accent border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transform rotate-12 opacity-80"></div>
+    <div class="absolute top-12 -right-16 w-80 h-80 bg-accent/50 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transform rotate-12 opacity-80"></div>
     
     <!-- Floating Stark Circle Left -->
-    <div class="absolute top-1/3 -left-20 w-64 h-64 rounded-full bg-secondary border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] -rotate-12 opacity-70"></div>
+    <div class="absolute top-1/3 -left-20 w-64 h-64 rounded-full bg-secondary/50 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] -rotate-12 opacity-70"></div>
     
     <!-- Abstract Geometric Cross/Plus Cluster -->
-    <div class="absolute bottom-20 right-12 w-12 h-36 bg-black transform rotate-45 hidden md:block"></div>
-    <div class="absolute bottom-32 right-24 w-36 h-12 bg-black transform rotate-45 hidden md:block"></div>
+    <div class="absolute bottom-20 right-12 w-12 h-36 bg-black/50 transform rotate-45 hidden md:block"></div>
+    <div class="absolute bottom-32 right-24 w-36 h-12 bg-black/50 transform rotate-45 hidden md:block"></div>
   </div>
   
   <!-- Main Header Title Section (Centered) -->
@@ -39,9 +34,8 @@
             </span>
           {% else %}
             Welcome to Your
-            <!-- Neo-Brutalism Tilted Box Setup -->
             <span class="block mt-4 font-mono text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter">
-              <span class="relative inline-block px-6 py-2 bg-primary text-black border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transform -rotate-2 select-none">
+              <span class="relative inline-block px-6 py-2 bg-[#9BD1FF] text-black border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transform -rotate-2 select-none">
                 Dashboard
               </span> 
             </span>
@@ -63,16 +57,28 @@
   <div class="container mx-auto px-4 max-w-4xl mt-6 relative z-10">
     <div class="bg-white border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none overflow-hidden relative">
       
-      <!-- Profile Banner Image with Stark Split Border -->
-      <div class="h-44 sm:h-56 w-full relative bg-base-300 overflow-hidden border-b-4 border-black">
-        <img src="{{ url_for('static', filename='images/profile_bg.jpg') }}" alt="Profile Banner" class="w-full h-full object-cover filtering sepia-[10%]">
+      <!-- Banner: Structural Neobrutalist Block Grid -->
+      <div class="h-32 sm:h-40 w-full bg-[#FFFDF6] border-b-4 border-black relative overflow-hidden flex items-stretch">
+        <div class="w-1/3 bg-[#FF6B6B] border-r-4 border-black p-4 flex flex-col justify-between items-start">
+          <span class="text-xs font-black uppercase tracking-widest bg-black text-white px-1.5 py-0.5">SYS-LOG</span>
+        </div>
+        <div class="w-1/4 bg-[#4D96FF] border-r-4 border-black relative">
+          <div class="absolute bottom-2 right-2 font-mono text-xs font-black opacity-40">VER.26</div>
+        </div>
+        <div class="flex-1 bg-white p-4 relative flex items-center justify-center">
+          <svg class="w-12 h-12 text-black/10 absolute top-2 right-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          <div class="w-full border-2 border-dashed border-black/20 h-full flex items-center justify-center font-mono text-[10px] font-bold tracking-widest text-black/30 select-none">
+            HACKHUB_CORE_NODE
+          </div>
+        </div>
       </div>
 
-      <!-- Profile Avatar Overlap Section (Perfect 50/50 Splitting) -->
+      <!-- Profile Avatar Overlap Section -->
       <div class="px-6 sm:px-8 relative pb-6 border-b-4 border-black bg-white">
         <div class="absolute -top-12 sm:-top-16 left-6 sm:left-8 z-20">
           <div class="avatar">
-            <!-- Stark Square-edged Avatar Frame -->
             <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-none border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-[#F0EFE9] overflow-hidden flex items-center justify-center">
               {% if user.profile_pic %}
                 <img src="{{ url_for('static', filename='images/' + user.profile_pic) }}" alt="{{ user.name }}'s Avatar" class="rounded-none object-cover w-full h-full" />
@@ -92,17 +98,16 @@
       <!-- Combined Content Accordions -->
       <div class="divide-y-4 divide-black">
         
-        <!-- SECTION 1: Identity & Settings / Profile Detail (OPEN BY DEFAULT) -->
+        <!-- SECTION 1: Identity & Settings / Profile Detail -->
         <details open class="group/window collapse rounded-none overflow-hidden">
           <summary class="bg-[#F0EFE9] px-6 py-4 flex items-center justify-between select-none cursor-pointer list-none [&::-webkit-details-marker]:hidden border-b-2 border-black/10 group-open/window:border-b-4 group-open/window:border-black">
             <div class="flex items-center gap-2">
               <span class="text-sm font-black text-black uppercase tracking-wider font-mono">Profile Identity</span>
-              <span class="font-black text-black bg-primary border-2 border-black px-2 py-0.5 text-[10px] uppercase tracking-wider select-none ml-1">
+              <span class="font-black text-black bg-[#9BD1FF] border-2 border-black px-2 py-0.5 text-[10px] uppercase tracking-wider select-none ml-1">
                 {% if is_owner %}Settings{% else %}Details{% endif %}
               </span>
             </div>
             
-            <!-- Custom Dynamic Plus/Minus Indicator Toggle -->
             <div class="text-black transition-colors bg-white p-1 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4 block group-open/window:hidden">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -158,7 +163,7 @@
 
                 <div class="flex flex-col sm:flex-row justify-end gap-4 pt-6 border-t-4 border-dashed border-black">
                   <a href="{{ url_for('reset_pwd') }}" class="btn btn-sm bg-white text-black rounded-none border-4 border-black h-11 font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] order-2 sm:order-1 hover:bg-[#F0EFE9]">Reset Password</a>
-                  {{ form.submit(id='submitButton', class="btn btn-sm bg-primary text-black rounded-none border-4 border-black font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] h-11 order-1 sm:order-2 px-8 hover:translate-y-[-1px] hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all") }}
+                  {{ form.submit(id='submitButton', class="btn btn-sm bg-primary/80 text-black rounded-none border-4 border-black font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] h-11 order-1 sm:order-2 px-8 hover:translate-y-[-1px] hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all") }}
                 </div>
               </form>
               
@@ -192,7 +197,7 @@
           </div>
         </details>
 
-        <!-- SECTION 2: Completed Quests / Event History (CLOSED BY DEFAULT) -->
+        <!-- SECTION 2: Completed Quests / Event History -->
         <details class="group/window collapse rounded-none overflow-hidden">
           <summary class="bg-[#F0EFE9] px-6 py-4 flex items-center justify-between select-none cursor-pointer list-none [&::-webkit-details-marker]:hidden group-open/window:border-b-4 group-open/window:border-black">
             <div class="flex items-center gap-2">
@@ -204,7 +209,6 @@
               {% endif %}
             </div>
             
-            <!-- Custom Dynamic Plus/Minus Indicator Toggle -->
             <div class="text-black transition-colors bg-white p-1 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4 block group-open/window:hidden">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
