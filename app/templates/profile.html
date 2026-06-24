@@ -7,57 +7,18 @@
 
 <div class="relative w-full min-h-screen bg-[#F0EFE9] text-black pb-16 selection:bg-secondary selection:text-secondary-content overflow-x-hidden group/page font-sans">
 
-  <!-- Neo-Brutalist Geometric Background Shapes -->
   <div class="absolute inset-0 pointer-events-none overflow-hidden z-0 select-none">
-    <!-- Giant Tilted Decorative Rectangle Right -->
-    <div class="absolute top-12 -right-16 w-80 h-80 bg-accent/50 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transform rotate-12 opacity-80"></div>
+    <div class="absolute top-12 -right-16 w-80 h-80 bg-accent border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transform rotate-12 opacity-40"></div>
     
-    <!-- Floating Stark Circle Left -->
-    <div class="absolute top-1/3 -left-20 w-64 h-64 rounded-full bg-secondary/50 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] -rotate-12 opacity-70"></div>
+    <div class="absolute top-1/3 -left-20 w-64 h-64 rounded-full bg-secondary border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] -rotate-12 opacity-30"></div>
     
-    <!-- Abstract Geometric Cross/Plus Cluster -->
     <div class="absolute bottom-20 right-12 w-12 h-36 bg-black/50 transform rotate-45 hidden md:block"></div>
     <div class="absolute bottom-32 right-24 w-36 h-12 bg-black/50 transform rotate-45 hidden md:block"></div>
   </div>
-  
-  <!-- Main Header Title Section (Centered) -->
-  <div class="relative z-10 pt-16 pb-6">
-    <div class="container mx-auto max-w-4xl px-4 text-center">
-      <div class="space-y-4">
-        <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight uppercase">
-          {% if not is_owner %}
-            Meet 
-            <span class="block mt-4 font-mono text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter">
-              <span class="relative inline-block px-6 py-2 bg-secondary text-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transform rotate-2">
-                {{ user.name }}
-              </span> 
-            </span>
-          {% else %}
-            Welcome to Your
-            <span class="block mt-4 font-mono text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter">
-              <span class="relative inline-block px-6 py-2 bg-[#9BD1FF] text-black border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transform -rotate-2 select-none">
-                Dashboard
-              </span> 
-            </span>
-          {% endif %}
-        </h1>
 
-        {% if not is_owner %}
-        <div class="pt-4 flex justify-center">
-          <a href="{{ url_for('chat', user_id=user.id) }}" class="btn btn-md bg-[#FFDE4D] text-black rounded-none border-4 border-black font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-100">
-            Say Hello!
-          </a>
-        </div>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Unified Profile Container -->
-  <div class="container mx-auto px-4 max-w-4xl mt-6 relative z-10">
+  <div class="container mx-auto px-4 max-w-4xl mt-16 relative z-10">
     <div class="bg-white border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none overflow-hidden relative">
       
-      <!-- Banner: Structural Neobrutalist Block Grid -->
       <div class="h-32 sm:h-40 w-full bg-[#FFFDF6] border-b-4 border-black relative overflow-hidden flex items-stretch">
         <div class="w-1/3 bg-[#FF6B6B] border-r-4 border-black p-4 flex flex-col justify-between items-start">
           <span class="text-xs font-black uppercase tracking-widest bg-black text-white px-1.5 py-0.5">SYS-LOG</span>
@@ -75,7 +36,6 @@
         </div>
       </div>
 
-      <!-- Profile Avatar Overlap Section -->
       <div class="px-6 sm:px-8 relative pb-6 border-b-4 border-black bg-white">
         <div class="absolute -top-12 sm:-top-16 left-6 sm:left-8 z-20">
           <div class="avatar">
@@ -89,16 +49,24 @@
           </div>
         </div>
 
-        <div class="pt-16 sm:pt-16 text-left">
-          <h2 class="text-2xl sm:text-3xl font-black text-black tracking-tight leading-tight uppercase font-mono">{{ user.name }}</h2>
-          <p class="text-xs font-bold text-black/60 font-mono bg-[#F0EFE9] inline-block px-2 py-0.5 border border-black mt-1">{{ user.email if is_owner else 'Verified Hackhub User' }}</p>
+        <div class="pt-16 sm:pt-16 flex flex-col sm:flex-row sm:items-end justify-between gap-4 text-left">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-black text-black tracking-tight leading-tight uppercase font-mono">{{ user.name }}</h2>
+            <p class="text-xs font-bold text-black/60 font-mono bg-[#F0EFE9] inline-block px-2 py-0.5 border border-black mt-1">{{ user.email if is_owner else 'Verified Hackhub User' }}</p>
+          </div>
+          
+          <a href="mailto:{{ user.email }}" class="inline-flex items-center gap-2 bg-[#FFDE4D] text-black font-mono font-black text-xs uppercase tracking-wider px-3 py-2 border-2 border-black rounded-none shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all shrink-0 mb-0.5">
+            <svg class="w-4 h-4 text-black shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20C9.5 20 7 18.5 6 16.5C5 14.5 5.5 12.5 7.5 11.5C9.5 10.5 11.5 11.5 12 13.5C12.5 15.5 11 17 9.5 17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M11 18.5L9.5 17L11 15.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Reach me out</span>
+          </a>
         </div>
       </div>
 
-      <!-- Combined Content Accordions -->
       <div class="divide-y-4 divide-black">
         
-        <!-- SECTION 1: Identity & Settings / Profile Detail -->
         <details open class="group/window collapse rounded-none overflow-hidden">
           <summary class="bg-[#F0EFE9] px-6 py-4 flex items-center justify-between select-none cursor-pointer list-none [&::-webkit-details-marker]:hidden border-b-2 border-black/10 group-open/window:border-b-4 group-open/window:border-black">
             <div class="flex items-center gap-2">
@@ -197,7 +165,6 @@
           </div>
         </details>
 
-        <!-- SECTION 2: Completed Quests / Event History -->
         <details class="group/window collapse rounded-none overflow-hidden">
           <summary class="bg-[#F0EFE9] px-6 py-4 flex items-center justify-between select-none cursor-pointer list-none [&::-webkit-details-marker]:hidden group-open/window:border-b-4 group-open/window:border-black">
             <div class="flex items-center gap-2">
