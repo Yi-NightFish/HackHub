@@ -80,24 +80,25 @@
             <span>{{ event.deadline.strftime('%b %d, %Y') }}</span>
           </div>
           <div class="flex items-center gap-2.5">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/xl" class="h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span>{{ event.deadline.strftime('%I:%M %p') }}</span>
           </div>
         </div>
 
+        <!-- ONLY SECTION UPDATED BELOW TO NEO-BRUTALISM -->
         <div class="pt-4 mt-auto border-t border-base-200">
           {% if event.id in joined_event_ids %}
-          <a href="/event/{{ event.id }}" class="btn btn-outline btn-sm w-full font-bold tracking-wide text-base-content/80 hover:bg-base-200">
+          <a href="/event/{{ event.id }}" class="btn min-h-0 h-11 w-full border-2 border-black bg-white text-black rounded-none font-black uppercase tracking-wider hover:bg-gray-100 hover:border-black transition-all duration-75 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none inline-flex items-center justify-center">
             View Details
           </a>
           {% elif status == 'open' %}
-          <a href="/event/{{ event.id }}" class="btn btn-sm w-full font-black tracking-wide bg-primary text-primary-content border-none hover:bg-primary-focus shadow-lg shadow-primary/20 rounded-xl">
+          <a href="/event/{{ event.id }}" class="btn min-h-0 h-11 w-full border-2 border-black bg-[#4D96FF] text-white rounded-none font-black uppercase tracking-wider hover:bg-[#357AE8] hover:border-black transition-all duration-75 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none inline-flex items-center justify-center">
             Register Now
           </a>
           {% else %}
-          <a href="/event/{{ event.id }}" class="btn btn-outline btn-sm w-full font-bold tracking-wide text-base-content/80 hover:bg-base-200">
+          <a href="/event/{{ event.id }}" class="btn min-h-0 h-11 w-full border-2 border-black bg-white text-black rounded-none font-black uppercase tracking-wider hover:bg-gray-100 hover:border-black transition-all duration-75 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none inline-flex items-center justify-center">
             View Details
           </a>
           {% endif %}
@@ -108,7 +109,7 @@
   </div>
   {% else %}
   <div class="bg-base-200/50 border border-base-300 rounded-2xl p-8 text-center max-w-xl mx-auto my-6 relative z-10">
-    <svg xmlns="http://www.w3.org/2000/xl" class="h-12 w-12 text-base-content/30 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-base-content/30 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
     <p class="text-base-content text-md font-bold mb-1">No events found</p>
