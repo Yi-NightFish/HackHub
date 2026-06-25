@@ -21,13 +21,9 @@
         </div>
         
         <div style="display: flex; gap: 8px; align-items: center;">
-            <a href="{{ url_for('export_participants_csv', event_id=current_event.id) }}" 
+            <a href="{{ url_for('export_data_csv', event_id=current_event.id) }}" 
                style="background-color: #295a8e; color: white; text-decoration: none; padding: 0 12px; border-radius: 4px; font-size: 0.85em; font-weight: bold; line-height: 32px; height: 32px; display: inline-block; text-align: center; transition: background 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                Export Participants (CSV)
-            </a>
-            <a href="{{ url_for('export_teams_csv', event_id=current_event.id) }}" 
-               style="background-color: #277639; color: white; text-decoration: none; padding: 0 12px; border-radius: 4px; font-size: 0.85em; font-weight: bold; line-height: 32px; height: 32px; display: inline-block; text-align: center; transition: background 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                Export Teams (CSV)
+                Export Data (CSV)
             </a>
             <span style="font-size: 0.85em; background: #343a40; color: #fff; padding: 0 12px; border-radius: 20px; font-weight: bold; line-height: 32px; height: 32px; display: inline-block; text-align: center;">
                 Organizer: {{ current_user.name or current_user.email }}

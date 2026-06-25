@@ -1116,16 +1116,13 @@ def organizer_dashboard(event_id):
     stats = {"total_participants": len(participants), "total_active_teams": len(active_teams_list), "total_soloists": len(soloist)} #  "total_cancelled_teams": len(cancelled_teams_list),
     return render_template("organizer_dashboard.html", stats = stats, participants = participants, teams = all_teams, soloists = soloist, current_user = current_user, team_progress = team_progress, current_event = event, my_all_events = my_all_events)
 
-@app.route("/organizer/<int:event_id>/export/participants")
+@app.route("/organizer/<int:event_id>/export/data")
 @login_required
-def export_participants_csv(event_id):
+def export_data_csv(event_id):
     current_user_id = session.get("user_id")
     event = db.session.get(Event, event_id)
     if not event or event.organizer_id != current_user_id:
         return "Unauthorized", 403
-
-    # Fetch all participants for the event
-    participants = User.query.join(Participation).filter(Participation.event_id == event_id).distinct().all()
 
     # Create a CSV string
     #stringio is a temporary memory file in RAM
@@ -1134,34 +1131,9 @@ def export_participants_csv(event_id):
     output.write('\ufeff')
     writer = csv.writer(output)
     #write in a row in the csv file, the first row is the header
-    writer.writerow(["ID", "Name", "Email", "University", "Skills Stack", "GitHub"])
-
-    for participant in participants:
-        writer.writerow([participant.id, participant.name or "Unnamed Student", participant.email, participant.university or "MMU", participant.skills or "Not specified yet", participant.github_link or "No Link"])
-
-    # Create a response with the CSV data
-    response = make_response(output.getvalue())
-    #force download with a filename, and set content type to csv
-    response.headers["Content-Disposition"] = f"attachment; filename=participants_{event_id}.csv"
-    # tell the browser this is a csv file and use utf-8 encoding
-    response.headers["Content-Type"] = "text/csv; charset = utf-8"
-    return response
-
-@app.route("/organizer/<int:event_id>/export/teams")
-@login_required
-def export_teams_csv(event_id):
-    current_user_id = session.get("user_id")
-    event = db.session.get(Event, event_id)
-    if not event or event.organizer_id != current_user_id:
-        return "Unauthorized", 403
-
-    teams = Team.query.filter_by(event_id = event_id).all()
-
-    output = StringIO()
-    output.write('\ufeff')
-    writer = csv.writer(output)
-    writer.writerow(["Team ID", "Team Name", "Motto", "Project Idea", "Max Members", "Current Members", "Members' Names and Emails"])
-
+    writer.writerow(["=== SECTION 1: TEAM TRACKING REPORT ==="])
+    writer.writerow(["Team ID", "Team Name", "Motto", "Project Idea", "Pax Members", "Member list"])
+    teams = Team.query.filter_by(event_id=event_id).all()
     for team in teams:
         team_users = User.query.join(Participation).filter(Participation.team_id == team.id).all()
         member_list = []
@@ -1172,7 +1144,20 @@ def export_teams_csv(event_id):
 
         writer.writerow([team.id, team.name, team.motto or "", team.project_idea or "", team.max_members, len(team_users), member_info])
 
+    writer.writerow([])
+    writer.writerow([])
+    writer.writerow(["=== SECTION 2: PARTICIPANT TRACKING REPORT ==="])
+    writer.writerow(["Student ID", "Name", "Email", "University", "Skills Stack", "GitHub"])
+
+    # Fetch all participants for the event
+    participants = User.query.join(Participation).filter(Participation.event_id == event_id).distinct().all()
+    for participant in participants:
+        writer.writerow([participant.id, participant.name or "Unnamed Student", participant.email, participant.university or "MMU", participant.skills or "Not specified yet", participant.github_link or "No Link"])
+
+    # Create a response with the CSV data
     response = make_response(output.getvalue())
-    response.headers["Content-Disposition"] = f"attachment; filename=teams_{event_id}.csv"
-    response.headers["Content-Type"] = "text/csv; charset=utf-8"
+    #force download with a filename, and set content type to csv
+    response.headers["Content-Disposition"] = f"attachment; filename=event_{event_id}_report.csv"
+    # tell the browser this is a csv file and use utf-8 encoding
+    response.headers["Content-Type"] = "text/csv; charset = utf-8"
     return response
