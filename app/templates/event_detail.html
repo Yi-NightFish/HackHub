@@ -4,12 +4,15 @@
 {% block content %}
 <div class="relative w-full min-h-screen bg-sky-50/50 pb-16 text-black selection:bg-sky-200" style="overflow-x: hidden !important;">
   
+  <!-- Enhanced Geometric Background Vectors & Right Border Dot Gradients -->
   <div class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0" style="max-width: 100vw;">
     
+    <!-- Tilted Right Border Dot Decoration Matrix -->
     <div class="absolute right-0 top-1/4 bottom-1/4 w-[350px] md:w-[500px] opacity-45 transform rotate-12 translate-x-12 origin-right" 
          style="background-image: radial-gradient(circle, #000000 2px, transparent 2px); background-size: 20px 20px; -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1) 15%, rgba(0,0,0,0) 100%); mask-image: linear-gradient(to left, rgba(0,0,0,1) 15%, rgba(0,0,0,0) 100%);">
     </div>
 
+    <!-- Nested SVG Concentric Circles -->
     <svg class="absolute inset-0 w-full h-full opacity-35 text-black" xmlns="http://www.w3.org/2000/svg">
       <circle cx="0%" cy="0%" r="320" fill="none" stroke="currentColor" stroke-width="4.5" />
       <circle cx="0%" cy="0%" r="290" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="8 5" />
@@ -17,26 +20,27 @@
     </svg>
   </div>
 
+  <!-- Header Banner Section -->
   <div class="relative py-12 px-4 mb-4 z-10">
     <div class="container mx-auto px-4 max-w-4xl text-center">
       <div class="space-y-6">
         {% if event.status == 'open' or event.status == 'ongoing' %}
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-yellow-300 text-black text-xs font-black tracking-wider uppercase border-2 border-black rounded-md">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-yellow-300 text-black text-xs font-black tracking-wider uppercase border-2 border-black rounded-none">
           <span class="flex h-2 w-2 relative">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-black"></span>
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-none bg-black opacity-75"></span>
+            <span class="relative inline-flex rounded-none h-2 w-2 bg-black"></span>
           </span>
           {{ event.status }}
         </div>
         {% endif %}
         
-        <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-black uppercase bg-white border-2 border-black p-4 inline-block rounded-xl max-w-3xl mx-auto transform -rotate-1 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+        <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-black uppercase bg-white border-2 border-black p-4 inline-block rounded-none max-w-3xl mx-auto transform -rotate-1 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
           {{ event.title }}
         </h1>
 
         {% if current_user and event.organizer_id == current_user.id %}
         <div class="pt-4">
-          <a href="{{ url_for('edit_event', event_id=event.id) }}" class="inline-flex items-center gap-2 bg-cyan-200 text-black border-2 border-black font-black uppercase text-sm px-6 py-3 rounded-lg hover:bg-cyan-300 active:translate-y-[1px] transition-all">
+          <a href="{{ url_for('edit_event', event_id=event.id) }}" class="inline-flex items-center gap-2 bg-cyan-200 text-black border-2 border-black font-black uppercase text-sm px-6 py-3 rounded-none hover:bg-cyan-300 active:translate-y-[1px] transition-all">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
             </svg>
@@ -48,10 +52,12 @@
     </div>
   </div>
 
+  <!-- Main Container -->
   <div class="container mx-auto px-4 max-w-5xl relative z-10">
     
-    <div class="bg-white border-2 border-black rounded-2xl shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] overflow-hidden relative z-10">
+    <div class="bg-white border-2 border-black rounded-none shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] overflow-hidden relative z-10">
       
+      <!-- Tab Bar Section -->
       <div class="bg-stone-100 border-b-2 border-black flex flex-wrap items-stretch">
         {% set tabs = ["overview", "participants", "teams", "solo"] %}
         {% for tab in tabs %}
@@ -63,6 +69,7 @@
         {% endfor %}
       </div>
 
+      <!-- Main Body Padding Area -->
       <div class="p-6 sm:p-10">
 
         {# ================= OVERVIEW TAB ================= #}
@@ -71,16 +78,16 @@
           <div>
             <h2 class="text-xl font-black uppercase text-black mb-4 flex items-center gap-2">
               <span>Event Portal</span>
-              <span class="text-xs font-black text-white bg-black px-2 py-0.5 uppercase tracking-widest border border-black rounded">Specs</span>
+              <span class="text-xs font-black text-white bg-black px-2 py-0.5 uppercase tracking-widest border border-black rounded-none">Specs</span>
             </h2>
             
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-white p-6 border-2 border-black rounded-xl">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-white p-6 border-2 border-black rounded-none">
               
               <div class="lg:col-span-5 flex flex-col gap-4">
-                <div class="bg-white border-2 border-black p-3 rounded-lg">
+                <div class="bg-white border-2 border-black p-3 rounded-none">
                   <span class="text-[10px] uppercase font-black tracking-wider text-black/60 block mb-1">Launch Date</span>
                   <div class="flex items-center gap-3">
-                    <div class="p-2 border-2 border-black bg-lime-300 text-black rounded-md">
+                    <div class="p-2 border-2 border-black bg-lime-300 text-black rounded-none">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                       </svg>
@@ -92,10 +99,10 @@
                   </div>
                 </div>
 
-                <div class="bg-white border-2 border-black p-3 rounded-lg">
+                <div class="bg-white border-2 border-black p-3 rounded-none">
                   <span class="text-[10px] uppercase font-black tracking-wider text-black/60 block mb-1">Organizer</span>
                   <div class="flex items-center gap-3">
-                    <div class="p-2 border-2 border-black bg-pink-300 text-black rounded-md">
+                    <div class="p-2 border-2 border-black bg-pink-300 text-black rounded-none">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                       </svg>
@@ -104,10 +111,10 @@
                   </div>
                 </div>
 
-                <div class="bg-white border-2 border-black p-3 rounded-lg">
+                <div class="bg-white border-2 border-black p-3 rounded-none">
                   <span class="text-[10px] uppercase font-black tracking-wider text-black/60 block mb-1">Participants</span>
                   <div class="flex items-center gap-3">
-                    <div class="p-2 border-2 border-black bg-cyan-200 text-black rounded-md">
+                    <div class="p-2 border-2 border-black bg-cyan-200 text-black rounded-none">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.65-2.42 9.123 9.123 0 00-6.182 0 3 3 0 00-4.65 2.42 9.094 9.094 0 003.741.479M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                       </svg>
@@ -117,58 +124,61 @@
                 </div>
               </div>
 
-              <div class="lg:col-span-7 bg-white border-2 border-black p-6 rounded-lg flex flex-col justify-center">
+              <div class="lg:col-span-7 bg-white border-2 border-black p-6 rounded-none flex flex-col justify-center">
                 <ul class="relative border-l-4 border-black space-y-8 pl-6 my-2">
                   
+                  <!-- 1. Registration Close -->
                   <li class="relative">
-                    <div class="absolute -left-[38px] top-0 w-6 h-6 rounded-full border-2 border-black flex items-center justify-center font-black text-xs transition-colors 
+                    <div class="absolute -left-[38px] top-0 w-6 h-6 rounded-none border-2 border-black flex items-center justify-center font-black text-xs transition-colors 
                       {{ 'bg-yellow-300 text-black' if event.status == 'open' else ('bg-lime-400 text-black' if event.status in ['ongoing', 'completed'] else 'bg-white text-black/40') }}">
                       1
                     </div>
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-2 border-black p-2.5 rounded-lg {{ 'bg-orange-50' if event.status == 'open' else 'bg-white' }}">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-2 border-black p-2.5 rounded-none {{ 'bg-orange-50' if event.status == 'open' else 'bg-white' }}">
                       <div>
                         <span class="text-xs font-black uppercase tracking-wide block {{ 'text-black' if event.status == 'open' else 'text-black/60' }}">Registration Close</span>
                         {% if event.deadline %}
                         <span class="text-[10px] font-mono font-bold {{ 'text-black/60' if event.status == 'open' else 'text-black/40' }}">{{ event.deadline.strftime('%I:%M %p') }}</span>
                         {% endif %}
                       </div>
-                      <span class="text-xs font-mono font-black border border-black px-2 py-0.5 rounded align-self-start sm:align-self-auto {{ 'bg-black text-white' if event.status == 'open' else 'bg-stone-100 text-black/60' }}">
+                      <span class="text-xs font-mono font-black border border-black px-2 py-0.5 rounded-none align-self-start sm:align-self-auto {{ 'bg-black text-white' if event.status == 'open' else 'bg-stone-100 text-black/60' }}">
                         {{ event.deadline.strftime('%b %d, %Y') if event.deadline else 'N/A' }}
                       </span>
                     </div>
                   </li>
 
+                  <!-- 2. Event Launch -->
                   <li class="relative">
-                    <div class="absolute -left-[38px] top-0 w-6 h-6 rounded-full border-2 border-black flex items-center justify-center font-black text-xs transition-colors 
+                    <div class="absolute -left-[38px] top-0 w-6 h-6 rounded-none border-2 border-black flex items-center justify-center font-black text-xs transition-colors 
                       {{ 'bg-yellow-300 text-black' if event.status == 'ongoing' else ('bg-lime-400 text-black' if event.status == 'completed' else 'bg-white text-black/40') }}">
                       2
                     </div>
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-2 border-black p-2.5 rounded-lg {{ 'bg-orange-50' if event.status == 'ongoing' else 'bg-white' }}">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-2 border-black p-2.5 rounded-none {{ 'bg-orange-50' if event.status == 'ongoing' else 'bg-white' }}">
                       <div>
                         <span class="text-xs font-black uppercase tracking-wide block {{ 'text-black' if event.status == 'ongoing' else 'text-black/60' }}">Event Launch</span>
                         {% if event.start_time %}
                         <span class="text-[10px] font-mono font-bold {{ 'text-black/60' if event.status == 'ongoing' else 'text-black/40' }}">{{ event.start_time.strftime('%I:%M %p') }}</span>
                         {% endif %}
                       </div>
-                      <span class="text-xs font-mono font-black border border-black px-2 py-0.5 rounded {{ 'bg-cyan-200 text-black' if event.status == 'ongoing' else 'bg-stone-100 text-black/60' }}">
+                      <span class="text-xs font-mono font-black border border-black px-2 py-0.5 rounded-none {{ 'bg-cyan-200 text-black' if event.status == 'ongoing' else 'bg-stone-100 text-black/60' }}">
                         {{ event.start_time.strftime('%b %d, %Y') if event.start_time else 'N/A' }}
                       </span>
                     </div>
                   </li>
 
+                  <!-- 3. Conclusion -->
                   <li class="relative">
-                    <div class="absolute -left-[38px] top-0 w-6 h-6 rounded-full border-2 border-black flex items-center justify-center font-black text-xs transition-colors 
+                    <div class="absolute -left-[38px] top-0 w-6 h-6 rounded-none border-2 border-black flex items-center justify-center font-black text-xs transition-colors 
                       {{ 'bg-yellow-300 text-black' if event.status == 'completed' else 'bg-white text-black/40' }}">
                       3
                     </div>
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-2 border-black p-2.5 rounded-lg {{ 'bg-orange-50' if event.status == 'completed' else 'bg-white' }}">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-2 border-black p-2.5 rounded-none {{ 'bg-orange-50' if event.status == 'completed' else 'bg-white' }}">
                       <div>
                         <span class="text-xs font-black uppercase tracking-wide block {{ 'text-black' if event.status == 'completed' else 'text-black/40' }}">Conclusion</span>
                         {% if event.end_time %}
                         <span class="text-[10px] font-mono font-bold {{ 'text-black/60' if event.status == 'completed' else 'text-black/30' }}">{{ event.end_time.strftime('%I:%M %p') }}</span>
                         {% endif %}
                       </div>
-                      <span class="text-xs font-mono font-black border px-2 py-0.5 rounded {{ 'bg-black text-white border-black' if event.status == 'completed' else 'bg-white text-black/40 border-black/20' }}">
+                      <span class="text-xs font-mono font-black border px-2 py-0.5 rounded-none {{ 'bg-black text-white border-black' if event.status == 'completed' else 'bg-white text-black/40 border-black/20' }}">
                         {{ event.end_time.strftime('%b %d, %Y') if event.end_time else 'N/A' }}
                       </span>
                     </div>
@@ -184,7 +194,7 @@
 
           <div>
             <h3 class="text-xl font-black uppercase text-black mb-3">Description</h3>
-            <div class="bg-white border-2 border-black p-6 rounded-xl">
+            <div class="bg-white border-2 border-black p-6 rounded-none">
               <p class="text-black font-medium whitespace-pre-line text-sm leading-relaxed">{{ event.description or 'No description provided for this event.' }}</p>
             </div>
           </div>
@@ -195,14 +205,14 @@
               {% if not enrolled %}
               <form method="POST" class="w-full sm:w-auto">
                 <input name="user-id" value='{{ current_user.id }}' hidden>
-                <button type="submit" class="w-full sm:w-auto text-center bg-lime-400 text-black border-2 border-black font-black uppercase text-base px-10 py-4 rounded-xl hover:bg-lime-500 active:translate-y-[1px] transition-all">Join Now</button>
+                <button type="submit" class="w-full sm:w-auto text-center bg-lime-400 text-black border-2 border-black font-black uppercase text-base px-10 py-4 rounded-none hover:bg-lime-500 active:translate-y-[1px] transition-all">Join Now</button>
               </form>
               {% else %}
-              <a href='{{ url_for("unroll", event_id=event.id) }}' class="w-full sm:w-auto text-center bg-red-400 text-black border-2 border-black font-black uppercase text-base px-10 py-4 rounded-xl hover:bg-red-500 active:translate-y-[1px] transition-all">Leave Event</a>
+              <a href='{{ url_for("unroll", event_id=event.id) }}' class="w-full sm:w-auto text-center bg-red-400 text-black border-2 border-black font-black uppercase text-base px-10 py-4 rounded-none hover:bg-red-500 active:translate-y-[1px] transition-all">Leave Event</a>
               {% endif %}
             {% else %}
-              <div class="bg-amber-200 border-2 border-black p-4 text-center w-full rounded-xl">
-                <p class="text-sm font-black uppercase tracking-wide">Please <a href="{{ url_for('login', next=request.url) }}" class="underline decoration-2 font-black text-black hover:bg-white px-1 rounded">log in</a> to register and participate.</p>
+              <div class="bg-amber-200 border-2 border-black p-4 text-center w-full rounded-none">
+                <p class="text-sm font-black uppercase tracking-wide">Please <a href="{{ url_for('login', next=request.url) }}" class="underline decoration-2 font-black text-black hover:bg-white px-1 rounded-none">log in</a> to register and participate.</p>
               </div>
             {% endif %}
           </div>
@@ -214,18 +224,18 @@
         <div>
           <h2 class="text-2xl font-black uppercase text-black mb-6 flex items-center gap-2">
             <span>Enrolled Manifest</span>
-            <span class="text-xs font-black text-white bg-black px-2 py-0.5 uppercase tracking-widest border border-black rounded">Roster</span>
+            <span class="text-xs font-black text-white bg-black px-2 py-0.5 uppercase tracking-widest border border-black rounded-none">Roster</span>
           </h2>
 
           {% if current_user %}
             {% if participants %}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {% for participant in participants %}
-                <a href="{{ url_for('profile', user_id=participant.id) }}" class="group bg-white border-2 border-black p-4 rounded-xl block">
+                <a href="{{ url_for('profile', user_id=participant.id) }}" class="group bg-white border-2 border-black p-4 rounded-none block">
                   <div class="flex items-center justify-between w-full gap-3">
                     
                     <div class="flex items-center gap-3 min-w-0">
-                      <div class="w-12 h-12 border-2 border-black bg-orange-100 flex-shrink-0 flex items-center justify-center overflow-hidden rounded-lg">
+                      <div class="w-12 h-12 border-2 border-black bg-orange-100 flex-shrink-0 flex items-center justify-center overflow-hidden rounded-none">
                         <svg data-jdenticon-value="{{ participant.name }}" class="w-full h-full m-1"></svg>
                       </div>
                       <div class="flex flex-col min-w-0">
@@ -250,7 +260,7 @@
                       </div>
                     </div>
 
-                    <div class="flex-shrink-0 w-8 h-8 border-2 border-black bg-black text-white flex items-center justify-center rounded-md group-hover:bg-white group-hover:text-black">
+                    <div class="flex-shrink-0 w-8 h-8 border-2 border-black bg-black text-white flex items-center justify-center rounded-none group-hover:bg-white group-hover:text-black">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                       </svg>
@@ -263,16 +273,16 @@
 
             {% if total_pages and total_pages > 1 %}
             <div class="flex justify-center pt-8">
-              <div class="inline-flex bg-white border-2 border-black p-1 rounded-xl gap-1">
+              <div class="inline-flex bg-white border-2 border-black p-1 rounded-none gap-1">
                 <a href="{{ url_for('event_detail', event_id=event.id, tab='participants', page=current_page-1) }}" 
-                   class="px-3 py-1.5 font-black text-xs uppercase rounded-lg border-2 border-transparent transition-all hover:bg-black hover:text-white {% if current_page == 1 %}pointer-events-none opacity-30{% endif %}">
+                   class="px-3 py-1.5 font-black text-xs uppercase rounded-none border-2 border-transparent transition-all hover:bg-black hover:text-white {% if current_page == 1 %}pointer-events-none opacity-30{% endif %}">
                   « Prev
                 </a>
-                <span class="px-4 py-1.5 font-black text-xs uppercase bg-sky-100 border-2 border-black rounded-lg text-black">
+                <span class="px-4 py-1.5 font-black text-xs uppercase bg-sky-100 border-2 border-black rounded-none text-black">
                   Page {{ current_page }} / {{ total_pages }}
                 </span>
                 <a href="{{ url_for('event_detail', event_id=event.id, tab='participants', page=current_page+1) }}" 
-                   class="px-3 py-1.5 font-black text-xs uppercase rounded-lg border-2 border-transparent transition-all hover:bg-black hover:text-white {% if current_page == total_pages %}pointer-events-none opacity-30{% endif %}">
+                   class="px-3 py-1.5 font-black text-xs uppercase rounded-none border-2 border-transparent transition-all hover:bg-black hover:text-white {% if current_page == total_pages %}pointer-events-none opacity-30{% endif %}">
                   Next »
                 </a>
               </div>
@@ -280,12 +290,12 @@
             {% endif %}
 
             {% else %}
-            <div class="text-center py-10 bg-yellow-50 border-2 border-black border-dashed rounded-xl max-w-md mx-auto">
+            <div class="text-center py-10 bg-yellow-50 border-2 border-black border-dashed rounded-none max-w-md mx-auto">
               <p class="text-sm font-black uppercase tracking-wide text-black/60">No participants registered inside this event pipeline.</p>
             </div>
             {% endif %}
           {% else %}
-            <div class="text-center py-10 bg-red-100 border-2 border-black rounded-xl max-w-md mx-auto">
+            <div class="text-center py-10 bg-red-100 border-2 border-black rounded-none max-w-md mx-auto">
               <p class="text-sm font-black uppercase tracking-wide text-black">Secure dashboard logic. Please <a href="{{ url_for('login', next=request.url) }}" class="underline decoration-2 font-black">log in</a> to view profile information.</p>
             </div>
           {% endif %}
@@ -297,10 +307,10 @@
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <h2 class="text-2xl font-black uppercase text-black flex items-center gap-2">
               <span>Active Teams</span>
-              <span class="text-xs font-black text-white bg-black px-2 py-0.5 uppercase tracking-widest border border-black rounded">Cohorts</span>
+              <span class="text-xs font-black text-white bg-black px-2 py-0.5 uppercase tracking-widest border border-black rounded-none">Cohorts</span>
             </h2>
             {% if enrolled and not in_team %}
-              <a href='{{ url_for("create_team_for_event", event_id=event.id) }}' class="w-full sm:w-auto text-center bg-yellow-200 text-black border-2 border-black font-black uppercase text-sm px-5 py-2.5 rounded-xl hover:bg-yellow-300 active:translate-y-[1px] transition-all">
+              <a href='{{ url_for("create_team_for_event", event_id=event.id) }}' class="w-full sm:w-auto text-center bg-yellow-200 text-black border-2 border-black font-black uppercase text-sm px-5 py-2.5 rounded-none hover:bg-yellow-300 active:translate-y-[1px] transition-all">
                 + Create Team
               </a>
             {% endif %}
@@ -309,7 +319,7 @@
           {% if teams %}
           <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {% for team in teams %}
-              <a href="{{ url_for('team_detail', team_id=team.id) }}" class="group bg-white border-2 border-black p-5 rounded-xl block">
+              <a href="{{ url_for('team_detail', team_id=team.id) }}" class="group bg-white border-2 border-black p-5 rounded-none block">
                 <div class="flex items-center justify-between w-full gap-4">
                   
                   <div class="min-w-0 flex-1 space-y-3">
@@ -324,17 +334,17 @@
                     
                     <div class="space-y-1.5 text-xs text-black font-bold">
                       <div class="flex items-center gap-1.5">
-                        <span class="bg-black text-white px-1.5 py-0.5 uppercase tracking-wide text-[9px] font-black border border-black rounded-sm">Members</span>
-                        <span class="font-mono bg-yellow-100 border-2 border-black px-1.5 rounded text-black">{{ team.members|length }} / {{ team.max_members }}</span>
+                        <span class="bg-black text-white px-1.5 py-0.5 uppercase tracking-wide text-[9px] font-black border border-black rounded-none">Members</span>
+                        <span class="font-mono bg-yellow-100 border-2 border-black px-1.5 rounded-none text-black">{{ team.members|length }} / {{ team.max_members }}</span>
                       </div>
                       <div class="flex items-center gap-1.5 min-w-0">
-                        <span class="bg-black text-white px-1.5 py-0.5 uppercase tracking-wide text-[9px] font-black border border-black rounded-sm flex-shrink-0">Project</span>
+                        <span class="bg-black text-white px-1.5 py-0.5 uppercase tracking-wide text-[9px] font-black border border-black rounded-none flex-shrink-0">Project</span>
                         <span class="truncate italic text-black/80 font-medium">{{ team.project_idea or 'N/A' }}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div class="flex-shrink-0 w-8 h-8 border-2 border-black bg-black text-white flex items-center justify-center rounded-md group-hover:bg-white group-hover:text-black">
+                  <div class="flex-shrink-0 w-8 h-8 border-2 border-black bg-black text-white flex items-center justify-center rounded-none group-hover:bg-white group-hover:text-black">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                     </svg>
@@ -345,7 +355,7 @@
             {% endfor %}
           </div>
           {% else %}
-          <div class="text-center py-10 bg-yellow-50 border-2 border-black border-dashed rounded-xl max-w-md mx-auto">
+          <div class="text-center py-10 bg-yellow-50 border-2 border-black border-dashed rounded-none max-w-md mx-auto">
             <p class="text-sm font-black uppercase tracking-wide text-black/60">No collaborative teams registered for this event yet.</p>
           </div>
           {% endif %}
@@ -358,10 +368,10 @@
             <div>
               <h2 class="text-2xl font-black uppercase text-black flex items-center gap-2">
                 <span>Solo Operators</span>
-                <span class="text-xs font-black text-white bg-black px-2 py-0.5 uppercase tracking-widest border border-black rounded">Soloists</span>
+                <span class="text-xs font-black text-white bg-black px-2 py-0.5 uppercase tracking-widest border border-black rounded-none">Soloists</span>
               </h2>
               <p class="text-xs text-black/60 font-bold mt-1 uppercase tracking-wide">
-                Showing <span class="bg-sky-100 border border-black px-1 text-black font-black rounded">{{ soloists|length }}</span> individuals looking for a team layout
+                Showing <span class="bg-sky-100 border border-black px-1 text-black font-black rounded-none">{{ soloists|length }}</span> individuals looking for a team layout
               </p>
             </div>
           </div>
@@ -376,7 +386,7 @@
                    name="search_soloists" 
                    placeholder="Search profiles by tag, skills, or specific names..." 
                    value="{{ search_soloists_query or '' }}" 
-                   class="w-full bg-white border-2 border-black h-14 pl-12 pr-4 text-sm font-black uppercase tracking-tight text-black placeholder-black/50 focus:outline-none focus:bg-sky-50 rounded-xl"
+                   class="w-full bg-white border-2 border-black h-14 pl-12 pr-4 text-sm font-black uppercase tracking-tight text-black placeholder-black/50 focus:outline-none focus:bg-sky-50 rounded-none"
                    hx-get="/event/{{ event.id }}?tab=solo"
                    hx-trigger="keyup changed delay:500ms"
                    hx-target="#soloists-list"
