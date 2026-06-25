@@ -1142,7 +1142,7 @@ def export_data_csv(event_id):
             member_list.append(f"{name} ({u.email})")
         member_info = "; ".join(member_list)
 
-        writer.writerow([team.id, team.name, team.motto or "", team.project_idea or "", team.max_members, len(team_users), member_info])
+        writer.writerow([team.id, team.name, team.motto or "", team.project_idea or "", len(team_users), member_info])
 
     writer.writerow([])
     writer.writerow([])
