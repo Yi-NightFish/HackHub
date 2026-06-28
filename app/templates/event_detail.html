@@ -2,30 +2,43 @@
 {% block title %}{{ event.title }} | Event Details{% endblock %}
 
 {% block content %}
-<div class="relative w-full min-h-screen bg-sky-50/50 pb-16 text-black selection:bg-sky-200" style="overflow-x: hidden !important;">
+<div class="relative w-full min-h-screen bg-[#F4ECE1] pb-24 text-black font-sans selection:bg-yellow-300 selection:text-black overflow-x-hidden" style="overflow-x: hidden !important;">
   
-  <!-- Enhanced Geometric Background Vectors & Right Border Dot Gradients -->
-  <div class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0" style="max-width: 100vw;">
+  <div class="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden" style="max-width: 100vw;">
     
-    <!-- Tilted Right Border Dot Decoration Matrix -->
-    <div class="absolute right-0 top-1/4 bottom-1/4 w-[350px] md:w-[500px] opacity-45 transform rotate-12 translate-x-12 origin-right" 
-         style="background-image: radial-gradient(circle, #000000 2px, transparent 2px); background-size: 20px 20px; -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1) 15%, rgba(0,0,0,0) 100%); mask-image: linear-gradient(to left, rgba(0,0,0,1) 15%, rgba(0,0,0,0) 100%);">
+    <div class="absolute -left-16 top-40 w-72 h-72 bg-pink-300/25 border-4 border-black transform -rotate-6 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] opacity-40 md:opacity-100"></div>
+
+    <div class="absolute -right-20 top-1/4 w-96 h-64 bg-yellow-300/25 border-4 border-black transform rotate-12 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] opacity-30 md:opacity-100 hidden sm:block">
+      <div class="w-full h-8 border-b-4 border-black bg-black/10"></div>
+      <div class="p-4 space-y-3">
+        <div class="w-2/3 h-4 bg-black/20"></div>
+        <div class="w-1/2 h-4 bg-black/20"></div>
+      </div>
     </div>
 
-    <!-- Nested SVG Concentric Circles -->
-    <svg class="absolute inset-0 w-full h-full opacity-35 text-black" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="0%" cy="0%" r="320" fill="none" stroke="currentColor" stroke-width="4.5" />
-      <circle cx="0%" cy="0%" r="290" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="8 5" />
-      <circle cx="0%" cy="0%" r="260" fill="none" stroke="currentColor" stroke-width="3" />
-    </svg>
-  </div>
+    <div class="absolute -left-32 bottom-20 w-[500px] h-[500px] border-[6px] border-black opacity-10 rounded-none transform rotate-45"></div>
+    <div class="absolute -left-16 bottom-36 w-[350px] h-[350px] border-4 border-black border-dashed opacity-10 rounded-none transform -rotate-12"></div>
 
-  <!-- Header Banner Section -->
-  <div class="relative py-12 px-4 mb-4 z-10">
-    <div class="container mx-auto px-4 max-w-4xl text-center">
+    <div class="absolute right-[10%] top-12 w-12 h-12 opacity-80 hidden md:block">
+      <div class="absolute top-5 left-0 w-12 h-2 bg-black"></div>
+      <div class="absolute top-0 left-5 w-2 h-12 bg-black"></div>
+    </div>
+    <div class="absolute left-[5%] top-1/2 w-8 h-8 opacity-60">
+      <div class="absolute top-3 left-0 w-8 h-2 bg-black"></div>
+      <div class="absolute top-0 left-3 w-2 h-8 bg-black"></div>
+    </div>
+
+    <div class="absolute right-6 bottom-10 w-64 h-64 opacity-35"
+         style="background-image: radial-gradient(circle, #000000 3px, transparent 3px); background-size: 24px 24px;">
+    </div>
+    
+  </div>
+  <div class="relative pt-16 pb-12 px-4 z-10">
+    <div class="container mx-auto max-w-5xl text-center">
       <div class="space-y-6">
+        
         {% if event.status == 'open' or event.status == 'ongoing' %}
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-yellow-300 text-black text-xs font-black tracking-wider uppercase border-2 border-black rounded-none">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-yellow-300 text-black text-xs font-black tracking-widest uppercase border-4 border-black rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
           <span class="flex h-2 w-2 relative">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-none bg-black opacity-75"></span>
             <span class="relative inline-flex rounded-none h-2 w-2 bg-black"></span>
@@ -34,17 +47,19 @@
         </div>
         {% endif %}
         
-        <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-black uppercase bg-white border-2 border-black p-4 inline-block rounded-none max-w-3xl mx-auto transform -rotate-1 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-          {{ event.title }}
-        </h1>
+        <div class="inline-block transform -rotate-1 bg-white border-4 border-black p-6 sm:p-8 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] max-w-4xl mx-auto">
+          <h1 class="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-black uppercase leading-none">
+            {{ event.title }}
+          </h1>
+        </div>
 
         {% if current_user and event.organizer_id == current_user.id %}
         <div class="pt-4">
-          <a href="{{ url_for('edit_event', event_id=event.id) }}" class="inline-flex items-center gap-2 bg-cyan-200 text-black border-2 border-black font-black uppercase text-sm px-6 py-3 rounded-none hover:bg-cyan-300 active:translate-y-[1px] transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+          <a href="{{ url_for('edit_event', event_id=event.id) }}" class="inline-flex items-center gap-2 bg-cyan-300 text-black border-4 border-black font-black uppercase text-sm px-8 py-3.5 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-cyan-400 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
             </svg>
-            Edit Event
+            Edit Event Configuration
           </a>
         </div>
         {% endif %}
@@ -52,167 +67,161 @@
     </div>
   </div>
 
-  <!-- Main Container -->
   <div class="container mx-auto px-4 max-w-5xl relative z-10">
     
-    <div class="bg-white border-2 border-black rounded-none shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] overflow-hidden relative z-10">
+    <div class="bg-[#FFFDF6] border-4 border-black rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
       
-      <!-- Tab Bar Section -->
-      <div class="bg-stone-100 border-b-2 border-black flex flex-wrap items-stretch">
+      <div class="bg-stone-200 border-b-4 border-black flex flex-wrap items-stretch">
         {% set tabs = ["overview", "participants", "teams", "solo"] %}
         {% for tab in tabs %}
           <a href="{{ url_for('event_detail', event_id=event.id, tab=tab) }}" 
-             class="flex-1 min-w-[85px] sm:min-w-[110px] text-center py-4 text-xs sm:text-sm font-black uppercase tracking-wide border-r-2 border-black last:border-r-0 transition-all duration-100 flex items-center justify-center
-             {{ 'bg-white text-black font-black' if active_tab == tab else 'text-black/60 bg-stone-100 hover:bg-sky-50 hover:text-black' }}">
+             class="flex-1 min-w-[100px] text-center py-5 text-xs sm:text-sm font-black uppercase tracking-wider border-r-4 border-black last:border-r-0 transition-all flex items-center justify-center
+             {{ 'bg-white text-black border-b-4 border-b-white -mb-[4px]' if active_tab == tab else 'text-black/70 bg-stone-200 hover:bg-amber-100 hover:text-black' }}">
             {{ tab.capitalize() }}
           </a>
         {% endfor %}
       </div>
 
-      <!-- Main Body Padding Area -->
-      <div class="p-6 sm:p-10">
+      <div class="p-6 sm:p-12">
 
         {# ================= OVERVIEW TAB ================= #}
         {% if active_tab == "overview" %}
-        <div class="space-y-8">
-          <div>
-            <h2 class="text-xl font-black uppercase text-black mb-4 flex items-center gap-2">
-              <span>Event Portal</span>
-              <span class="text-xs font-black text-white bg-black px-2 py-0.5 uppercase tracking-widest border border-black rounded-none">Specs</span>
-            </h2>
+        <div class="space-y-12">
+          
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-white p-6 border-2 border-black rounded-none">
+            <div class="lg:col-span-5 flex flex-col gap-6">
               
-              <div class="lg:col-span-5 flex flex-col gap-4">
-                <div class="bg-white border-2 border-black p-3 rounded-none">
-                  <span class="text-[10px] uppercase font-black tracking-wider text-black/60 block mb-1">Launch Date</span>
-                  <div class="flex items-center gap-3">
-                    <div class="p-2 border-2 border-black bg-lime-300 text-black rounded-none">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-                      </svg>
-                    </div>
+              <div class="bg-white border-4 border-black p-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] flex items-center gap-4">
+                <div class="p-3 border-4 border-black bg-lime-400 text-black rounded-none flex-shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                  </svg>
+                </div>
+                <div class="min-w-0">
+                  <span class="text-[10px] uppercase font-black tracking-widest text-black/50 block mb-0.5">LAUNCH DATE</span>
+                  <span class="text-lg font-black text-black block uppercase tracking-tight leading-none">{{ event.start_time.strftime('%b %d, %Y') }}</span>
+                  <span class="text-xs font-mono font-black text-black/70 mt-1 block">{{ event.start_time.strftime('%I:%M %p') }}</span>
+                </div>
+              </div>
+
+              <div class="bg-white border-4 border-black p-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] flex items-center gap-4">
+                <div class="p-3 border-4 border-black bg-pink-400 text-black rounded-none flex-shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  </svg>
+                </div>
+                <div class="min-w-0">
+                  <span class="text-[10px] uppercase font-black tracking-widest text-black/50 block mb-0.5">ORGANIZER HOST</span>
+                  <span class="text-lg font-black text-black uppercase truncate block tracking-tight">{{ event.organizer.name if event.organizer else 'N/A' }}</span>
+                </div>
+              </div>
+
+              <div class="bg-white border-4 border-black p-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] flex items-center gap-4">
+                <div class="p-3 border-4 border-black bg-cyan-300 text-black rounded-none flex-shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.65-2.42 9.123 9.123 0 00-6.182 0 3 3 0 00-4.65 2.42 9.094 9.094 0 003.741.479M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                  </svg>
+                </div>
+                <div class="min-w-0">
+                  <span class="text-[10px] uppercase font-black tracking-widest text-black/50 block mb-0.5">METRIC MANIFEST</span>
+                  <span class="text-lg font-black text-black uppercase tracking-tight block">{{ no_participant }} Operators Enrolled</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="lg:col-span-7 bg-amber-50 border-4 border-black p-6 sm:p-8 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <h3 class="text-xs font-black uppercase tracking-widest text-black/40 mb-6 bg-white border-2 border-black px-2 py-1 inline-block">Pipeline Milestones</h3>
+              
+              <ul class="relative border-l-4 border-black space-y-8 pl-6 my-2 ml-2">
+                
+                <li class="relative">
+                  <div class="absolute -left-[38px] top-0 w-7 h-7 rounded-none border-4 border-black flex items-center justify-center font-black text-sm transition-colors 
+                    {{ 'bg-yellow-300 text-black' if event.status == 'open' else ('bg-lime-400 text-black' if event.status in ['ongoing', 'completed'] else 'bg-white text-black') }}">
+                    1
+                  </div>
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-4 border-black p-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] {{ 'bg-white' if event.status == 'open' else 'bg-stone-50' }}">
                     <div>
-                      <span class="text-sm font-black text-black block leading-none mb-1">{{ event.start_time.strftime('%b %d, %Y') }}</span>
-                      <span class="text-xs font-mono text-black/70">{{ event.start_time.strftime('%I:%M %p') }}</span>
+                      <span class="text-sm font-black uppercase tracking-wide block {{ 'text-black' if event.status == 'open' else 'text-black/50' }}">Registration Deadline</span>
+                      {% if event.deadline %}
+                      <span class="text-xs font-mono font-bold text-black/60">{{ event.deadline.strftime('%I:%M %p') }}</span>
+                      {% endif %}
                     </div>
+                    <span class="text-xs font-mono font-black border-2 border-black bg-black text-white px-3 py-1 rounded-none align-self-start sm:align-self-auto">
+                      {{ event.deadline.strftime('%b %d, %Y') if event.deadline else 'N/A' }}
+                    </span>
                   </div>
-                </div>
+                </li>
 
-                <div class="bg-white border-2 border-black p-3 rounded-none">
-                  <span class="text-[10px] uppercase font-black tracking-wider text-black/60 block mb-1">Organizer</span>
-                  <div class="flex items-center gap-3">
-                    <div class="p-2 border-2 border-black bg-pink-300 text-black rounded-none">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                      </svg>
-                    </div>
-                    <span class="text-sm font-black text-black truncate">{{ event.organizer.name if event.organizer else 'N/A' }}</span>
+                <li class="relative">
+                  <div class="absolute -left-[38px] top-0 w-7 h-7 rounded-none border-4 border-black flex items-center justify-center font-black text-sm transition-colors 
+                    {{ 'bg-yellow-300 text-black' if event.status == 'ongoing' else ('bg-lime-400 text-black' if event.status == 'completed' else 'bg-white text-black') }}">
+                    2
                   </div>
-                </div>
-
-                <div class="bg-white border-2 border-black p-3 rounded-none">
-                  <span class="text-[10px] uppercase font-black tracking-wider text-black/60 block mb-1">Participants</span>
-                  <div class="flex items-center gap-3">
-                    <div class="p-2 border-2 border-black bg-cyan-200 text-black rounded-none">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.65-2.42 9.123 9.123 0 00-6.182 0 3 3 0 00-4.65 2.42 9.094 9.094 0 003.741.479M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                      </svg>
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-4 border-black p-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] {{ 'bg-white' if event.status == 'ongoing' else 'bg-stone-50' }}">
+                    <div>
+                      <span class="text-sm font-black uppercase tracking-wide block {{ 'text-black' if event.status == 'ongoing' else 'text-black/50' }}">Event Launch execution</span>
+                      {% if event.start_time %}
+                      <span class="text-xs font-mono font-bold text-black/60">{{ event.start_time.strftime('%I:%M %p') }}</span>
+                      {% endif %}
                     </div>
-                    <span class="text-sm font-black text-black uppercase tracking-wide">{{ no_participant }} Enrolled</span>
+                    <span class="text-xs font-mono font-black border-2 border-black bg-cyan-300 text-black px-3 py-1 rounded-none">
+                      {{ event.start_time.strftime('%b %d, %Y') if event.start_time else 'N/A' }}
+                    </span>
                   </div>
-                </div>
-              </div>
+                </li>
 
-              <div class="lg:col-span-7 bg-white border-2 border-black p-6 rounded-none flex flex-col justify-center">
-                <ul class="relative border-l-4 border-black space-y-8 pl-6 my-2">
-                  
-                  <!-- 1. Registration Close -->
-                  <li class="relative">
-                    <div class="absolute -left-[38px] top-0 w-6 h-6 rounded-none border-2 border-black flex items-center justify-center font-black text-xs transition-colors 
-                      {{ 'bg-yellow-300 text-black' if event.status == 'open' else ('bg-lime-400 text-black' if event.status in ['ongoing', 'completed'] else 'bg-white text-black/40') }}">
-                      1
+                <li class="relative">
+                  <div class="absolute -left-[38px] top-0 w-7 h-7 rounded-none border-4 border-black flex items-center justify-center font-black text-sm transition-colors 
+                    {{ 'bg-yellow-300 text-black' if event.status == 'completed' else 'bg-white text-black' }}">
+                    3
+                  </div>
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-4 border-black p-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] {{ 'bg-white' if event.status == 'completed' else 'bg-stone-50' }}">
+                    <div>
+                      <span class="text-sm font-black uppercase tracking-wide block {{ 'text-black' if event.status == 'completed' else 'text-black/40' }}">Terminal Conclusion</span>
+                      {% if event.end_time %}
+                      <span class="text-xs font-mono font-bold text-black/60">{{ event.end_time.strftime('%I:%M %p') }}</span>
+                      {% endif %}
                     </div>
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-2 border-black p-2.5 rounded-none {{ 'bg-orange-50' if event.status == 'open' else 'bg-white' }}">
-                      <div>
-                        <span class="text-xs font-black uppercase tracking-wide block {{ 'text-black' if event.status == 'open' else 'text-black/60' }}">Registration Close</span>
-                        {% if event.deadline %}
-                        <span class="text-[10px] font-mono font-bold {{ 'text-black/60' if event.status == 'open' else 'text-black/40' }}">{{ event.deadline.strftime('%I:%M %p') }}</span>
-                        {% endif %}
-                      </div>
-                      <span class="text-xs font-mono font-black border border-black px-2 py-0.5 rounded-none align-self-start sm:align-self-auto {{ 'bg-black text-white' if event.status == 'open' else 'bg-stone-100 text-black/60' }}">
-                        {{ event.deadline.strftime('%b %d, %Y') if event.deadline else 'N/A' }}
-                      </span>
-                    </div>
-                  </li>
-
-                  <!-- 2. Event Launch -->
-                  <li class="relative">
-                    <div class="absolute -left-[38px] top-0 w-6 h-6 rounded-none border-2 border-black flex items-center justify-center font-black text-xs transition-colors 
-                      {{ 'bg-yellow-300 text-black' if event.status == 'ongoing' else ('bg-lime-400 text-black' if event.status == 'completed' else 'bg-white text-black/40') }}">
-                      2
-                    </div>
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-2 border-black p-2.5 rounded-none {{ 'bg-orange-50' if event.status == 'ongoing' else 'bg-white' }}">
-                      <div>
-                        <span class="text-xs font-black uppercase tracking-wide block {{ 'text-black' if event.status == 'ongoing' else 'text-black/60' }}">Event Launch</span>
-                        {% if event.start_time %}
-                        <span class="text-[10px] font-mono font-bold {{ 'text-black/60' if event.status == 'ongoing' else 'text-black/40' }}">{{ event.start_time.strftime('%I:%M %p') }}</span>
-                        {% endif %}
-                      </div>
-                      <span class="text-xs font-mono font-black border border-black px-2 py-0.5 rounded-none {{ 'bg-cyan-200 text-black' if event.status == 'ongoing' else 'bg-stone-100 text-black/60' }}">
-                        {{ event.start_time.strftime('%b %d, %Y') if event.start_time else 'N/A' }}
-                      </span>
-                    </div>
-                  </li>
-
-                  <!-- 3. Conclusion -->
-                  <li class="relative">
-                    <div class="absolute -left-[38px] top-0 w-6 h-6 rounded-none border-2 border-black flex items-center justify-center font-black text-xs transition-colors 
-                      {{ 'bg-yellow-300 text-black' if event.status == 'completed' else 'bg-white text-black/40' }}">
-                      3
-                    </div>
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-2 border-black p-2.5 rounded-none {{ 'bg-orange-50' if event.status == 'completed' else 'bg-white' }}">
-                      <div>
-                        <span class="text-xs font-black uppercase tracking-wide block {{ 'text-black' if event.status == 'completed' else 'text-black/40' }}">Conclusion</span>
-                        {% if event.end_time %}
-                        <span class="text-[10px] font-mono font-bold {{ 'text-black/60' if event.status == 'completed' else 'text-black/30' }}">{{ event.end_time.strftime('%I:%M %p') }}</span>
-                        {% endif %}
-                      </div>
-                      <span class="text-xs font-mono font-black border px-2 py-0.5 rounded-none {{ 'bg-black text-white border-black' if event.status == 'completed' else 'bg-white text-black/40 border-black/20' }}">
-                        {{ event.end_time.strftime('%b %d, %Y') if event.end_time else 'N/A' }}
-                      </span>
-                    </div>
-                  </li>
-
-                </ul>
-              </div>
-              
+                    <span class="text-xs font-mono font-black border-2 border-black bg-pink-300 text-black px-3 py-1 rounded-none">
+                      {{ event.end_time.strftime('%b %d, %Y') if event.end_time else 'N/A' }}
+                    </span>
+                  </div>
+                </li>
+              </ul>
             </div>
           </div>
 
-          <div class="border-t-2 border-black"></div>
-
-          <div>
-            <h3 class="text-xl font-black uppercase text-black mb-3">Description</h3>
-            <div class="bg-white border-2 border-black p-6 rounded-none">
-              <p class="text-black font-medium whitespace-pre-line text-sm leading-relaxed">{{ event.description or 'No description provided for this event.' }}</p>
+          <div class="pt-4">
+            <h3 class="text-2xl font-black uppercase tracking-tight text-black mb-4">Description Statement</h3>
+            <div class="bg-white border-4 border-black p-6 sm:p-8 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] relative">
+              <div class="absolute top-0 right-0 border-b-4 border-l-4 border-black bg-yellow-300 px-3 py-1 text-[10px] font-black uppercase tracking-widest">TXT</div>
+              <p class="text-black font-bold whitespace-pre-line text-base leading-relaxed tracking-wide">
+                {{ event.description or 'No blueprint description provided for this pipeline layout.' }}
+              </p>
             </div>
           </div>
 
           {% if event.status == 'open' %}
-          <div class="flex justify-end pt-4">
+          <div class="flex justify-end pt-6">
             {% if current_user %}
               {% if not enrolled %}
               <form method="POST" class="w-full sm:w-auto">
                 <input name="user-id" value='{{ current_user.id }}' hidden>
-                <button type="submit" class="w-full sm:w-auto text-center bg-lime-400 text-black border-2 border-black font-black uppercase text-base px-10 py-4 rounded-none hover:bg-lime-500 active:translate-y-[1px] transition-all">Join Now</button>
+                <button type="submit" class="w-full sm:w-auto text-center bg-lime-400 text-black border-4 border-black font-black uppercase tracking-wider text-lg px-12 py-5 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-lime-500 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer">
+                  Join Pipeline Now
+                </button>
               </form>
               {% else %}
-              <a href='{{ url_for("unroll", event_id=event.id) }}' class="w-full sm:w-auto text-center bg-red-400 text-black border-2 border-black font-black uppercase text-base px-10 py-4 rounded-none hover:bg-red-500 active:translate-y-[1px] transition-all">Leave Event</a>
+              <a href='{{ url_for("unroll", event_id=event.id) }}' class="w-full sm:w-auto text-center bg-red-400 text-black border-4 border-black font-black uppercase tracking-wider text-base px-10 py-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-red-500 active:translate-y-[2px] active:shadow-none transition-all">
+                Leave Event Configuration
+              </a>
               {% endif %}
             {% else %}
-              <div class="bg-amber-200 border-2 border-black p-4 text-center w-full rounded-none">
-                <p class="text-sm font-black uppercase tracking-wide">Please <a href="{{ url_for('login', next=request.url) }}" class="underline decoration-2 font-black text-black hover:bg-white px-1 rounded-none">log in</a> to register and participate.</p>
+              <div class="bg-amber-300 border-4 border-black p-6 text-center w-full rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                <p class="text-base font-black uppercase tracking-wide">
+                  System Restricted. Please <a href="{{ url_for('login', next=request.url) }}" class="underline decoration-4 font-black text-black bg-white px-2 py-0.5 hover:bg-black hover:text-white transition-colors rounded-none">log in</a> to authorize pipeline registration.
+                </p>
               </div>
             {% endif %}
           </div>
@@ -222,24 +231,24 @@
         {# ================= PARTICIPANTS TAB ================= #}
         {% elif active_tab == "participants" %}
         <div>
-          <h2 class="text-2xl font-black uppercase text-black mb-6 flex items-center gap-2">
-            <span>Enrolled Manifest</span>
-            <span class="text-xs font-black text-white bg-black px-2 py-0.5 uppercase tracking-widest border border-black rounded-none">Roster</span>
+          <h2 class="text-3xl font-black uppercase text-black mb-8 flex items-center gap-3">
+            <span>Enrolled Manifest Roster</span>
+            <span class="text-xs font-black text-white bg-black px-3 py-1 uppercase tracking-widest border-2 border-black rounded-none">SYSTEM.DAT</span>
           </h2>
 
           {% if current_user %}
             {% if participants %}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {% for participant in participants %}
-                <a href="{{ url_for('profile', user_id=participant.id) }}" class="group bg-white border-2 border-black p-4 rounded-none block">
-                  <div class="flex items-center justify-between w-full gap-3">
+                <a href="{{ url_for('profile', user_id=participant.id) }}" class="group bg-white border-4 border-black p-5 rounded-none block shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-100">
+                  <div class="flex items-center justify-between w-full gap-4">
                     
-                    <div class="flex items-center gap-3 min-w-0">
-                      <div class="w-12 h-12 border-2 border-black bg-orange-100 flex-shrink-0 flex items-center justify-center overflow-hidden rounded-none">
-                        <svg data-jdenticon-value="{{ participant.name }}" class="w-full h-full m-1"></svg>
+                    <div class="flex items-center gap-4 min-w-0">
+                      <div class="w-14 h-14 border-4 border-black bg-orange-200 flex-shrink-0 flex items-center justify-center overflow-hidden rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                        <svg data-jdenticon-value="{{ participant.name }}" class="w-full h-full p-1"></svg>
                       </div>
                       <div class="flex flex-col min-w-0">
-                        <span class="font-black text-base text-black uppercase tracking-tight truncate group-hover:underline decoration-2">
+                        <span class="font-black text-lg text-black uppercase tracking-tight truncate group-hover:underline decoration-2 decoration-black">
                           {{ participant.name }}
                         </span>
                         
@@ -250,18 +259,18 @@
                           {% endif %}
                         {% endfor %}
                         
-                        <span class="text-xs font-mono font-bold text-black/60 truncate">
+                        <span class="text-xs font-mono font-black text-black/60 truncate mt-0.5">
                           {% if _team_name %}
-                            <span class="text-sky-500 font-bold">⚡</span> {{ _team_name }}
+                            <span class="text-yellow-500 font-black">★</span> {{ _team_name }}
                           {% else %}
-                            <span class="opacity-40">⬡</span> Solo operator
+                            <span class="opacity-40">⚃</span> Solo operator
                           {% endif %}
                         </span>
                       </div>
                     </div>
 
-                    <div class="flex-shrink-0 w-8 h-8 border-2 border-black bg-black text-white flex items-center justify-center rounded-none group-hover:bg-white group-hover:text-black">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4">
+                    <div class="flex-shrink-0 w-10 h-10 border-4 border-black bg-black text-white flex items-center justify-center rounded-none group-hover:bg-yellow-300 group-hover:text-black transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="4" stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                       </svg>
                     </div>
@@ -272,17 +281,17 @@
             </div>
 
             {% if total_pages and total_pages > 1 %}
-            <div class="flex justify-center pt-8">
-              <div class="inline-flex bg-white border-2 border-black p-1 rounded-none gap-1">
+            <div class="flex justify-center pt-12">
+              <div class="inline-flex bg-white border-4 border-black p-1.5 rounded-none gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 <a href="{{ url_for('event_detail', event_id=event.id, tab='participants', page=current_page-1) }}" 
-                   class="px-3 py-1.5 font-black text-xs uppercase rounded-none border-2 border-transparent transition-all hover:bg-black hover:text-white {% if current_page == 1 %}pointer-events-none opacity-30{% endif %}">
+                   class="px-4 py-2 font-black text-xs uppercase rounded-none border-2 border-transparent transition-all hover:bg-black hover:text-white {% if current_page == 1 %}pointer-events-none opacity-20{% endif %}">
                   « Prev
                 </a>
-                <span class="px-4 py-1.5 font-black text-xs uppercase bg-sky-100 border-2 border-black rounded-none text-black">
+                <span class="px-5 py-2 font-black text-xs uppercase bg-cyan-200 border-2 border-black rounded-none text-black">
                   Page {{ current_page }} / {{ total_pages }}
                 </span>
                 <a href="{{ url_for('event_detail', event_id=event.id, tab='participants', page=current_page+1) }}" 
-                   class="px-3 py-1.5 font-black text-xs uppercase rounded-none border-2 border-transparent transition-all hover:bg-black hover:text-white {% if current_page == total_pages %}pointer-events-none opacity-30{% endif %}">
+                   class="px-4 py-2 font-black text-xs uppercase rounded-none border-2 border-transparent transition-all hover:bg-black hover:text-white {% if current_page == total_pages %}pointer-events-none opacity-20{% endif %}">
                   Next »
                 </a>
               </div>
@@ -290,13 +299,15 @@
             {% endif %}
 
             {% else %}
-            <div class="text-center py-10 bg-yellow-50 border-2 border-black border-dashed rounded-none max-w-md mx-auto">
-              <p class="text-sm font-black uppercase tracking-wide text-black/60">No participants registered inside this event pipeline.</p>
+            <div class="text-center py-14 bg-yellow-50 border-4 border-black border-dashed rounded-none max-w-md mx-auto">
+              <p class="text-base font-black uppercase tracking-wide text-black/60">No operator entities identified inside this database segment.</p>
             </div>
             {% endif %}
           {% else %}
-            <div class="text-center py-10 bg-red-100 border-2 border-black rounded-none max-w-md mx-auto">
-              <p class="text-sm font-black uppercase tracking-wide text-black">Secure dashboard logic. Please <a href="{{ url_for('login', next=request.url) }}" class="underline decoration-2 font-black">log in</a> to view profile information.</p>
+            <div class="text-center py-12 bg-pink-100 border-4 border-black rounded-none max-w-md mx-auto shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <p class="text-sm font-black uppercase tracking-wide text-black px-4">
+                Secure logic terminal. Please <a href="{{ url_for('login', next=request.url) }}" class="underline decoration-4 font-black">log in</a> to decrypt identity data records.
+              </p>
             </div>
           {% endif %}
         </div>
@@ -304,48 +315,48 @@
         {# ================= TEAMS TAB ================= #}
         {% elif active_tab == "teams" %}
         <div>
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <h2 class="text-2xl font-black uppercase text-black flex items-center gap-2">
-              <span>Active Teams</span>
-              <span class="text-xs font-black text-white bg-black px-2 py-0.5 uppercase tracking-widest border border-black rounded-none">Cohorts</span>
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8">
+            <h2 class="text-3xl font-black uppercase text-black flex items-center gap-3">
+              <span>Active Assembly Cohorts</span>
+              <span class="text-xs font-black text-white bg-black px-3 py-1 uppercase tracking-widest border-2 border-black rounded-none">TEAM.CFG</span>
             </h2>
             {% if enrolled and not in_team %}
-              <a href='{{ url_for("create_team_for_event", event_id=event.id) }}' class="w-full sm:w-auto text-center bg-yellow-200 text-black border-2 border-black font-black uppercase text-sm px-5 py-2.5 rounded-none hover:bg-yellow-300 active:translate-y-[1px] transition-all">
-                + Create Team
+              <a href='{{ url_for("create_team_for_event", event_id=event.id) }}' class="w-full sm:w-auto text-center bg-yellow-300 text-black border-4 border-black font-black uppercase tracking-wider text-sm px-6 py-3.5 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-yellow-400 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all">
+                + Establish New Team
               </a>
             {% endif %}
           </div>
 
           {% if teams %}
-          <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {% for team in teams %}
-              <a href="{{ url_for('team_detail', team_id=team.id) }}" class="group bg-white border-2 border-black p-5 rounded-none block">
+              <a href="{{ url_for('team_detail', team_id=team.id) }}" class="group bg-white border-4 border-black p-6 rounded-none block shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] ">
                 <div class="flex items-center justify-between w-full gap-4">
                   
-                  <div class="min-w-0 flex-1 space-y-3">
+                  <div class="min-w-0 flex-1 space-y-4">
                     <div>
-                      <h3 class="text-base font-black uppercase tracking-tight text-black group-hover:underline decoration-2 truncate mb-0.5">
+                      <h3 class="text-xl font-black uppercase tracking-tight text-black group-hover:underline decoration-4 truncate mb-1">
                         {{ team.name }}
                       </h3>
-                      <p class="text-xs text-black/60 font-mono font-bold italic truncate">
-                        "{{ team.motto or 'No team motto set' }}"
+                      <p class="text-xs text-black/60 font-mono font-black italic truncate bg-stone-100 p-1 border border-black inline-block rounded-none">
+                        "{{ team.motto or 'No motto set' }}"
                       </p>
                     </div>
                     
-                    <div class="space-y-1.5 text-xs text-black font-bold">
-                      <div class="flex items-center gap-1.5">
-                        <span class="bg-black text-white px-1.5 py-0.5 uppercase tracking-wide text-[9px] font-black border border-black rounded-none">Members</span>
-                        <span class="font-mono bg-yellow-100 border-2 border-black px-1.5 rounded-none text-black">{{ team.members|length }} / {{ team.max_members }}</span>
+                    <div class="space-y-2 text-xs text-black font-black uppercase tracking-wide">
+                      <div class="flex items-center gap-2">
+                        <span class="bg-black text-white px-2 py-0.5 text-[9px] font-black border border-black rounded-none">MEMBERS</span>
+                        <span class="font-mono bg-yellow-200 border-2 border-black px-2 py-0.5 rounded-none text-black font-black">{{ team.members|length }} / {{ team.max_members }}</span>
                       </div>
-                      <div class="flex items-center gap-1.5 min-w-0">
-                        <span class="bg-black text-white px-1.5 py-0.5 uppercase tracking-wide text-[9px] font-black border border-black rounded-none flex-shrink-0">Project</span>
-                        <span class="truncate italic text-black/80 font-medium">{{ team.project_idea or 'N/A' }}</span>
+                      <div class="flex items-center gap-2 min-w-0">
+                        <span class="bg-black text-white px-2 py-0.5 text-[9px] font-black border border-black rounded-none flex-shrink-0">PROJECT</span>
+                        <span class="truncate italic text-black/80 font-bold normal-case">{{ team.project_idea or 'Undefined deployment logic' }}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div class="flex-shrink-0 w-8 h-8 border-2 border-black bg-black text-white flex items-center justify-center rounded-none group-hover:bg-white group-hover:text-black">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4">
+                  <div class="flex-shrink-0 w-10 h-10 border-4 border-black bg-black text-white flex items-center justify-center rounded-none group-hover:bg-lime-400 group-hover:text-black transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="4" stroke="currentColor" class="w-5 h-5">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                     </svg>
                   </div>
@@ -355,38 +366,38 @@
             {% endfor %}
           </div>
           {% else %}
-          <div class="text-center py-10 bg-yellow-50 border-2 border-black border-dashed rounded-none max-w-md mx-auto">
-            <p class="text-sm font-black uppercase tracking-wide text-black/60">No collaborative teams registered for this event yet.</p>
+          <div class="text-center py-14 bg-yellow-50 border-4 border-black border-dashed rounded-none max-w-md mx-auto">
+            <p class="text-base font-black uppercase tracking-wide text-black/60">No modular active assemblies verified in this environment stack.</p>
           </div>
           {% endif %}
         </div>
 
         {# ================= SOLOIST MATRIX TAB ================= #}
         {% elif active_tab == "solo" %}
-        <div class="space-y-6">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div class="space-y-8">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h2 class="text-2xl font-black uppercase text-black flex items-center gap-2">
-                <span>Solo Operators</span>
-                <span class="text-xs font-black text-white bg-black px-2 py-0.5 uppercase tracking-widest border border-black rounded-none">Soloists</span>
+              <h2 class="text-3xl font-black uppercase text-black flex items-center gap-3">
+                <span>Independent Soloists</span>
+                <span class="text-xs font-black text-white bg-black px-3 py-1 uppercase tracking-widest border-2 border-black rounded-none">SOLO.IDX</span>
               </h2>
-              <p class="text-xs text-black/60 font-bold mt-1 uppercase tracking-wide">
-                Showing <span class="bg-sky-100 border border-black px-1 text-black font-black rounded-none">{{ soloists|length }}</span> individuals looking for a team layout
+              <p class="text-xs text-black/60 font-black mt-2 uppercase tracking-widest">
+                Isolating <span class="bg-cyan-200 border-2 border-black px-2 py-0.5 text-black font-black rounded-none">{{ soloists|length }}</span> elements matching integration requirements
               </p>
             </div>
           </div>
           
           <div class="w-full relative">
             <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-black">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
             <input type="text" 
                    name="search_soloists" 
-                   placeholder="Search profiles by tag, skills, or specific names..." 
+                   placeholder="Query indices by keyword tags, skills array, or profile signatures..." 
                    value="{{ search_soloists_query or '' }}" 
-                   class="w-full bg-white border-2 border-black h-14 pl-12 pr-4 text-sm font-black uppercase tracking-tight text-black placeholder-black/50 focus:outline-none focus:bg-sky-50 rounded-none"
+                   class="w-full bg-white border-4 border-black h-16 pl-14 pr-6 text-base font-black uppercase tracking-tight text-black placeholder-black/40 focus:outline-none focus:bg-amber-50 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-none transition-all"
                    hx-get="/event/{{ event.id }}?tab=solo"
                    hx-trigger="keyup changed delay:500ms"
                    hx-target="#soloists-list"
