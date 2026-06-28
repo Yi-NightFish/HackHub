@@ -122,7 +122,6 @@ def explore():
                         joined_event_ids = joined_event_ids,
                         is_organizer = is_organizer,
                         first_event_id = first_event_id,
-                        joined_event_ids = joined_event_ids, #nx add
                         image_links=image_links
     )
 
