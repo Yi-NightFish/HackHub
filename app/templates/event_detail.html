@@ -59,7 +59,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
             </svg>
-            Edit Event Configuration
+            Edit Event Details
           </a>
         </div>
         {% endif %}
@@ -90,10 +90,12 @@
           
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
+            <!-- Left Info Cards Container -->
             <div class="lg:col-span-5 flex flex-col gap-6">
               
+              <!-- LAUNCH DATE CARD (Muted Lime Accent) -->
               <div class="bg-white border-4 border-black p-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] flex items-center gap-4">
-                <div class="p-3 border-4 border-black bg-lime-400 text-black rounded-none flex-shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                <div class="p-3 border-4 border-black bg-[#b5e285] text-black rounded-none flex-shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                   </svg>
@@ -105,8 +107,9 @@
                 </div>
               </div>
 
+              <!-- ORGANIZER CARD (Muted Muted Pink Accent) -->
               <div class="bg-white border-4 border-black p-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] flex items-center gap-4">
-                <div class="p-3 border-4 border-black bg-pink-400 text-black rounded-none flex-shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                <div class="p-3 border-4 border-black bg-[#e2a8be] text-black rounded-none flex-shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                   </svg>
@@ -117,73 +120,87 @@
                 </div>
               </div>
 
+              <!-- ENROLLMENT CARD (Muted Cyan Accent) -->
               <div class="bg-white border-4 border-black p-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] flex items-center gap-4">
-                <div class="p-3 border-4 border-black bg-cyan-300 text-black rounded-none flex-shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                <div class="p-3 border-4 border-black bg-[#8ccad2] text-black rounded-none flex-shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.65-2.42 9.123 9.123 0 00-6.182 0 3 3 0 00-4.65 2.42 9.094 9.094 0 003.741.479M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                   </svg>
                 </div>
                 <div class="min-w-0">
-                  <span class="text-[10px] uppercase font-black tracking-widest text-black/50 block mb-0.5">METRIC MANIFEST</span>
-                  <span class="text-lg font-black text-black uppercase tracking-tight block">{{ no_participant }} Operators Enrolled</span>
+                  <span class="text-[10px] uppercase font-black tracking-widest text-black/50 block mb-0.5">ENROLLMENT</span>
+                  <span class="text-lg font-black text-black uppercase tracking-tight block">{{ no_participant }} USERS Enrolled</span>
                 </div>
               </div>
             </div>
 
-            <div class="lg:col-span-7 bg-amber-50 border-4 border-black p-6 sm:p-8 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-              <h3 class="text-xs font-black uppercase tracking-widest text-black/40 mb-6 bg-white border-2 border-black px-2 py-1 inline-block">Pipeline Milestones</h3>
+            <!-- Timeline Matrix (Low Saturation Background) -->
+            <div class="lg:col-span-7 bg-[#eae7df] border-4 border-black p-6 sm:p-8 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <h3 class="text-xs font-black uppercase tracking-widest text-black mb-6 bg-white border-2 border-black px-2 py-1 inline-block">EVENT TIMELINE</h3>
               
               <ul class="relative border-l-4 border-black space-y-8 pl-6 my-2 ml-2">
                 
+                <!-- STEP 1: Registration Deadline -->
                 <li class="relative">
                   <div class="absolute -left-[38px] top-0 w-7 h-7 rounded-none border-4 border-black flex items-center justify-center font-black text-sm transition-colors 
-                    {{ 'bg-yellow-300 text-black' if event.status == 'open' else ('bg-lime-400 text-black' if event.status in ['ongoing', 'completed'] else 'bg-white text-black') }}">
+                    {{ 'bg-[#e5cf7b] text-black border-black' if event.status == 'open' else ('bg-[#b5e285] text-black border-black' if event.status in ['ongoing', 'completed'] else 'bg-neutral-100 text-neutral-400 border-neutral-300') }}">
                     1
                   </div>
-                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-4 border-black p-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] {{ 'bg-white' if event.status == 'open' else 'bg-stone-50' }}">
+                  <!-- Grayed out box and text if not 'open' -->
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-4 p-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] 
+                    {{ 'bg-white border-black text-black' if event.status == 'open' else 'bg-stone-50/50 border-neutral-300 text-neutral-400 shadow-none' }}">
                     <div>
-                      <span class="text-sm font-black uppercase tracking-wide block {{ 'text-black' if event.status == 'open' else 'text-black/50' }}">Registration Deadline</span>
+                      <span class="text-sm font-black uppercase tracking-wide block {{ 'text-black' if event.status == 'open' else 'text-neutral-400' }}">Registration Deadline</span>
                       {% if event.deadline %}
-                      <span class="text-xs font-mono font-bold text-black/60">{{ event.deadline.strftime('%I:%M %p') }}</span>
+                      <span class="text-xs font-mono font-bold {{ 'text-black/60' if event.status == 'open' else 'text-neutral-400/60' }}">{{ event.deadline.strftime('%I:%M %p') }}</span>
                       {% endif %}
                     </div>
-                    <span class="text-xs font-mono font-black border-2 border-black bg-black text-white px-3 py-1 rounded-none align-self-start sm:align-self-auto">
+                    <span class="text-xs font-mono font-black border-2 px-3 py-1 rounded-none align-self-start sm:align-self-auto
+                      {{ 'bg-black text-white border-black' if event.status == 'open' else 'bg-neutral-200 text-neutral-400 border-neutral-300' }}">
                       {{ event.deadline.strftime('%b %d, %Y') if event.deadline else 'N/A' }}
                     </span>
                   </div>
                 </li>
 
+                <!-- STEP 2: Event Launch Execution -->
                 <li class="relative">
                   <div class="absolute -left-[38px] top-0 w-7 h-7 rounded-none border-4 border-black flex items-center justify-center font-black text-sm transition-colors 
-                    {{ 'bg-yellow-300 text-black' if event.status == 'ongoing' else ('bg-lime-400 text-black' if event.status == 'completed' else 'bg-white text-black') }}">
+                    {{ 'bg-[#e5cf7b] text-black border-black' if event.status == 'ongoing' else ('bg-[#b5e285] text-black border-black' if event.status == 'completed' else 'bg-neutral-100 text-neutral-400 border-neutral-300') }}">
                     2
                   </div>
-                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-4 border-black p-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] {{ 'bg-white' if event.status == 'ongoing' else 'bg-stone-50' }}">
+                  <!-- Grayed out box and text if not 'ongoing' -->
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-4 p-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] 
+                    {{ 'bg-white border-black text-black' if event.status == 'ongoing' else 'bg-stone-50/50 border-neutral-300 text-neutral-400 shadow-none' }}">
                     <div>
-                      <span class="text-sm font-black uppercase tracking-wide block {{ 'text-black' if event.status == 'ongoing' else 'text-black/50' }}">Event Launch execution</span>
+                      <span class="text-sm font-black uppercase tracking-wide block {{ 'text-black' if event.status == 'ongoing' else 'text-neutral-400' }}">Event Launch execution</span>
                       {% if event.start_time %}
-                      <span class="text-xs font-mono font-bold text-black/60">{{ event.start_time.strftime('%I:%M %p') }}</span>
+                      <span class="text-xs font-mono font-bold {{ 'text-black/60' if event.status == 'ongoing' else 'text-neutral-400/60' }}">{{ event.start_time.strftime('%I:%M %p') }}</span>
                       {% endif %}
                     </div>
-                    <span class="text-xs font-mono font-black border-2 border-black bg-cyan-300 text-black px-3 py-1 rounded-none">
+                    <span class="text-xs font-mono font-black border-2 px-3 py-1 rounded-none
+                      {{ 'bg-[#8ccad2] text-black border-black' if event.status == 'ongoing' else 'bg-neutral-200 text-neutral-400 border-neutral-300' }}">
                       {{ event.start_time.strftime('%b %d, %Y') if event.start_time else 'N/A' }}
                     </span>
                   </div>
                 </li>
 
+                <!-- STEP 3: Terminal Conclusion -->
                 <li class="relative">
                   <div class="absolute -left-[38px] top-0 w-7 h-7 rounded-none border-4 border-black flex items-center justify-center font-black text-sm transition-colors 
-                    {{ 'bg-yellow-300 text-black' if event.status == 'completed' else 'bg-white text-black' }}">
+                    {{ 'bg-[#e5cf7b] text-black border-black' if event.status == 'completed' else 'bg-neutral-100 text-neutral-400 border-neutral-300' }}">
                     3
                   </div>
-                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-4 border-black p-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] {{ 'bg-white' if event.status == 'completed' else 'bg-stone-50' }}">
+                  <!-- Grayed out box and text if not 'completed' -->
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-4 p-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] 
+                    {{ 'bg-white border-black text-black' if event.status == 'completed' else 'bg-stone-50/50 border-neutral-300 text-neutral-400 shadow-none' }}">
                     <div>
-                      <span class="text-sm font-black uppercase tracking-wide block {{ 'text-black' if event.status == 'completed' else 'text-black/40' }}">Terminal Conclusion</span>
+                      <span class="text-sm font-black uppercase tracking-wide block {{ 'text-black' if event.status == 'completed' else 'text-neutral-400' }}">Terminal Conclusion</span>
                       {% if event.end_time %}
-                      <span class="text-xs font-mono font-bold text-black/60">{{ event.end_time.strftime('%I:%M %p') }}</span>
+                      <span class="text-xs font-mono font-bold {{ 'text-black/60' if event.status == 'completed' else 'text-neutral-400/60' }}">{{ event.end_time.strftime('%I:%M %p') }}</span>
                       {% endif %}
                     </div>
-                    <span class="text-xs font-mono font-black border-2 border-black bg-pink-300 text-black px-3 py-1 rounded-none">
+                    <span class="text-xs font-mono font-black border-2 px-3 py-1 rounded-none
+                      {{ 'bg-[#e2a8be] text-black border-black' if event.status == 'completed' else 'bg-neutral-200 text-neutral-400 border-neutral-300' }}">
                       {{ event.end_time.strftime('%b %d, %Y') if event.end_time else 'N/A' }}
                     </span>
                   </div>
@@ -192,42 +209,43 @@
             </div>
           </div>
 
+          <!-- Description Section (Desaturated Yellow Accent File Tag) -->
           <div class="pt-4">
             <h3 class="text-2xl font-black uppercase tracking-tight text-black mb-4">Description Statement</h3>
             <div class="bg-white border-4 border-black p-6 sm:p-8 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] relative">
-              <div class="absolute top-0 right-0 border-b-4 border-l-4 border-black bg-yellow-300 px-3 py-1 text-[10px] font-black uppercase tracking-widest">TXT</div>
+              <div class="absolute top-0 right-0 border-b-4 border-l-4 border-black bg-[#e5cf7b] px-3 py-1 text-[10px] font-black uppercase tracking-widest">TXT</div>
               <p class="text-black font-bold whitespace-pre-line text-base leading-relaxed tracking-wide">
-                {{ event.description or 'No blueprint description provided for this pipeline layout.' }}
+                {{ event.description or 'No description provided for this event yet.' }}
               </p>
             </div>
           </div>
 
+          <!-- Form Interaction Area -->
           {% if event.status == 'open' %}
           <div class="flex justify-end pt-6">
             {% if current_user %}
               {% if not enrolled %}
               <form method="POST" class="w-full sm:w-auto">
                 <input name="user-id" value='{{ current_user.id }}' hidden>
-                <button type="submit" class="w-full sm:w-auto text-center bg-lime-400 text-black border-4 border-black font-black uppercase tracking-wider text-lg px-12 py-5 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-lime-500 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer">
-                  Join Pipeline Now
+                <button type="submit" class="w-full sm:w-auto text-center bg-[#b5e285] text-black border-4 border-black font-black uppercase tracking-wider text-lg px-12 py-5 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-[#a3cb75] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer">
+                  Enroll Now
                 </button>
               </form>
               {% else %}
-              <a href='{{ url_for("unroll", event_id=event.id) }}' class="w-full sm:w-auto text-center bg-red-400 text-black border-4 border-black font-black uppercase tracking-wider text-base px-10 py-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-red-500 active:translate-y-[2px] active:shadow-none transition-all">
-                Leave Event Configuration
+              <a href='{{ url_for("unroll", event_id=event.id) }}' class="w-full sm:w-auto text-center bg-[#e28a8a] text-black border-4 border-black font-black uppercase tracking-wider text-base px-10 py-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-[#ce7676] active:translate-y-[2px] active:shadow-none transition-all">
+                Quit Event
               </a>
               {% endif %}
             {% else %}
-              <div class="bg-amber-300 border-4 border-black p-6 text-center w-full rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <div class="bg-[#e5cf7b] border-4 border-black p-6 text-center w-full rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 <p class="text-base font-black uppercase tracking-wide">
-                  System Restricted. Please <a href="{{ url_for('login', next=request.url) }}" class="underline decoration-4 font-black text-black bg-white px-2 py-0.5 hover:bg-black hover:text-white transition-colors rounded-none">log in</a> to authorize pipeline registration.
+                  Restricted. Please <a href="{{ url_for('login', next=request.url) }}" class="underline decoration-4 font-black text-black bg-white px-2 py-0.5 hover:bg-black hover:text-white transition-colors rounded-none">log in</a> to authorize pipeline registration.
                 </p>
               </div>
             {% endif %}
           </div>
           {% endif %}
-        </div>
-
+        </div> 
         {# ================= PARTICIPANTS TAB ================= #}
         {% elif active_tab == "participants" %}
         <div>
@@ -240,7 +258,7 @@
             {% if participants %}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {% for participant in participants %}
-                <a href="{{ url_for('profile', user_id=participant.id) }}" class="group bg-white border-4 border-black p-5 rounded-none block shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-100">
+                <a href="{{ url_for('profile', user_id=participant.id) }}" class="group bg-white border-4 border-black p-5 rounded-none block shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                   <div class="flex items-center justify-between w-full gap-4">
                     
                     <div class="flex items-center gap-4 min-w-0">
@@ -311,13 +329,12 @@
             </div>
           {% endif %}
         </div>
-
         {# ================= TEAMS TAB ================= #}
         {% elif active_tab == "teams" %}
         <div>
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8">
             <h2 class="text-3xl font-black uppercase text-black flex items-center gap-3">
-              <span>Active Assembly Cohorts</span>
+              <span>TEAMS</span>
               <span class="text-xs font-black text-white bg-black px-3 py-1 uppercase tracking-widest border-2 border-black rounded-none">TEAM.CFG</span>
             </h2>
             {% if enrolled and not in_team %}
@@ -350,12 +367,12 @@
                       </div>
                       <div class="flex items-center gap-2 min-w-0">
                         <span class="bg-black text-white px-2 py-0.5 text-[9px] font-black border border-black rounded-none flex-shrink-0">PROJECT</span>
-                        <span class="truncate italic text-black/80 font-bold normal-case">{{ team.project_idea or 'Undefined deployment logic' }}</span>
+                        <span class="truncate italic text-black/80 font-bold normal-case">{{ team.project_idea or 'Undefined idea' }}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div class="flex-shrink-0 w-10 h-10 border-4 border-black bg-black text-white flex items-center justify-center rounded-none group-hover:bg-lime-400 group-hover:text-black transition-colors">
+                  <div class="flex-shrink-0 w-10 h-10 border-4 border-black bg-black text-white flex items-center justify-center rounded-none group-hover:bg-ywllow-300 group-hover:text-black transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="4" stroke="currentColor" class="w-5 h-5">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                     </svg>
@@ -367,7 +384,7 @@
           </div>
           {% else %}
           <div class="text-center py-14 bg-yellow-50 border-4 border-black border-dashed rounded-none max-w-md mx-auto">
-            <p class="text-base font-black uppercase tracking-wide text-black/60">No modular active assemblies verified in this environment stack.</p>
+            <p class="text-base font-black uppercase tracking-wide text-black/60">No teams created for this event yet...</p>
           </div>
           {% endif %}
         </div>
@@ -382,7 +399,7 @@
                 <span class="text-xs font-black text-white bg-black px-3 py-1 uppercase tracking-widest border-2 border-black rounded-none">SOLO.IDX</span>
               </h2>
               <p class="text-xs text-black/60 font-black mt-2 uppercase tracking-widest">
-                Isolating <span class="bg-cyan-200 border-2 border-black px-2 py-0.5 text-black font-black rounded-none">{{ soloists|length }}</span> elements matching integration requirements
+                Found <span class="bg-cyan-200 border-2 border-black px-2 py-0.5 text-black font-black rounded-none">{{ soloists|length }}</span> sololist
               </p>
             </div>
           </div>
@@ -395,7 +412,7 @@
             </div>
             <input type="text" 
                    name="search_soloists" 
-                   placeholder="Query indices by keyword tags, skills array, or profile signatures..." 
+                   placeholder="Finding someone by name..." 
                    value="{{ search_soloists_query or '' }}" 
                    class="w-full bg-white border-4 border-black h-16 pl-14 pr-6 text-base font-black uppercase tracking-tight text-black placeholder-black/40 focus:outline-none focus:bg-amber-50 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-none transition-all"
                    hx-get="/event/{{ event.id }}?tab=solo"
