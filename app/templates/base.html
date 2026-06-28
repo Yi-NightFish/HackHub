@@ -1,62 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html data-theme = "bumblebee">
     <head>
         <title>{% block title %}{% endblock %}</title>
         <meta charset = "utf-8">
         <script src="https://unpkg.com/htmx.org@1.9.10"></script>
         {% block css %}
         {% endblock %}
-
-        <style>
-            body{
-                margin: 0px;
-                padding: 0px;
-                font-family: Arial, sans-serif;
-            }
-
-            #navigation{
-                margin: 0 auto 20px;
-                background-color: #f9f9f9;
-                padding: 16px 20px;
-                border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                display: flex;
-                flex-wrap: wrap;
-                gap: 12px;
-                align-items: center;
-            }
-
-            #navigation a{
-                padding: 10px 14px;
-                color: #007bff;
-                border-radius: 4px;
-                transition: background-color 0.2s ease, color 0.2s ease;
-            }
-
-            #navigation a:hover,
-            #navigation a:focus{
-                background-color: rgba(0, 123, 255, 0.1);
-                text-decoration: none;
-            }
-
-            a, a:visited{
-                text-decoration: none;
-                color: #007bff;
-            }
         </style>
+        <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jdenticon@3.3.0/dist/jdenticon.min.js" async
+                integrity="sha384-LfouGM03m83ArVtne1JPk926e3SGD0Tz8XHtW2OKGsgeBU/UfR0Fa8eX+UlwSSAZ" crossorigin="anonymous">
+        </script>
+        <script>
+            function tryJdenticonUpdate() {
+                if (window.jdenticon && typeof jdenticon.update === 'function') {
+                    try { jdenticon.update(); } catch (e) { console.warn('jdenticon update failed', e); }
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                tryJdenticonUpdate();
+            });
+
+            // Re-render jdenticon avatars after HTMX swaps content (pagination, partial updates)
+                document.addEventListener('htmx:afterSwap', function(evt) {
+                    tryJdenticonUpdate();
+
+                    // Fallback: if update didn't populate SVGs, generate SVGs manually
+                    try {
+                        if (window.jdenticon && typeof jdenticon.toSvg === 'function') {
+                            document.querySelectorAll('svg[data-jdenticon-value]').forEach(function(svg){
+                                // If svg is empty (no rendered paths), replace with generated SVG
+                                if (!svg.innerHTML.trim()) {
+                                    var val = svg.getAttribute('data-jdenticon-value') || '';
+                                    var size = Math.max(svg.clientWidth, svg.clientHeight) || 64;
+                                    try {
+                                        var newSvg = jdenticon.toSvg(val, size);
+                                        // Replace the element preserving outer container
+                                        var wrapper = document.createElement('div');
+                                        wrapper.innerHTML = newSvg;
+                                        svg.replaceWith(wrapper.firstElementChild);
+                                    } catch (e) {
+                                        // ignore per-element failures
+                                    }
+                                }
+                            });
+                        }
+                    } catch (e) {
+                        console.warn('jdenticon fallback failed', e);
+                    }
+                });
+        </script>
     </head>
 
-    <body>
-        <div id = "navigation">
-            <a href = '{{url_for("home")}}'>Home</a>
-            <a href = '{{ url_for("explore") }}'>Events</a>
+    <body class="w-screen min-h-screen bg-base-200 overflow-x-hidden">
+        <div class = "sticky top-0 z-50 tabs tabs-lift tabs-lg mb-2 bg-base-100 flex justify-start">
+            <a href = '{{url_for("home")}}' class = "tab font-bold tab-active bg-base-200">Home</a>
+            <a href = '{{ url_for("explore") }}' class = "tab text-neutral-content font-semibold">Events</a>
             {% if current_user %}
-                <a href = '{{url_for("profile", user_id = current_user.id)}}'>Profile</a>
-                <!-- <a href='{{ url_for("teams") }}'>Teams</a>
-                <a href='{{ url_for("chat_home") }}'>Chats</a> -->
-                <a href = '{{url_for("logout")}}'>Log Out</a>
+                <a href = '{{url_for("logout")}}' class = "tab text-neutral-content font-bold">Log Out</a>
+                <div class="avatar flex-1 flex items-center justify-end pr-8">
+                    <div class="w-9 h-9 rounded-full border-1 border-neutral/30 shadow-sm p-1 bg-base-100 transition duration-200 hover:scale-105">
+                        <a href = '{{url_for("profile", user_id = current_user.id)}}'>
+                            <svg data-jdenticon-value="{{ current_user.name }}" class="w-full h-full"></svg>
+                        </a>
+                    </div>
+                </div>
             {% else %}
-                <a href = '{{url_for("login")}}'>Login</a>
+                <a href = '{{url_for("login")}}' class = "tab text-neutral-content font-bold">Login</a>
+                <a href = '{{url_for("register")}}' class = "tab text-neutral-content font-bold">Sign Up</a>
             {% endif %}
         </div>
 

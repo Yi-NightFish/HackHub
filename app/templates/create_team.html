@@ -1,39 +1,57 @@
 {% extends "base.html" %}
 
-{% block css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/team.css') }}">
-{% endblock %}
-
 {% block content %}
-<div class="team-page">
-    <h1 class="team-title">Create Team</h1>
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-4xl font-bold">Create Team</h1>
+    </div>
 
-    <form class="form-box" method="POST">
-        <label>Team Name</label>
-        <input type="text" name="name" required>
+    <div class="card bg-base-200 shadow-xl border border-base-300">
+        <div class="card-body">
+            <form class="grid gap-4" method="POST">
+                <div class="form-control w-full">
+                    <label class="label"><span class="label-text">Team Name</span></label>
+                    <input type="text" name="name" required class="input input-bordered w-full">
+                </div>
 
-        <label>Motto</label>
-        <input type="text" name="motto">
+                <div class="form-control w-full">
+                    <label class="label"><span class="label-text">Motto</span></label>
+                    <input type="text" name="motto" class="input input-bordered w-full">
+                </div>
 
-        <label>Roles Needed</label>
-        <input type="text" name="roles">
+                <div class="form-control w-full">
+                    <label class="label"><span class="label-text">Roles Needed</span></label>
+                    <input type="text" name="roles" class="input input-bordered w-full">
+                </div>
 
-        <label>Project Idea</label>
-        <textarea name="project_idea"></textarea>
+                <div class="form-control w-full">
+                    <label class="label"><span class="label-text">Project Idea</span></label>
+                    <textarea name="project_idea" class="textarea textarea-bordered w-full h-28"></textarea>
+                </div>
 
-        <label>Event</label>
-        <select name="event_id" required>
-            {% for event in events %}
-            <option value="{{ event.id }}">{{ event.title }}</option>
-            {% endfor %}
-        </select>
+                <div class="form-control w-full">
+                    {% set event = events[0] %}
+                    <label class="label"><span class="label-text">Event</span></label>
+                    <!-- <select name="event_id" required class="select select-bordered w-full">
+                        {% for event in events %}
+                        <option value="{{ event.id }}">{{ event.title }}</option>
+                        {% endfor %}
+                    </select> -->
+                    <p class="text w-full">{{ event.title }}</p>
+                    <input type="hidden" name="event_id" value="{{ event.id }}" />
+                </div>
 
-        <label>Max Members</label>
-        <input type="number" name="max_members" min="1" max="6" required>
+                <div class="form-control w-full">
+                    <label class="label"><span class="label-text">Max Members</span></label>
+                    <input type="number" name="max_members" min="1" max="6" required class="input input-bordered w-full">
+                </div>
 
-        <button type="submit">Create Team</button>
-    </form>
-
-    <a class="back-link" href="{{ url_for('teams') }}">Back</a>
+                <div class="flex gap-3 pt-2">
+                    <button type="submit" class="btn btn-primary">Create Team</button>
+                    <a class="btn btn-ghost" href="{{ url_for('teams') }}">Back</a>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}
