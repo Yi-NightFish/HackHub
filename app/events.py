@@ -86,20 +86,12 @@ def explore():
 
     paginate = query.paginate(page=page, per_page=12, error_out=False)
     events = paginate.items
-    url = f"https://api.pexels.com/v1/search?query=vibrant+geometric+art+painting&orientation=landscape&per_page={len(events)}"
-    try:
-        headers = {"Authentication": f"{PEXELS_API_KEY}"}
-        response = requests.get(url, headers=headers)
-        image_links = response.json()
-    except:
-        print("Error during fetching image")
     if request.headers.get("HX-Request"):
         return render_template("partials/event_list.html", 
                                events = events, 
                                search_query = search_query, 
                                paginate = paginate or None, 
-                               joined_event_ids = joined_event_ids,
-                               image_links=image_links
+                               joined_event_ids = joined_event_ids
     )
     return render_template(
                         "explore.html", 
@@ -110,8 +102,7 @@ def explore():
                         sort_by = sort_by, 
                         paginate = paginate, 
                         history = session.get("search_history", []), 
-                        joined_event_ids = joined_event_ids, #nx add
-                        image_links=image_links
+                        joined_event_ids = joined_event_ids #nx add
     )
 
 @app.route("/event/create", methods=["GET", "POST"])
