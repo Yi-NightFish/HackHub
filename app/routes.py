@@ -362,7 +362,7 @@ def tasks(team_id):
         # nx
     tasks_results = query.all()
     if request.headers.get("HX-Request"):
-        return render_template("partials/task_list.html", tasks = tasks_results, datetime = dt)
+        return render_template("partials/task_list.html", tasks = tasks_results, datetime = dt, team_id = team_id)
     # wy
     return render_template("tasks.html", form = form, tasks = tasks_results, datetime = dt, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]), team = team)
 
