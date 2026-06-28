@@ -1,158 +1,186 @@
-<!DOCTYPE html>
-<html>
+{% include "base.html" %}
 
-<head>
-    <title>Tasks</title>
-    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/task.css') }}">
-</head>
-
-<body>
-    <div class="container">
-        <div class="task-page-header">
-            <h1>{{ team.name }}</h1>
-            <input type="text" name="searchtasks" placeholder="Search tasks..." hx-get="{{ url_for('tasks', team_id=team.id) }}" hx-trigger="keyup changed delay:300ms" hx-target="#task-list-container" hx-swap="innerHTML" class="task-search-box"/>
+{% block content %}
+<div class="bg-[#F0EFE9] text-black min-h-screen font-sans p-4 md:p-8 selection:bg-yellow-100 relative overflow-x-hidden z-0">
+    <div class="max-w-7xl mx-auto container relative z-10">
+        
+        <div class="flex flex-col justify-between items-start gap-2 mb-12 p-6 bg-white border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <h1 class="text-4xl md:text-6xl font-black uppercase tracking-tight mb-2 text-black">{{ team.name }}</h1>
         </div>
         
-        <div class="task-layout">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-            <!-- Create Task Panel -->
-            <div class="create-task-panel">
-                <form method="POST">
+            <div class="lg:col-span-4 bg-white border-2 border-black shadow-[6px_6px_0px_0px_#000000] p-6">
+                <h2 class="text-2xl font-black uppercase border-b-2 border-black pb-3 mb-6 tracking-wide flex items-center gap-2">
+                    <svg class="w-6 h-6 text-[#00B4D8]" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+                    Create Task
+                </h2>
+                
+                <form method="POST" class="flex flex-col gap-5">
                     {{ form.hidden_tag() }}
 
-                    <div>{{ form.title.label() }}{{ form.title() }}</div>
-                    <div>{{ form.description.label() }}{{ form.description() }}</div>
-                    <div>{{ form.assigned_to.label() }}{{ form.assigned_to() }}</div>
-                    <div>{{ form.deadline.label() }}{{ form.deadline() }}</div>
-                    <div>{{ form.priority.label() }}{{ form.priority() }}</div>
-                    <div>{{ form.status.label() }}{{ form.status() }}</div>
+                    <div class="form-control w-full">
+                        <label class="label font-black uppercase text-xs pb-1 text-black tracking-wider">{{ form.title.label.text }}</label>
+                        {{ form.title(class="input input-bordered w-full border-2 border-black rounded-none focus:outline-none focus:bg-yellow-50/30 font-bold bg-white text-black h-12") }}
+                    </div>
+                    
+                    <div class="form-control w-full">
+                        <label class="label font-black uppercase text-xs pb-1 text-black tracking-wider">{{ form.description.label.text }}</label>
+                        {{ form.description(class="textarea textarea-bordered w-full border-2 border-black rounded-none focus:outline-none focus:bg-yellow-50/30 font-medium bg-white text-black h-28 resize-none p-3") }}
+                    </div>
 
-                    <div>{{ form.submit(class="create-btn") }}</div>
-                </form><br>
-                <a href="{{ url_for('team_detail', team_id=team.id) }}" class="button">← Back to Team</a>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label class="label font-black uppercase text-xs pb-1 text-black tracking-wider">{{ form.assigned_to.label.text }}</label>
+                            {{ form.assigned_to(class="select select-bordered w-full border-2 border-black rounded-none focus:outline-none font-bold bg-white text-black h-12") }}
+                        </div>
+                        <div class="form-control">
+                            <label class="label font-black uppercase text-xs pb-1 text-black tracking-wider">{{ form.deadline.label.text }}</label>
+                            {{ form.deadline(class="input input-bordered w-full border-2 border-black rounded-none focus:outline-none font-bold bg-white text-black p-2 h-12") }}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label class="label font-black uppercase text-xs pb-1 text-black tracking-wider">{{ form.priority.label.text }}</label>
+                            {{ form.priority(class="select select-bordered w-full border-2 border-black rounded-none focus:outline-none font-bold bg-white text-black h-12") }}
+                        </div>
+                        <div class="form-control">
+                            <label class="label font-black uppercase text-xs pb-1 text-black tracking-wider">{{ form.status.label.text }}</label>
+                            {{ form.status(class="select select-bordered w-full border-2 border-black rounded-none focus:outline-none font-bold bg-white text-black h-12") }}
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="w-full h-12 rounded-none border-2 border-black bg-[#FFDE4D] text-black hover:bg-yellow-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all font-black uppercase tracking-wider text-sm">
+                            Create Task Block
+                        </button>
+                    </div>
+                </form>
+                
+                <a href="{{ url_for('team_detail', team_id=team.id) }}" class="w-full block text-center h-12 leading-[44px] rounded-none border-2 border-black bg-white text-black hover:bg-gray-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all font-black uppercase tracking-wider text-xs mt-4">
+                    ← Back to Team
+                </a>
             </div>
 
-            <!-- Task Main Section -->
-            <div class="task-main">
+            <div class="lg:col-span-8 flex flex-col gap-6 rounded-xl">
 
-                <!-- Filter Bar -->
-                <div class="filter-bar">
-                    <a class="filter-link {% if status_filter == 'all' %}active{% endif %}"
-                        href="{{ url_for('tasks', team_id=team.id, status='all') }}">
-                        All
-                    </a>
-
-                    <a class="filter-link {% if status_filter == 'Wishlist' %}active{% endif %}"
-                        href="{{ url_for('tasks', team_id=team.id, status='Wishlist') }}">
-                        Wishlist
-                    </a>
-
-                    <a class="filter-link {% if status_filter == 'To Do' %}active{% endif %}"
-                        href="{{ url_for('tasks', team_id=team.id, status='To Do') }}">
-                        To Do
-                    </a>
-
-                    <a class="filter-link {% if status_filter == 'In Progress' %}active{% endif %}"
-                        href="{{ url_for('tasks', team_id=team.id, status='In Progress') }}">
-                        In Progress
-                    </a>
-
-                    <a class="filter-link {% if status_filter == 'In Review' %}active{% endif %}"
-                        href="{{ url_for('tasks', team_id=team.id, status='In Review') }}">
-                        In Review
-                    </a>
-
-                    <a class="filter-link {% if status_filter == 'Complete' %}active{% endif %}"
-                        href="{{ url_for('tasks', team_id=team.id, status='Complete') }}">
-                        Complete
-                    </a>
+                <div class="flex flex-wrap gap-3 items-center">
+                    {% for status in ['all', 'Wishlist', 'To Do', 'In Progress', 'In Review', 'Complete'] %}
+                        {% set is_active = (status_filter == status or (status == 'all' and not status_filter)) %}
+                        <a class="h-11 px-4 flex items-center justify-center font-black uppercase tracking-wider text-xs border-2 border-black transition-all rounded-none
+                                  {% if is_active %} bg-[#FFDE4D] text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] {% else %} bg-white text-black hover:bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] {% endif %}"
+                           href="{{ url_for('tasks', team_id=team.id, status=status) }}">
+                            
+                            {% if status == 'all' %}
+                                <span class="mr-1.5 text-sm">★</span>
+                            {% elif status == 'Complete' %}
+                                <span class="mr-1.5 text-sm">✓</span>
+                            {% else %}
+                                <span class="mr-1.5 text-sm">❑</span>
+                            {% endif %}
+                            
+                            {{ status if status != 'all' else 'All Blocks' }}
+                        </a>
+                    {% endfor %}
                 </div>
 
-                <!-- Task Scroll Area -->
-                <div class="task-scroll-area">
-                    <div class="task-card-list" id="task-list-container">
-                        <!-- Task list starts here -->
+                <div class="relative w-full bg-white mb-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center">
+                    <span class="absolute left-4 z-20 pointer-events-none flex items-center justify-center">
+                        <svg class="h-5 w-5 text-black block" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.602 10.602z"></path>
+                        </svg>
+                    </span>
+                    <input 
+                        type="text" 
+                        name="searchtasks" 
+                        placeholder="Type something to search tasks..." 
+                        hx-get="{{ url_for('tasks', team_id=team.id) }}" 
+                        hx-trigger="keyup changed delay:300ms" 
+                        hx-target="#task-list-container" 
+                        hx-swap="innerHTML" 
+                        class="input w-full pl-12 pr-4 py-3 rounded-none focus:outline-none font-bold uppercase placeholder-gray-400 bg-white text-black border-none text-sm h-12 relative z-10"
+                    />
+                </div>
+
+                <div class="w-full">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="task-list-container">
                         {% for task in tasks %}
                         {% set is_overdue = (not task.is_done) and (task.status in ['To Do', 'In Progress']) and task.deadline and task.deadline < datetime.datetime.now() %}
 
-                        <div class="task-card {% if is_overdue %}overdue-card{% endif %}">
-                            <!-- Clickable Task Card -->
-                            <a class="task-card-link" href="{{ url_for('task_details', team_id=task.team_id, id=task.id) }}">
-                                <h3>{{ task.title }}</h3>
+                        <div class="flex flex-col justify-between bg-white border-2 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-none overflow-hidden group">
+                            
+                            <div class="p-5 flex-grow border-b-2 border-black bg-[linear-gradient(135deg,#f9fafb_25%,transparent_25%,transparent_50%,#f9fafb_50%,#f9fafb_75%,transparent_75%,transparent)] bg-[size:12px_12px] {% if is_overdue %} bg-red-50/40 {% endif %}">
+                                <div class="bg-white border-2 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)]">
+                                    <a class="block" href="{{ url_for('task_details', team_id=task.team_id, id=task.id) }}">
+                                        <h3 class="text-xl font-black uppercase tracking-tight mb-4 group-hover:underline decoration-2 text-black">{{ task.title }}</h3>
+                                    </a>
 
-                                <p>
-                                    <strong>Assigned:</strong>
-                                    {% if task.assigned_user %}
-                                        {{ task.assigned_user.name }}
-                                    {% else %}
-                                        No assignee
-                                    {% endif %}
-                                </p>
+                                    <div class="space-y-2 text-xs font-bold tracking-wide">
+                                        <p class="flex justify-between border-b border-black/10 pb-1.5">
+                                            <span class="opacity-60 uppercase text-[10px]">Assigned:</span>
+                                            <span class="text-black font-black">{{ task.assigned_user.name if task.assigned_user else 'No assignee' }}</span>
+                                        </p>
 
-                                <p>
-                                    <strong>Priority:</strong>
-                                    {% if task.priority %}
-                                        <span class="badge {{ task.priority|lower }}">
-                                            {{ task.priority }}
-                                        </span>
-                                    {% else %}
-                                        No priority
-                                    {% endif %}
-                                </p>
+                                        <p class="flex justify-between border-b border-black/10 pb-1.5 items-center">
+                                            <span class="opacity-60 uppercase text-[10px]">Priority:</span>
+                                            {% if task.priority %}
+                                                <span class="border-2 border-black font-black uppercase px-2 py-0.5 text-[10px]
+                                                    {% if task.priority|lower == 'high' %} bg-[#F72585] text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
+                                                    {% elif task.priority|lower == 'medium' %} bg-[#FFDE4D] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
+                                                    {% else %} bg-[#A3E635] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] {% endif %}">
+                                                    {{ task.priority }}
+                                                </span>
+                                            {% else %}
+                                                <span class="text-gray-400">No priority</span>
+                                            {% endif %}
+                                        </p>
 
-                                <p>
-                                    <strong>Deadline:</strong>
-                                    {% if task.deadline %}
-                                        {{ task.deadline.strftime('%d %b %Y') }}
-                                    {% else %}
-                                        No deadline
-                                    {% endif %}
-                                </p>
+                                        <p class="flex justify-between pb-0.5">
+                                            <span class="opacity-60 uppercase text-[10px]">Deadline:</span>
+                                            <span class="font-black text-black">{{ task.deadline.strftime('%d %b %Y') if task.deadline else 'No deadline' }}</span>
+                                        </p>
 
-                                {% if is_overdue %}
-                                    <p class="overdue-text">Overdue</p>
-                                {% endif %}
-
-                                <p>
-                                    <span class="status-badge status-{{ task.status|lower|replace(' ', '-') }}">
-                                        {{ task.status }}
-                                    </span>
-                                </p>
-                            </a>
-
-                            <!-- Task Actions -->
-                            <div class="task-actions">
-                                <!-- Toggle Done -->
-                                <form method="POST" action="{{ url_for('toggle_task', team_id=task.team_id, id=task.id) }}">
-                                    <button type="submit">
-                                        {% if task.is_done %}
-                                            Undo
-                                        {% else %}
-                                            Done
+                                        {% if is_overdue %}
+                                            <div class="bg-white text-red-600 text-center font-black uppercase text-[10px] py-1 tracking-widest mt-3 border-2 border-red-600 shadow-[3px_3px_0px_0px_#F72585]">
+                                                OVERDUE BLOCK
+                                            </div>
                                         {% endif %}
-                                    </button>
-                                </form>
+                                    </div>
+                                </div>
+                            </div>
 
-                                <!-- Delete Task -->
-                                <form method="POST" action="{{ url_for('delete_task', team_id=task.team_id, id=task.id) }}">
-                                    <button type="submit" onclick="return confirm('Delete this task?')">
-                                        Delete
-                                    </button>
-                                </form>
+                            <div class="bg-white p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50/50 border-t-0">
+                                <span class="border-2 border-black font-black uppercase py-1 px-2.5 text-[11px] bg-[#00B4D8] text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                                    {{ task.status }}
+                                </span>
+                                
+                                <div class="flex items-center gap-2">
+                                    <form method="POST" action="{{ url_for('toggle_task', team_id=task.team_id, id=task.id) }}" class="inline">
+                                        <button type="submit" class="h-8 px-3 border-2 border-black bg-white text-black font-black uppercase text-xs hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none">
+                                            {{ 'Undo' if task.is_done else 'Done' }}
+                                        </button>
+                                    </form>
+
+                                    <form method="POST" action="{{ url_for('delete_task', team_id=task.team_id, id=task.id) }}" class="inline">
+                                        <button type="submit" onclick="return confirm('Delete this task?')" class="h-8 px-3 border-2 border-black bg-[#F72585] text-white font-black uppercase text-xs hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
 
                         {% else %}
-                            <p class="empty">No tasks found.</p>
+                        <div class="col-span-full bg-white border-2 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-12 text-center">
+                            <p class="font-black uppercase tracking-wider text-gray-400 text-sm">No tasks found in this block index.</p>
+                        </div>
                         {% endfor %}
-                        <!-- Task list ends here -->
                     </div>
                 </div>
 
             </div>
         </div>
     </div>
-</body>
-
-</html>
+</div>
+{% endblock %}
