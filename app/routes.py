@@ -17,7 +17,7 @@ from flask import make_response
 
 from app import app, db, mail
 from app.models import *
-from app.forms import ProfileForm, TaskForm
+from app.forms import ProfileForm, TaskForm, SetupProfileForm
 from sqlalchemy import select, case, update
 
 #By Wan Yi
@@ -33,16 +33,16 @@ def send_otp(email, purpose):
         )
     )
     db.session.commit()
-    # msg = Message(
-    #     "HackHub OTP",
-    #     sender=app.config["MAIL_USERNAME"],
-    #     recipients=[email]
-    # )
-    # msg.body = f"Your OTP is: {otp}"
-    # mail.send(msg)
+    msg = MailMessage(
+        "HackHub OTP",
+        sender=app.config["MAIL_USERNAME"],
+        recipients=[email]
+    )
+    msg.body = f"Your OTP is: {otp}"
+    mail.send(msg)
 
     # Use this to get otp without actually sending to email during development
-    print(f"Sent OTP: {otp} -> {email}")
+    # print(f"Sent OTP: {otp} -> {email}")
     
 def login_required(view):
     @functools.wraps(view)
@@ -157,23 +157,21 @@ def register():
         return redirect(url_for("verify_register"))
     return render_template("register.html")
 
-@app.route("/verify-register", methods=["GET", "POST"])
+@app.route("/verify-register", methods = ["GET", "POST"])
 def verify_register():
     email = session.get("temp_email", None)
     if request.method == "POST":
         if verify_otp("register", "temp_email"):
             password = session.get("temp_password", None)
-            user = User(email = email, 
-                        password = password, 
-                        is_verified = True, 
-            )
+            user = User(email = email, password = password, is_verified = True)
             db.session.add(user)
             db.session.commit()
             session.pop("temp_email", None)
             session.pop("temp_password", None)
-            return redirect(url_for("login"))    
+            session["user_id"] = user.id
+            return redirect(url_for("setup_profile"))
         return "Invalid OTP"
-    return render_template("otp_veri.html",  email = email)
+    return render_template("otp_veri.html", email = email)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -190,6 +188,22 @@ def login():
             return redirect("/dashboard")
         return "Invalid credentials"
     return render_template("login.html")
+
+@app.route("/setup-profile", methods = ["GET", "POST"])
+@login_required
+def setup_profile():
+    user = db.session.get(User, session["user_id"])
+    if not user:
+        return redirect(url_for("login"))
+    form = SetupProfileForm(obj = user)  
+    if form.validate_on_submit():
+        user.name = form.username.data
+        user.university = form.university.data
+        user.skills = form.skills.data
+        user.github_link = form.github_link.data
+        db.session.commit()
+        return redirect(url_for("dashboard")) 
+    return render_template("setup_profile.html", form = form, user = user)
 
 @app.route("/logout")
 def logout():
@@ -1215,3 +1229,4 @@ def export_data_csv(event_id):
     # tell the browser this is a csv file and use utf-8 encoding
     response.headers["Content-Type"] = "text/csv; charset = utf-8"
     return response
+

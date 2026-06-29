@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Complete Your Profile | Hackhub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+  <div class="card bg-base-100 shadow-lg border border-base-200">
+    <div class="card-body">
+      <h1 class="text-3xl font-bold mb-2">Welcome to HackHub!</h1>
+      <p class="text-base-content/70 mb-6">
+        Please fill in your details. You can Update your profile later in the settings. Fields marked with * are required.
+      </p>
+
+      <form method="POST" class="space-y-6">
+        {{ form.hidden_tag() }}
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="form-control">
+            <label class="label"><span class="label-text text-base-content/50">Name *</span></label>
+            {{ form.username(class="input input-bordered w-full bg-base-200", placeholder="Your display name") }}
+            {% for error in form.username.errors %}
+              <span class="text-error text-sm">{{ error }}</span>
+            {% endfor %}
+          </div>
+
+          <div class="form-control">
+            <label class="label"><span class="label-text text-base-content/50">University</span></label>
+            {{ form.university(class="input input-bordered w-full bg-base-200", placeholder="e.g. MMU") }}
+          </div>
+
+          <div class="form-control">
+            <label class="label"><span class="label-text text-base-content/50">Skills</span></label>
+            {{ form.skills(class="input input-bordered w-full bg-base-200", placeholder="e.g. Python, React, UI/UX") }}
+          </div>
+
+          <div class="form-control">
+            <label class="label"><span class="label-text text-base-content/50">GitHub Link</span></label>
+            {{ form.github_link(class="input input-bordered w-full bg-base-200", placeholder="https://github.com/yourusername") }}
+          </div>
+        </div>
+
+        <div class="card-actions justify-end gap-3 pt-4">
+          {{ form.submit(class="btn btn-primary", value="Complete Setup") }}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
