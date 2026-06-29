@@ -10,8 +10,6 @@ from app.forms import EventForm
 import requests
 import os
 
-PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY", None)
-
 # Helper function
 def get_user_by_id(user_id):
     return db.session.get(User, user_id)
@@ -91,7 +89,8 @@ def explore():
                                events = events, 
                                search_query = search_query, 
                                paginate = paginate or None, 
-                               joined_event_ids = joined_event_ids
+                               joined_event_ids = joined_event_ids,
+                               current_user = current_user
     )
     return render_template(
                         "explore.html", 
@@ -102,7 +101,7 @@ def explore():
                         sort_by = sort_by, 
                         paginate = paginate, 
                         history = session.get("search_history", []), 
-                        joined_event_ids = joined_event_ids #nx add
+                        joined_event_ids = joined_event_ids
     )
 
 @app.route("/event/create", methods=["GET", "POST"])
@@ -135,15 +134,6 @@ def create_event():
             db.session.add(new_event)
             db.session.commit()
             
-            # Add the organizer as a participant
-            participation = Participation(
-                user_id=session["user_id"],
-                event_id=new_event.id,
-                team_id=None
-            )
-            db.session.add(participation)
-            db.session.commit()
-            
             return redirect(url_for("event_detail", event_id=new_event.id))
     
     return render_template("create_event.html", form=form, current_user=current_user)
@@ -156,7 +146,11 @@ def event_detail(event_id):
         current_user = get_current_user()
 
         def get_participants():
-            return list(map(lambda participant: participant.user, event.participants))
+            return [
+                participant.user
+                for participant in event.participants
+                if participant.user_id != event.organizer_id and participant.user is not None
+            ]
 
         participants = get_participants()
         teams = [team for team in event.teams if Participation.query.filter_by(team_id = team.id).count() < team.max_members] if event else []
@@ -242,11 +236,24 @@ def event_detail(event_id):
                 search_soloists_query = search_soloists_query
             )
     else:
-        user_id = request.form.get("user-id")
+        current_user = get_current_user()
+        event = db.session.get(Event, event_id)
+
+        if not current_user:
+            return redirect(url_for("login", next=request.url))
+        if not event:
+            return "Event not found", 404
+        if event.organizer_id == current_user.id:
+            return redirect(url_for("event_detail", event_id=event.id, tab="overview"))
+
+        existing_participation = Participation.query.filter_by(event_id=event_id, user_id=current_user.id).first()
+        if existing_participation:
+            return redirect(request.url)
+
         participation = Participation(
-            user_id = user_id,
-            event_id = event_id,
-            team_id = None
+            user_id=current_user.id,
+            event_id=event_id,
+            team_id=None
         )
         db.session.add(participation)
         db.session.commit()
@@ -289,11 +296,19 @@ def invite_soloists(event_id):
 @app.route("/unroll/<event_id>")
 @login_required
 def unroll(event_id):
-    participation = Participation.query.filter_by(event_id = event_id, user_id = get_current_user().id).first()
-    print(participation)
-    db.session.delete(participation)
-    db.session.commit()
-    return redirect(url_for("event_detail", event_id = event_id))
+    event = db.session.get(Event, event_id)
+    current_user = get_current_user()
+
+    if not event:
+        return "Event not found", 404
+    if event.organizer_id == current_user.id:
+        return redirect(url_for("event_detail", event_id=event.id, tab="overview"))
+
+    participation = Participation.query.filter_by(event_id=event_id, user_id=current_user.id).first()
+    if participation:
+        db.session.delete(participation)
+        db.session.commit()
+    return redirect(url_for("event_detail", event_id=event_id))
 
 @app.route("/event/<event_id>/edit", methods=["GET", "POST"])
 @login_required

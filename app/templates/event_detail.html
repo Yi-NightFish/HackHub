@@ -220,13 +220,35 @@
             </div>
           </div>
 
+          {% if current_user and event.organizer_id == current_user.id %}
+          <div class="pt-8">
+            <div class="mb-6 border-t-4 border-dotted border-black pt-6"></div>
+            <h3 class="text-2xl font-black uppercase tracking-tight text-black mb-4">Post Announcement</h3>
+            <form method="POST" action="{{ url_for('create_event_announcement', event_id=event.id) }}" class="space-y-4 bg-white border-4 border-black p-6 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <input type="hidden" name="next" value="{{ request.url }}">
+              <div>
+                <label class="mb-2 block text-sm font-black uppercase tracking-wide">Title</label>
+                <input type="text" name="title" required class="w-full border-4 border-black bg-[#FFFDF6] px-3 py-2 font-semibold">
+              </div>
+              <div>
+                <label class="mb-2 block text-sm font-black uppercase tracking-wide">Message</label>
+                <textarea name="content" rows="4" required class="w-full border-4 border-black bg-[#FFFDF6] px-3 py-2 font-semibold"></textarea>
+              </div>
+              <button type="submit" class="bg-[#8ccad2] text-black border-4 border-black font-black uppercase px-6 py-3 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">Publish</button>
+            </form>
+          </div>
+          {% endif %}
+
           <!-- Form Interaction Area -->
           {% if event.status == 'open' %}
           <div class="flex justify-end pt-6">
             {% if current_user %}
-              {% if not enrolled %}
+              {% if current_user.id == event.organizer_id %}
+              <a href="{{ url_for('edit_event', event_id=event.id) }}" class="w-full sm:w-auto text-center bg-[#8ccad2] text-black border-4 border-black font-black uppercase tracking-wider text-lg px-12 py-5 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-[#76b7c1] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer">
+                Manage Event
+              </a>
+              {% elif not enrolled %}
               <form method="POST" class="w-full sm:w-auto">
-                <input name="user-id" value='{{ current_user.id }}' hidden>
                 <button type="submit" class="w-full sm:w-auto text-center bg-[#b5e285] text-black border-4 border-black font-black uppercase tracking-wider text-lg px-12 py-5 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-[#a3cb75] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer">
                   Enroll Now
                 </button>

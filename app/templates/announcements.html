@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Announcements{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-base-200 px-4 py-8">
+  <div class="mx-auto max-w-5xl space-y-6">
+    <div class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm">
+      <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-base-content/60">Event updates</p>
+          <h1 class="text-3xl font-bold">Announcements</h1>
+        </div>
+        <p class="text-sm text-base-content/70">See the latest updates from the events you joined.</p>
+      </div>
+    </div>
+
+    {% if announcements %}
+      <div class="space-y-4">
+        {% for item in announcements %}
+        <div class="rounded-box border border-base-300 bg-base-100 p-5 shadow-sm {% if not item.is_read %}ring-2 ring-primary/30{% endif %}">
+          <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <h2 class="text-xl font-semibold">{{ item.announcement.title }}</h2>
+                {% if not item.is_read %}
+                <span class="badge badge-primary">New</span>
+                {% endif %}
+              </div>
+              <p class="text-sm text-base-content/60">{{ item.announcement.event.title }} • {{ item.announcement.date_posted.strftime('%b %d, %Y %I:%M %p') }}</p>
+            </div>
+            <span class="badge badge-outline">{{ item.announcement.creator.name or item.announcement.creator.email }}</span>
+          </div>
+          <p class="mt-4 whitespace-pre-line text-base-content/80">{{ item.announcement.content }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="rounded-box border border-dashed border-base-300 bg-base-100 p-10 text-center text-base-content/70">
+        No announcements yet for the events you joined.
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

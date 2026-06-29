@@ -12,4 +12,4 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db, render_as_batch = True)
 mail = Mail(app)
 
-from app import routes, models, events
+from app import routes, models, events, announcement

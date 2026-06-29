@@ -57,7 +57,7 @@
       </div>
 
       <div class="p-5 flex flex-col flex-1 relative z-10 bg-base-100">
-        <div class="flex gap-2 items-center mb-3">
+        <div class="flex flex-wrap gap-2 items-center mb-3">
           <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider
             {% if status == 'open' %}bg-success/10 text-success animate-pulse
             {% elif status == 'cancelled' %}bg-error/10 text-error
@@ -66,6 +66,11 @@
             {% endif %}">
             {{ status }}
           </span>
+          {% if current_user and event.organizer_id == current_user.id %}
+          <span class="inline-flex items-center px-2.5 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-wider">
+            Organizer
+          </span>
+          {% endif %}
         </div>
 
         <h2 class="text-lg font-extrabold text-base-content mb-4 line-clamp-2 group-hover:text-primary transition-colors min-h-[3.5rem]">
@@ -89,7 +94,11 @@
 
         <!-- ONLY SECTION UPDATED BELOW TO NEO-BRUTALISM -->
         <div class="pt-4 mt-auto border-t border-base-200">
-          {% if event.id in joined_event_ids %}
+          {% if current_user and event.organizer_id == current_user.id %}
+          <a href="/event/{{ event.id }}" class="btn min-h-0 h-11 w-full border-2 border-black bg-[#8ccad2] text-black rounded-none font-black uppercase tracking-wider hover:bg-[#76b7c1] hover:border-black transition-all duration-75 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none inline-flex items-center justify-center">
+            Manage Event
+          </a>
+          {% elif event.id in joined_event_ids %}
           <a href="/event/{{ event.id }}" class="btn min-h-0 h-11 w-full border-2 border-black bg-white text-black rounded-none font-black uppercase tracking-wider hover:bg-gray-100 hover:border-black transition-all duration-75 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none inline-flex items-center justify-center">
             View Details
           </a>
