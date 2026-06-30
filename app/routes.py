@@ -808,17 +808,21 @@ def chat_home():
 @login_required
 def chat(user_id):
     current_user_id = session.get("user_id")
+    # Check if the user is talking to themself
+    if current_user_id == user_id:
+        return redirect(url_for("chat_home"))
     current_user = db.session.get(User, current_user_id)
     other_user = db.session.get(User, user_id)
     # add visibility filter: only show messages after the time when I choose to see this chat (handle the case where I clear chat but not delete, then new msg comes in, I should be able to see the new msg but not the old msg before clear)
-    visibility = ChatVisibility.query.filter_by(user_id = current_user_id, other_user_id = user_id).first()
-    # if chat was cleared b4, only show msg after clear time, otherwise show all msg
-    visible_time = visibility.visible_since if visibility else dt.datetime.min
-    messages = Message.query.filter((((Message.sender_id == current_user_id) & (Message.receiver_id == user_id)) | 
-                                    ((Message.sender_id == user_id) & (Message.receiver_id == current_user_id))) & (Message.timestamp >= visible_time)
-    ).order_by(Message.timestamp.asc()).all()
+    # visibility = ChatVisibility.query.filter_by(user_id = current_user_id, other_user_id = user_id).first()
+    # # if chat was cleared b4, only show msg after clear time, otherwise show all msg
+    # visible_time = visibility.visible_since if visibility else dt.datetime.min
+    # messages = Message.query.filter((((Message.sender_id == current_user_id) & (Message.receiver_id == user_id)) | 
+    #                                 ((Message.sender_id == user_id) & (Message.receiver_id == current_user_id))) & (Message.timestamp >= visible_time)
+    # ).order_by(Message.timestamp.asc()).all()
 
-    return render_template("chat.html",messages = messages, other_user = other_user, current_user_id=current_user_id, current_user = current_user)
+    # return render_template("chat.html",messages = messages, other_user = other_user, current_user_id=current_user_id, current_user = current_user)
+    return render_template("chat.html", other_user = other_user, current_user_id=current_user_id, current_user = current_user)
 
 @app.route("/hide_user/<int:user_id>")
 @login_required
@@ -853,7 +857,7 @@ def send_message():
     # return redirect(url_for("chat", user_id=sender_id)) #发完消息回聊天界面，user_id不变
     # messages = Message.query.filter(((Message.sender_id == sender_id) & (Message.deleted_by_sender == False)) | ((Message.receiver_id == sender_id) & (Message.deleted_by_receiver == False))).order_by(Message.timestamp.asc()).all()
     messages = Message.query.filter((((Message.sender_id == sender_id) & (Message.receiver_id == receiver_id)) | ((Message.sender_id == receiver_id) & (Message.receiver_id == sender_id))) & (Message.timestamp >= visible_time)).order_by(Message.timestamp.asc()).all()
-    return render_template("message.html", messages = messages, current_user_id = sender_id, other_user = other_user) #只返回新消息，前端htmx负责更新页面
+    return render_template("message.html", messages = messages, current_user_id = sender_id, other_user = other_user, current_user=db.session.get(User, sender_id)) #只返回新消息，前端htmx负责更新页面
     
 @app.route("/clear/<int:user_id>")
 @login_required
@@ -892,13 +896,13 @@ def get_message():
     other_user_id = request.args.get("user_id")
     user = db.session.get(User, current_user_id)
     other_user = db.session.get(User, other_user_id)
-    if user:
-        user.last_seen = dt.datetime.now(dt.UTC).replace(tzinfo=None)
     # find unread msg
     unread_messages = Message.query.filter_by(receiver_id = current_user_id, sender_id = other_user_id, is_read = False).all()
     for message in unread_messages:
         # seen
         message.is_read = True
+    if user:
+        user.last_seen = dt.datetime.now(dt.UTC).replace(tzinfo=None)
     db.session.commit()
     visibility = ChatVisibility.query.filter_by(user_id = current_user_id, other_user_id = other_user_id).first()
     # auto unhide chat

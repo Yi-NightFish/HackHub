@@ -9,48 +9,11 @@
         </style>
         <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <script>
+        window.jdenticon_config = { replaceMode: "observe" };
+        </script>
         <script src="https://cdn.jsdelivr.net/npm/jdenticon@3.3.0/dist/jdenticon.min.js" async
                 integrity="sha384-LfouGM03m83ArVtne1JPk926e3SGD0Tz8XHtW2OKGsgeBU/UfR0Fa8eX+UlwSSAZ" crossorigin="anonymous">
-        </script>
-        <script>
-            function tryJdenticonUpdate() {
-                if (window.jdenticon && typeof jdenticon.update === 'function') {
-                    try { jdenticon.update(); } catch (e) { console.warn('jdenticon update failed', e); }
-                }
-            }
-
-            document.addEventListener('DOMContentLoaded', function() {
-                tryJdenticonUpdate();
-            });
-
-            // Re-render jdenticon avatars after HTMX swaps content (pagination, partial updates)
-                document.addEventListener('htmx:afterSwap', function(evt) {
-                    tryJdenticonUpdate();
-
-                    // Fallback: if update didn't populate SVGs, generate SVGs manually
-                    try {
-                        if (window.jdenticon && typeof jdenticon.toSvg === 'function') {
-                            document.querySelectorAll('svg[data-jdenticon-value]').forEach(function(svg){
-                                // If svg is empty (no rendered paths), replace with generated SVG
-                                if (!svg.innerHTML.trim()) {
-                                    var val = svg.getAttribute('data-jdenticon-value') || '';
-                                    var size = Math.max(svg.clientWidth, svg.clientHeight) || 64;
-                                    try {
-                                        var newSvg = jdenticon.toSvg(val, size);
-                                        // Replace the element preserving outer container
-                                        var wrapper = document.createElement('div');
-                                        wrapper.innerHTML = newSvg;
-                                        svg.replaceWith(wrapper.firstElementChild);
-                                    } catch (e) {
-                                        // ignore per-element failures
-                                    }
-                                }
-                            });
-                        }
-                    } catch (e) {
-                        console.warn('jdenticon fallback failed', e);
-                    }
-                });
         </script>
     </head>
 

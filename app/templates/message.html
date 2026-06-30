@@ -1,91 +1,106 @@
-﻿<div id="status-display" hx-swap-oob="true" class="card bg-base-200 shadow mb-4 p-4 rounded-box">
+﻿<div id="status-display" class="card bg-base-200 shadow mb-4 p-4 rounded-box shrink-0">
     {% if other_user %}
-    <div class="flex flex-wrap items-center gap-3">
-        <span class="font-bold">Chat with: {{ other_user.name }}</span>
-        {% if other_user.is_online() %}
-            <span class="badge badge-success gap-1">
-                <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
-                Online
-            </span>
-        {% else %}
-            <span class="badge badge-outline text-base-content/60">Offline</span>
-        {% endif %}
+    <div class="flex flex-col flex-wrap items-center gap-3">
+        <div class="w-full">
+            <span class="font-bold">Chat with: {{ other_user.name }}</span>
+            {% if other_user.is_online() %}
+                <span class="badge badge-success gap-1">
+                    <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
+                    Online
+                </span>
+            {% else %}
+                <span class="badge badge-outline text-base-content/60">Offline</span>
+            {% endif %}
+        </div>
+        <div class="divider my-1 text-xs opacity-50">ACTIONS</div>
+        <div class="flex flex-wrap gap-2">
+          <a href="/chat" class="btn btn-ghost btn-sm">All Chats</a>
+          <a href="/clear/{{ other_user.id }}" class="btn btn-error btn-sm">Clear Chat</a>
+        </div>
     </div>
     {% endif %}
 </div>
 
-{% for msg in messages %}
-    {% set is_me = (msg.sender_id == current_user_id) %}
-    {% set sender_name = "You" if is_me else (msg.sender.name if msg.sender else "User " ~ msg.sender_id) %}
-    
-    {% if msg.is_deleted %}
-        <div id="msg-{{ msg.id }}" class="chat mb-4 opacity-60 {% if is_me %}chat-end{% else %}chat-start{% endif %}">
-            <div class="chat-image avatar">
-                <div class="w-10 rounded-full border border-base-300/50 bg-base-100 shadow-sm flex items-center justify-center">
-                    <svg data-jdenticon-value="{{ other_user.name }}" class="w-full h-full p-1"></svg>
-                </div>
-            </div>
-            <div class="chat-header text-xs opacity-50 mb-1">
-                {{ sender_name }}
-            </div>
-            <div class="chat-bubble bg-base-200 text-base-content/50 border border-dashed border-base-300 italic max-w-3xl">
-                <div class="flex items-center justify-between gap-4">
-                    <span>
-                        {% if is_me %}
-                            You deleted this message.
-                        {% else %}
-                            This message has been deleted.
-                        {% endif %}
-                    </span>
-                    <span class="text-xs font-semibold not-italic opacity-80 text-secondary-content">{{ msg.timestamp.strftime('%H:%M') }}</span>
-                </div>
-            </div>
-        </div>
-    {% else %}
-        <div id="msg-{{ msg.id }}" class="chat mb-4 {% if is_me %}chat-end{% else %}chat-start{% endif %}">
-            
-            <div class="chat-image avatar">
-                <div class="w-10 rounded-full border border-base-300/50 bg-base-100 shadow-sm flex justify-center items-center">
-                    <svg data-jdenticon-value="{{ current_user.name if is_me else other_user.name }}" class="w-full h-full p-1"></svg>
-                </div>
-            </div>
-
-            <div class="chat-header text-xs opacity-60 mb-1 space-x-1">
-                <span class="font-bold">{{ sender_name }}</span>
-                <time class="text-[10px] font-normal opacity-70">{{ msg.timestamp.strftime('%Y-%m-%d %H:%M') }}</time>
-            </div>
-
-            <div class="chat-bubble {% if is_me %}chat-primary text-primary-content{% else %}chat-secondary text-secondary-content{% endif %} max-w-3xl shadow-sm">
-                <div class="flex flex-col gap-2">
-                    <div class="text-sm text-neutral">{{ msg.message }}</div>
-                    
-                    {% if is_me %}
-                        <div class="flex items-center justify-between gap-3 mt-1 pt-1 border-t border-black/10">
-                            <div class="dropdown dropdown-end dropdown-bottom flex flex-column align-center my-1">
-                                <div tabindex="0" class="btn btn-ghost btn-xs text-secondary-content hover:bg-secondary/10 h-full rounded">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="black" class="w-3 opacity-70">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
-                                    </svg>
-                                </div>
-                                <ul tabindex="0" class="dropdown-content menu p-1 shadow-lg bg-base-100 rounded-box w-28 text-base-content z-[1]">
-                                    <li>
-                                        <a class="text-error py-1.5 text-xs font-semibold" 
-                                            hx-get="{{ url_for('delete_message', message_id=msg.id) }}" 
-                                            hx-confirm="Are you sure you want to delete this message?" 
-                                            hx-target="#msg-{{ msg.id }}" 
-                                            hx-swap="outerHTML">
-                                            Delete
-                                        </a>
-                                    </li>
-                                </ul>
+<div class="card bg-base-100 shadow-inner overflow-hidden">
+    <div id="chat-content" class="card-body p-4 h-[50vh] min-h-[300px] overflow-y-auto bg-base-200">
+        
+        <div class="w-full">
+            {% for msg in messages %}
+                {% set is_me = (msg.sender_id == current_user_id) %}
+                {% set sender_name = "You" if is_me else (msg.sender.name if msg.sender else "User " ~ msg.sender_id) %}
+                
+                {% if msg.is_deleted %}
+                    <div id="msg-{{ msg.id }}" class="chat mb-4 opacity-60 {% if is_me %}chat-end{% else %}chat-start{% endif %}">
+                        <div class="chat-image avatar">
+                            <div class="w-10 rounded-full border border-base-300/50 bg-base-100 shadow-sm flex items-center justify-center">
+                                <svg data-jdenticon-value="{{ other_user.name }}" class="w-full h-full p-1"></svg>
                             </div>
-                            <span class="text-[10px] text-neutral/70 h-full uppercase font-semibold opacity-80 select-none text-secondary-content">
-                                {% if msg.is_read %} Seen {% else %} Delivered {% endif %}
-                            </span>
                         </div>
-                    {% endif %}
-                </div>
-            </div>
+                        <div class="chat-header text-xs opacity-50 mb-1">
+                            {{ sender_name }}
+                        </div>
+                        <div class="chat-bubble bg-base-200 text-base-content/50 border border-dashed border-base-300 italic max-w-3xl">
+                            <div class="flex items-center justify-between gap-4">
+                                <span>
+                                    {% if is_me %}
+                                        You deleted this message.
+                                    {% else %}
+                                        This message has been deleted.
+                                    {% endif %}
+                                </span>
+                                <span class="text-xs font-semibold not-italic opacity-80 text-secondary-content">{{ msg.timestamp.strftime('%H:%M') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div id="msg-{{ msg.id }}" class="chat mb-4 {% if is_me %}chat-end{% else %}chat-start{% endif %}">
+                        
+                        <div class="chat-image avatar">
+                            <div class="w-10 rounded-full border border-base-300/50 bg-base-100 shadow-sm flex justify-center items-center">
+                                <svg data-jdenticon-value="{{ current_user.name if is_me else other_user.name }}" class="w-full h-full p-1"></svg>
+                            </div>
+                        </div>
+
+                        <div class="chat-header text-xs opacity-60 mb-1 space-x-1">
+                            <span class="font-bold">{{ sender_name }}</span>
+                            <time class="text-[10px] font-normal opacity-70">{{ msg.timestamp.strftime('%Y-%m-%d %H:%M') }}</time>
+                        </div>
+
+                        <div class="chat-bubble {% if is_me %}chat-primary text-primary-content{% else %}chat-secondary text-secondary-content{% endif %} max-w-3xl shadow-sm">
+                            <div class="flex flex-col gap-2">
+                                <div class="text-sm text-neutral">{{ msg.message }}</div>
+                                
+                                {% if is_me %}
+                                    <div class="flex items-center justify-between gap-3 mt-1 pt-1 border-t border-black/10">
+                                        <div class="dropdown dropdown-end dropdown-bottom flex flex-column align-center my-1">
+                                            <div tabindex="0" class="btn btn-ghost btn-xs text-secondary-content hover:bg-secondary/10 h-full rounded">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="black" class="w-3 opacity-70">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+                                                </svg>
+                                            </div>
+                                            <ul tabindex="0" class="dropdown-content menu p-1 shadow-lg bg-base-100 rounded-box w-28 text-base-content z-[1]">
+                                                <li>
+                                                    <a class="text-error py-1.5 text-xs font-semibold" 
+                                                       hx-get="{{ url_for('delete_message', message_id=msg.id) }}" 
+                                                       hx-confirm="Are you sure you want to delete this message?" 
+                                                       hx-target="#msg-{{ msg.id }}" 
+                                                       hx-swap="outerHTML">
+                                                        Delete
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <span class="text-[10px] text-neutral/70 h-full uppercase font-semibold opacity-80 select-none text-secondary-content">
+                                            {% if msg.is_read %} Seen {% else %} Delivered {% endif %}
+                                        </span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
         </div>
-    {% endif %}
-{% endfor %}
+
+    </div>
+</div>
