@@ -24,8 +24,8 @@ class User(db.Model):
         if self.last_seen is None:
             return False
         now = datetime.datetime.now(datetime.UTC).replace(tzinfo=None)
-        # Consider user online if last seen within the last 5 minutes
-        return (now - self.last_seen) < datetime.timedelta(minutes=1)
+        # Consider user online if last seen within the last 10 seconds
+        return (now - self.last_seen) < datetime.timedelta(seconds=15)
 
     def __repr__(self):
         return f'<User {self.name}>'
