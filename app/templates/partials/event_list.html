@@ -64,9 +64,20 @@
             {% endif %}">
             {{ status }}
           </span>
+          
           {% if current_user and event.organizer_id == current_user.id %}
           <span class="inline-flex items-center px-2.5 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-wider">
             Organizer
+          </span>
+          {% endif %}
+
+          <!-- MATCHED STYLE: Now matches the rounded-full, borderless, clean translucent style of your status pills -->
+          {% if current_user and current_user.id in event.participants|map(attribute='user_id') %}
+          <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-wider">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            Joined
           </span>
           {% endif %}
         </div>
