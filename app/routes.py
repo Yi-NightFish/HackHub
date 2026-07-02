@@ -1,4 +1,4 @@
-from flask import render_template, request, url_for, redirect, session, make_response, current_app
+from flask import render_template, request, url_for, redirect, session, make_response, current_app, flash
 import random
 import string
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -17,7 +17,7 @@ from flask import make_response
 
 from app import app, db, mail
 from app.models import *
-from app.forms import ProfileForm, TaskForm
+from app.forms import ProfileForm, TaskForm, SetupProfileForm
 from sqlalchemy import select, case, update
 
 #By Wan Yi
@@ -33,16 +33,16 @@ def send_otp(email, purpose):
         )
     )
     db.session.commit()
-    # msg = Message(
-    #     "HackHub OTP",
-    #     sender=app.config["MAIL_USERNAME"],
-    #     recipients=[email]
-    # )
-    # msg.body = f"Your OTP is: {otp}"
-    # mail.send(msg)
+    msg = MailMessage(
+        "HackHub OTP",
+        sender=app.config["MAIL_USERNAME"],
+        recipients=[email]
+    )
+    msg.body = f"Your OTP is: {otp}"
+    mail.send(msg)
 
     # Use this to get otp without actually sending to email during development
-    print(f"Sent OTP: {otp} -> {email}")
+    # print(f"Sent OTP: {otp} -> {email}")
     
 def login_required(view):
     @functools.wraps(view)
@@ -137,7 +137,9 @@ def allowed_file(filename):
 # Main routes
 @app.route("/")
 def home():
-    return render_template("home.html", current_user = db.session.get(User, session["user_id"]) if session.get("user_id", None) else None)
+    now = dt.datetime.now()
+    featured_events = Event.query.filter(Event.start_time > now).limit(3).all()
+    return render_template('home.html', featured_events=featured_events, now=now)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -155,34 +157,28 @@ def register():
         return redirect(url_for("verify_register"))
     return render_template("register.html")
 
-@app.route("/verify-register", methods=["GET", "POST"])
+@app.route("/verify-register", methods = ["GET", "POST"])
 def verify_register():
     email = session.get("temp_email", None)
     if request.method == "POST":
         if verify_otp("register", "temp_email"):
             password = session.get("temp_password", None)
-            user = User(email = email, 
-                        password = password, 
-                        is_verified = True, 
-            )
+            user = User(email = email, password = password, is_verified = True)
             db.session.add(user)
             db.session.commit()
             session.pop("temp_email", None)
             session.pop("temp_password", None)
-            return redirect(url_for("login"))    
+            session["user_id"] = user.id
+            return redirect(url_for("setup_profile"))
         return "Invalid OTP"
-    return render_template("otp_veri.html",  email = email)
+    return render_template("otp_veri.html", email = email)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.form.get("email", None)
-        if not email:
-            username = request.form.get("username")
-            user = User.query.filter_by(name=username).first()
-        else:
-            user = User.query.filter_by(email=email).first()
+        email = request.form["email"]
         password = request.form["password"]
+        user = User.query.filter_by(email=email).first()
 
         if user and check_password_hash(user.password, password):
             session["user_id"] = user.id
@@ -192,6 +188,22 @@ def login():
             return redirect("/dashboard")
         return "Invalid credentials"
     return render_template("login.html")
+
+@app.route("/setup-profile", methods = ["GET", "POST"])
+@login_required
+def setup_profile():
+    user = db.session.get(User, session["user_id"])
+    if not user:
+        return redirect(url_for("login"))
+    form = SetupProfileForm(obj = user)  
+    if form.validate_on_submit():
+        user.name = form.username.data
+        user.university = form.university.data
+        user.skills = form.skills.data
+        user.github_link = form.github_link.data
+        db.session.commit()
+        return redirect(url_for("dashboard")) 
+    return render_template("setup_profile.html", form = form, user = user)
 
 @app.route("/logout")
 def logout():
@@ -207,12 +219,20 @@ def logout():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    if "user_id" not in session:
-        return redirect("/login")
     user = db.session.get(User, session["user_id"])
-    # return f"Welcome {user.email} ---> ID: {user.id}"
-    return redirect("/")
-
+    joined_events = Participation.query.filter_by(user_id = user.id).all()
+    joined_teams = Participation.query.filter(Participation.user_id == user.id,
+                                              Participation.team_id != None).all()
+    tasks = Task.query.filter_by(assigned_to = user.id).all()
+    overdue_tasks = [t for t in tasks if not t.is_done and t.deadline and t.deadline < dt.datetime.now()]
+    return render_template("dashboard.html",
+                           current_user = user,
+                           user = user,
+                           joined_events = joined_events,
+                           joined_teams = joined_teams,
+                           tasks = tasks,
+                           overdue_tasks = overdue_tasks)
+    
 @app.route("/forget", methods=["GET", "POST"])
 def forget():
     if request.method == "POST":
@@ -365,10 +385,20 @@ def tasks(team_id):
     # tasks = query.all()
         # nx
     tasks_results = query.all()
+    total_tasks = len(tasks_results)
+    completed_tasks = len([t for t in tasks_results if t.is_done])
+    percentage = int((completed_tasks / total_tasks) * 100) if total_tasks > 0 else 0
     if request.headers.get("HX-Request"):
         return render_template("partials/task_list.html", tasks = tasks_results, datetime = dt, team_id = team_id)
     # wy
-    return render_template("tasks.html", form = form, tasks = tasks_results, datetime = dt, status_filter = status_filter, current_user = db.session.get(User, session["user_id"]), team = team)
+    return render_template("tasks.html", 
+                           form = form,
+                           tasks = tasks_results,
+                           datetime = dt,
+                           status_filter = status_filter,
+                           current_user = db.session.get(User, session["user_id"]), 
+                           team = team,
+                           percentage = percentage)
 
 @app.route("/task/<int:id>/toggle", methods = ["POST"])
 @login_required
@@ -426,12 +456,11 @@ def autosave_task(id):
         if field == "status":
             task.is_done = (value == "Complete")
     if str(old_value) != str(new_value):
-        add_task_activity(
-            task.id,
-            f"changed {field} from '{old_value}' to '{new_value}'"
-        )
+        add_task_activity(task.id, f"changed {field} from '{old_value}' to '{new_value}'")    
     db.session.commit()
-    return "Saved"
+    team = task.team
+    tasks = Task.query.filter_by(team_id = team.id).all()
+    return render_template("partials/kanban_board.html", tasks = tasks, team = team, datetime = dt)
 
 @app.route("/team/<int:team_id>/task/<int:id>/details", methods = ["GET", "POST"])
 @login_required
@@ -465,7 +494,9 @@ def task_details(team_id, id):
                            task = task,
                            users = team_members,
                            subtasks = subtasks, 
-                           team_id = team_id)
+                           team_id = team_id,
+                           team = task.team,
+                           current_user = db.session.get(User, session["user_id"]))
 
 @app.route("/team/<int:team_id>/task/<int:id>/add_subtask", methods = ["POST"])
 @login_required
@@ -912,12 +943,7 @@ def get_message():
     visible_time = visibility.visible_since if visibility else dt.datetime.min
     # receiver_id = 2 if current_user_id == 1 else 1
     messages = Message.query.filter((((Message.sender_id == current_user_id) & (Message.receiver_id == other_user_id)) | ((Message.sender_id == other_user_id) & (Message.receiver_id == current_user_id))) & (Message.timestamp >= visible_time)).order_by(Message.timestamp.asc()).all()
-    def get_current_user():
-        user_id = session.get("user_id", None)
-        if user_id:
-            return db.session.get(User, user_id)
-        return None
-    return render_template("message.html", messages = messages, current_user_id = current_user_id, other_user = other_user, current_user=get_current_user())
+    return render_template("message.html", messages = messages, current_user_id = current_user_id, other_user = other_user)
 
 @app.route("/delete_message/<int:message_id>")
 @login_required
@@ -1091,6 +1117,39 @@ def delete_screenshot(team_id, screenshot_index):
         db.session.commit()
     return redirect(url_for('project_page', team_id = team.id))
 
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+@app.route("/feedback", methods = ["GET", "POST"])
+@login_required
+def feedback():
+    if request.method == "POST":
+        message = request.form.get("message")
+        if not message:
+            if request.headers.get('HX-Request'):
+                return '<div id="feedback-container">Please enter a message. <button hx-get="/feedback" ...>Go back</button></div>'
+            flash("Please enter a message.", "error")
+            return redirect(url_for("feedback"))
+        if request.headers.get('HX-Request'):
+            return '''
+                <div id="feedback-container" style="max-width:600px; margin:2rem auto; text-align:center; ...">
+                    <h2>Thank you!</h2>
+                    <p>Your feedback has been sent.</p>
+                    <button hx-get="/feedback" hx-target="#feedback-container" hx-swap="outerHTML">Send another</button>
+                </div>
+            '''
+        flash("Thank you! Your feedback has been sent.", "success")
+        return redirect(url_for("feedback"))
+    return render_template("feedback.html")
+
+@app.route("/faq")
+def faq():
+    return render_template("faq.html")
+
+@app.route("/help")
+def help_page():
+    return render_template("help.html")
 # nx - organizer management system------------------------------------------------------------------------------
 @app.route("/organizer/<int:event_id>/dashboard")
 @login_required
@@ -1174,3 +1233,4 @@ def export_data_csv(event_id):
     # tell the browser this is a csv file and use utf-8 encoding
     response.headers["Content-Type"] = "text/csv; charset = utf-8"
     return response
+

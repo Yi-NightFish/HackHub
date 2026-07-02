@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback | HackHub{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; margin: 2rem auto;">
+    <h1>We value your feedback</h1>
+    <form method="POST">
+        <textarea name="message" rows="5" placeholder="Your thoughts..." required style="width:100%; padding:0.8rem; border-radius:12px; border:1px solid #ccc;"></textarea>
+        <button type="submit" style="margin-top:1rem; background:#3b82f6; color:white; border:none; padding:0.6rem 1.2rem; border-radius:40px; cursor:pointer;">Send Feedback</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,27 +1,14 @@
-{% extends "base.html" %}
-
-{% block title %}OTP Verification{% endblock %}
-
-{% block content %}
-<div class="max-w-md mx-auto">
-    <div class="card bg-base-200 shadow-lg">
-        <div class="card-body">
-            <h2 class="card-title">OTP Verification</h2>
-            <p class="text-sm text-base-content/70">Enter the OTP sent to <strong>{{ email }}</strong></p>
-
-            <form method="POST" class="space-y-4">
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">One-time password</span>
-                    </label>
-                    <input type="text" name="otp" placeholder="Enter OTP" required class="input input-bordered w-full" />
-                </div>
-
-                <div class="card-actions justify-end">
-                    <button type="submit" class="btn btn-primary">Verify OTP</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-{% endblock %}
+<!DCOTYPE html>
+<html>
+<head>
+    <title>OTP</title>
+</head>
+<body>
+    <h1>OTP Verification</h1>
+<form method="POST">
+    <p>Enter the OTP sent to {{email}}</p>
+    <input type="text" name="otp" placeholder="Enter OTP" required>
+    <button type="submit">Verify OTP</button>
+</form>
+</body>
+</html>

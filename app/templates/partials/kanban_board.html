@@ -1,0 +1,57 @@
+<div class="kanban-board" id="kanban-board-container">
+    {% for column_status in ["Wishlist", "To Do", "In Progress", "In Review", "Complete"] %}
+    <div class="kanban-column">
+        <div class="column-header status-{{ column_status|lower|replace(' ', '-') }}">
+            <h2>{{ column_status }}</h2>
+            <label for="create-modal-toggle" class="column-add-btn" title="Add task to {{ column_status }}">+</label>
+        </div>
+        <div class="kanban-cards-dropzone">
+            {% set tasks_in_column = tasks|selectattr("status", "equalto", column_status)|list %}
+            {% for task in tasks_in_column %}
+            {% set is_overdue = (not task.is_done) and (task.status in ['To Do', 'In Progress']) and task.deadline and task.deadline < datetime.datetime.now() %}
+            <div class="task-card {% if is_overdue %}overdue-card{% endif %}">
+                <a class="task-card-link" href="{{ url_for('task_details', team_id=team.id, id=task.id) }}">
+                    <h3>{{ task.title }}</h3>
+                    <p><strong>Assigned:</strong> {{ task.assigned_user.name if task.assigned_user else 'No assignee' }}</p>
+                    <p>
+                        <strong>Priority:</strong>
+                        {% if task.priority %}
+                        <span class="badge {{ task.priority|lower }}">{{ task.priority }}</span>
+                        {% else %}No priority{% endif %}
+                    </p>
+                    <p><strong>Deadline:</strong> {{ task.deadline.strftime('%d %b %Y') if task.deadline else 'No deadline' }}</p>
+                    {% if is_overdue %}<p class="overdue-text">Overdue</p>{% endif %}
+                </a>
+
+                <div class="kanban-quick-actions">
+                    <select name="value" 
+                            hx-post="{{ url_for('autosave_task', id=task.id) }}"
+                            hx-trigger="change" 
+                            hx-vals='{"field":"status"}'
+                            hx-target="#kanban-board-container"
+                            hx-swap="innerHTML"
+                            class="kanban-status-select">
+                        <option value="Wishlist" {% if task.status=="Wishlist" %}selected{% endif %}>Move to: Wishlist</option>
+                        <option value="To Do" {% if task.status=="To Do" %}selected{% endif %}>Move to: To Do</option>
+                        <option value="In Progress" {% if task.status=="In Progress" %}selected{% endif %}>Move to: In Progress</option>
+                        <option value="In Review" {% if task.status=="In Review" %}selected{% endif %}>Move to: In Review</option>
+                        <option value="Complete" {% if task.status=="Complete" %}selected{% endif %}>Move to: Complete</option>
+                    </select>
+                </div>
+
+                <div class="task-actions">
+                    <form method="POST" action="{{ url_for('toggle_task', team_id=team.id, id=task.id) }}">
+                        <button type="submit">{% if task.is_done %}↩Undo{% else %}Done{% endif %}</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('delete_task', team_id=team.id, id=task.id) }}">
+                        <button type="submit" onclick="return confirm('Delete this task?')">Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-column">No tasks</div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>

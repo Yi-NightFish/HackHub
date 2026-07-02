@@ -26,3 +26,10 @@ class EventForm(FlaskForm):
     end_time = DateTimeLocalField("End Time", format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
     deadline = DateTimeLocalField("Registration Deadline", format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
     submit = SubmitField("Save Event")
+
+class SetupProfileForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
+    university = StringField("University")
+    skills = StringField("Skills")
+    github_link = StringField("GitHub Link")
+    submit = SubmitField("Complete Setup")

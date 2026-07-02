@@ -3,6 +3,10 @@ import datetime
 import datetime as dt
 import sqlalchemy as sa
 
+def _utcnow():
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=True)
@@ -208,3 +212,10 @@ class Project(db.Model):
     
     def __repr__(self):
         return f'<Project {self.title}>'
+    
+class Feedback(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True) 
+    message = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=_utcnow)
+    user = db.relationship('User', backref='feedbacks')

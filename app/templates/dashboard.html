@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+
+    <div class="welcome-card">
+        <h1>Welcome Back</h1>
+        <h2>{{ user.name or user.email }}</h2>
+        <p>Manage your events, teams and tasks in one place.</p>
+    </div>
+
+<div class="stats-grid">
+    <a href="#joined-events-target" class="stat-card-link" style="text-decoration: none; color: inherit; display: block;">
+        <div class="stat-card">
+            <h4>Joined Events</h4>
+            <p>{{ joined_events|length }}</p>
+        </div>
+    </a>
+
+    <a href="#joined-teams-target" class="stat-card-link" style="text-decoration: none; color: inherit; display: block;">
+        <div class="stat-card">
+            <h4>Joined Teams</h4>
+            <p>{{ joined_teams|length }}</p>
+        </div>
+    </a>
+
+    <a href="#active-workspaces-target" class="stat-card-link" style="text-decoration: none; color: inherit; display: block;">
+        <div class="stat-card">
+            <h4>Active Workspace</h4>
+            <p>{{ joined_teams|length }}</p>
+        </div>
+    </a>
+</div>
+
+    <div class="dashboard-section">
+        <h2>Overdue Tasks</h2>
+        <div class="list-container">
+            {% for task in overdue_tasks %}
+                <a href="{{ url_for('task_details', team_id=task.team_id, id=task.id) }}" class="overdue-item task-flex-row clickable-row-box" style="text-decoration: none; color: inherit;">
+                    <div>
+                        <strong class="item-title" style="color: #ef4444;">{{ task.title }}</strong>
+                        {% if task.deadline %}
+                            <p class="item-subtitle">Due: {{ task.deadline.strftime('%d %b %Y') }}</p>
+                        {% endif %}
+                    </div>
+                </a>
+            {% else %}
+                <p class="empty-notice">You have no overdue tasks right now.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+<div class="dashboard-two-columns">
+        
+        <div id="joined-teams-target" class="dashboard-section column-box">
+            <h2>Joined Teams</h2>
+            <div class="list-container">
+                {% for p in joined_teams %}
+                    {% if p.team %}
+                        <a href="{{ url_for('team_detail', team_id=p.team_id) }}" class="list-item-row clickable-row-box" style="text-decoration: none; color: inherit;">
+                            <span class="item-name">{{ p.team.name }} <small class="item-role">({{ p.roles or 'Member' }})</small></span>
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <p class="empty-notice">You haven't joined any teams yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div id="joined-events-target" class="dashboard-section column-box">
+            <h2>Joined Events</h2>
+            <div class="list-container">
+                {% for p in joined_events %}
+                    {% if p.event %}
+                        <a href="{{ url_for('explore', search=p.event.title) }}" class="list-item-row clickable-row-box" style="text-decoration: none; color: inherit;">
+                            <span class="item-name">{{ p.event.title }}</span>
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <p class="empty-notice">You haven't joined any events yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+<div id="active-workspaces-target" class="dashboard-section">
+        <h2>Active Workspaces</h2>
+        <div class="list-container">
+            {% for p in joined_teams %}
+                {% if p.team %}
+                    <a href="{{ url_for('tasks', team_id=p.team_id) }}" class="workspace-item task-flex-row clickable-row-box" style="text-decoration: none; color: inherit;">
+                        <div>
+                            <strong class="item-title">{{ p.team.name }} Workspace</strong>
+                            <p class="item-subtitle">Event Assignment: {{ p.event.title if p.event else 'General' }}</p>
+                        </div>
+                    </a>
+                {% endif %}
+            {% else %}
+                <p class="empty-notice">No active workspaces available. Join a team to get started!</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="dashboard-section">
+        <div class="action-grid">
+            
+            <a href="{{ url_for('explore') }}" class="action-card">
+               <h3>Events</h3>
+                <p>Browse and explore newly opening hackathons and challenges.</p>
+            </a>
+
+            <a href="{{ url_for('teams') }}" class="action-card">
+                <h3>Join Team</h3>
+                <p>Find teammates looking for your specific skills.</p>
+            </a>
+
+            <a href="{{ url_for('create_team') }}" class="action-card">
+                <h3>Create Team</h3>
+                <p>Form a new group squad and manage custom tasks.</p>
+            </a>
+            
+        </div>
+    </div>
+
+</div>
+{% endblock %}

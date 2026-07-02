@@ -1,0 +1,191 @@
+/* Homepage specific styles */
+.hero {
+    padding: 4rem 0 5rem;
+    background: white;
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.hero-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3rem;
+    justify-content: space-between;
+}
+
+.hero-text {
+    flex: 1;
+    min-width: 280px;
+}
+
+.hero-text h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #1e293b, #3b82f6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.hero-text p {
+    font-size: 1.2rem;
+    color: #475569;
+    margin-bottom: 2rem;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.hero-image {
+    flex: 1;
+    background: linear-gradient(145deg, #eef2ff, #e0e7ff);
+    border-radius: 2rem;
+    padding: 2rem;
+    text-align: center;
+    font-size: 6rem;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 0.6rem 1.4rem;
+    border-radius: 40px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary {
+    background: lightblue;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2563eb;
+    transform: scale(0.97);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #cbd5e1;
+    color: #1e293b;
+}
+
+.btn-outline:hover {
+    background: #f1f5f9;
+}
+
+.btn-cta {
+    background: #facc15;
+    color: #1e293b;
+}
+
+.btn-cta:hover {
+    background: #eab308;
+}
+
+/* Section title */
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 2rem 0 1.5rem;
+}
+
+/* Card grid */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.event-card {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: all 0.2s;
+    border: 1px solid #edf2f7;
+}
+
+.event-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1);
+}
+
+.event-tag {
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 0.2rem 0.8rem;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.event-card h3 {
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+}
+
+.event-detail {
+    color: #4b5563;
+    margin: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* CTA banner */
+.cta-banner {
+    background: linear-gradient(110deg, #1e293b, #0f172a);
+    color: white;
+    margin: 3rem 2rem;
+    border-radius: 2rem;
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.cta-banner h2 {
+    font-size: 2rem;
+}
+
+.cta-banner p {
+    margin: 1rem 0 1.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-grid {
+        flex-direction: column;
+        text-align: center;
+    }
+    .hero-text h1 {
+        font-size: 2.2rem;
+    }
+    .hero-buttons {
+        justify-content: center;
+    }
+    .container {
+        padding: 0 1rem;
+    }
+    .section-title {
+        font-size: 1.8rem;
+    }
+}

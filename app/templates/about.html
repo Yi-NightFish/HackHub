@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}About HackHub{% endblock %}
+
+{% block content %}
+<div class="about-container">
+    <div class="about-header">
+        <h1>About HackHub</h1>
+        <p class="tagline">Your launchpad into the world of hackathons</p>
+    </div>
+
+    <div class="about-section">
+        <h2>Our Mission</h2>
+        <p>Many beginners, especially students like us, lack a clear entry point into hackathons, which can make the experience feel intimidating and confusing. Despite this, hackathons are highly valuable as they allow beginners to learn practical skills, collaborate with others, and apply knowledge to real-world problems in a hands-on environment. They also help build strong portfolios and improve resumes.</p>
+        <p><strong>HackHub aims to bridge this gap</strong> by providing a structured and beginner-friendly platform that guides users through joining events, forming teams, and developing projects, making hackathons more accessible and less overwhelming for newcomers.</p>
+    </div>
+
+    <div class="about-section">
+        <h2>What We Offer</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>Discover Events</h3>
+                <p>Browse and join hackathons tailored to beginners. Filter by status, date, and topic.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Team Formation</h3>
+                <p>Create teams, invite members with a unique code, or find solo participants to team up with.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Task Management</h3>
+                <p>Collaborate with your team using shared checklists, assign tasks, set priorities, and track deadlines.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Real-time Chat</h3>
+                <p>Communicate with teammates and other participants through our built-in messaging system.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Project Gallery</h3>
+                <p>Showcase your final projects with screenshots, links, and tech stacks. Get likes and comments from the community.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Organizer Tools</h3>
+                <p>Host your own hackathon, post announcements, monitor participants, and export data for evaluation.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="about-section">
+        <h2>Who We Serve</h2>
+        <div class="audience-boxes">
+            <div class="audience-box">
+                <h3>Students & Beginners</h3>
+                <p>If you're new to hackathons, HackHub gives you everything you need: easy event discovery, team matching, task tracking, and a supportive community.</p>
+            </div>
+            <div class="audience-box">
+                <h3>Organizers & Clubs</h3>
+                <p>Running a hackathon? Use our platform to manage registrations, communicate with participants, track team progress, and generate reports.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="about-section">
+        <h2>How It Works</h2>
+        <ol class="steps-list">
+            <li><strong>Create an account</strong> - sign up with email, verify OTP, and complete your profile.</li>
+            <li><strong>Explore events</strong> - find upcoming hackathons that match your interests and skill level.</li>
+            <li><strong>Join or form a team</strong> - either join an existing team using a code, create your own team, or start solo.</li>
+            <li><strong>Collaborate</strong> - use the task board, chat, and project page to work with your teammates.</li>
+            <li><strong>Submit your project</strong> - showcase your work in the project gallery and get feedback from the community.</li>
+        </ol>
+    </div>
+
+    <div class="about-section">
+        <h2>Our Team</h2>
+        <p>HackHub was created by a group of passionate students from MMU who experienced the challenges of joining hackathons firsthand. We believe that everyone deserves a fair chance to learn, build, and shine - and we built HackHub to make that happen.</p>
+        <p>If you'd like to contribute or have suggestions, feel free to <a href="{{ url_for('feedback') }}">send us feedback</a> or reach out via our social channels.</p>
+    </div>
+
+    <div class="about-cta">
+        <h3>Ready to start your hackathon journey?</h3>
+        <div class="cta-buttons">
+            <a href="{{ url_for('explore') }}" class="btn-primary">Explore Hackathons</a>
+            <a href="{{ url_for('register') }}" class="btn-outline">Join HackHub</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .about-container {
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+    }
+    .about-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+    .about-header h1 {
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, #1e293b, #3b82f6);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 0.5rem;
+    }
+    .tagline {
+        font-size: 1.2rem;
+        color: #475569;
+    }
+    .about-section {
+        margin-bottom: 2.5rem;
+    }
+    .about-section h2 {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        color: #0f172a;
+        border-left: 4px solid #3b82f6;
+        padding-left: 1rem;
+    }
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+    .feature-card {
+        background: white;
+        padding: 1.2rem;
+        border-radius: 1rem;
+        border: 1px solid #e2e8f0;
+        transition: transform 0.2s;
+    }
+    .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    }
+    .feature-icon {
+        font-size: 2rem;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+    .feature-card h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+    .audience-boxes {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+    .audience-box {
+        flex: 1;
+        background: #f8fafc;
+        padding: 1.2rem;
+        border-radius: 1rem;
+        border: 1px solid #e2e8f0;
+    }
+    .steps-list {
+        padding-left: 1.5rem;
+    }
+    .steps-list li {
+        margin-bottom: 0.8rem;
+        line-height: 1.5;
+    }
+    .about-cta {
+        background: linear-gradient(135deg, #f1f5f9, #eef2ff);
+        text-align: center;
+        padding: 2rem;
+        border-radius: 1.5rem;
+        margin-top: 2rem;
+    }
+    .about-cta h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .btn-primary {
+        background: #3b82f6;
+        color: white;
+        padding: 0.6rem 1.2rem;
+        border-radius: 40px;
+        text-decoration: none;
+    }
+    .btn-outline {
+        border: 1px solid #cbd5e1;
+        background: white;
+        color: #1e293b;
+        padding: 0.6rem 1.2rem;
+        border-radius: 40px;
+        text-decoration: none;
+    }
+    @media (max-width: 640px) {
+        .about-header h1 { font-size: 1.8rem; }
+        .about-section h2 { font-size: 1.4rem; }
+    }
+</style>
+{% endblock %}

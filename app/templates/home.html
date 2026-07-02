@@ -1,7 +1,58 @@
 {% extends "base.html" %}
 
-{% block title %}Home | Hackhub{% endblock %}
+{% block title %}HackHub - Beginner-Friendly Hackathon Platform{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
 
 {% block content %}
-<h1>HackHub - A central place for hackathon events!</h1>
+<!-- Hero section -->
+<section class="hero">
+    <div class="container hero-grid">
+        <div class="hero-text">
+            <h1>Your launchpad into hackathons</h1>
+            <p>Join beginner-friendly events, find teammates, build projects, and level up — all in one place.</p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('explore') }}" class="btn btn-primary">Explore hackathons</a>
+                <a href="{{ url_for('create_event') }}" class="btn btn-outline">Host an event</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <h2 class="section-title">Upcoming hackathons</h2>
+    {% if featured_events %}
+    <div class="card-grid">
+        {% for event in featured_events %}
+        <div class="event-card">
+            <span class="event-tag">
+                {% if event.deadline and event.deadline > now %}Open{% else %}Ongoing{% endif %}
+            </span>
+            <h3>{{ event.title }}</h3>
+            <div class="event-detail">
+                {% if event.start_time %}{{ event.start_time.strftime('%d %b %Y') }}{% else %}TBD{% endif %}
+                {% if event.end_time %} - {{ event.end_time.strftime('%d %b %Y') }}{% endif %}
+            </div>
+            <div class="event-detail">
+                {{ event.participants|length if event.participants else 0 }} participants
+            </div>
+            <p>{{ event.description[:120] }}{% if event.description|length > 120 %}…{% endif %}</p>
+            <a href="{{ url_for('event_detail', event_id=event.id) }}" class="btn btn-primary">View event →</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-events-message">
+        <p>No upcoming hackathons at the moment. Be the first to <a href="{{ url_for('create_event') }}">host an event</a>!</p>
+    </div>
+    {% endif %}
+</div>
+
+<div class="cta-banner">
+    <h2>Ready to host your own hackathon?</h2>
+    <p>Organizers can post announcements, track participants, and export results.</p>
+    <a href="{{ url_for('create_event') }}" class="btn btn-cta">Get started as organizer →</a>
+</div>
 {% endblock %}
