@@ -13,16 +13,6 @@
                         <svg class="h-5 opacity-50" xmlns="http://w3.org" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                         <input type="email" required placeholder="Email" class="w-full" id="login-identifier" name="email"/>
                     </label>
-                    <label class="opacity-50 text-xs">
-                        <input type="checkbox" class="toggle toggle-xs" 
-                               onChange="
-                                    const input = document.getElementById('login-identifier');
-                                    input.placeholder = this.checked ? 'Username' : 'Email';
-                                    input.type = this.checked ? 'text' : 'email';
-                                    input.name = this.checked ? 'username' : 'email'
-                               " />
-                        Use username
-                    </label>
                 </div>
 
                 <div class="form-control">
