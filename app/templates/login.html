@@ -3,34 +3,66 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto">
-    <div class="card bg-base-200 shadow-lg m-0">
-        <div class="card-body">
-            <h2 class="card-title">Log In</h2>
-            <form method="POST" class="space-y-4 mb-2">
+<!-- Page wrapper with the custom background and neo-brutalist centering -->
+<div class="min-h-screen flex items-center justify-center p-4" style="background-color: #FFFDF6;">
+    
+    <!-- Main Container: Flex/Grid layout separating form (left) and image (right) -->
+    <!-- Styled with neo-brutalist thick borders and a hard, unblurred shadow -->
+    <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 border-4 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-none overflow-hidden">
+        
+        <!-- Left Side: Login Form -->
+        <div class="p-8 md:p-12 flex flex-col justify-center border-b-4 md:border-b-0 md:border-r-4 border-black">
+            <h2 class="text-3xl font-black uppercase tracking-tight mb-6 text-black">Log In</h2>
+            
+            <form method="POST" class="space-y-6">
+                <!-- Email Input Group -->
                 <div class="form-control">
-                    <label class="input validator w-full border-2">
-                        <svg class="h-5 opacity-50" xmlns="http://w3.org" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        <input type="email" required placeholder="Email" class="w-full" id="login-identifier" name="email"/>
-                    </label>
+                    <label class="block text-sm font-bold uppercase mb-2 text-black" for="login-identifier">Email Address</label>
+                    <div class="flex items-center gap-3 p-3 bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                        <svg class="h-5 w-5 text-black shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <input type="email" required placeholder="you@example.com" class="w-full bg-transparent font-medium text-black border-none focus:outline-none placeholder:text-gray-400" id="login-identifier" name="email"/>
+                    </div>
                 </div>
 
+                <!-- Password Input Group -->
                 <div class="form-control">
-                    <label class="input validator w-full border-2">
-                        <svg class="h-[1em] opacity-50" xmlns="http://w3.org" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                        <input type="password" required placeholder="Password" name="password"/>
-                    </label>
+                    <label class="block text-sm font-bold uppercase mb-2 text-black">Password</label>
+                    <div class="flex items-center gap-3 p-3 bg-white border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                        <svg class="h-5 w-5 text-black shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        <input type="password" required placeholder="••••••••" class="w-full bg-transparent font-medium text-black border-none focus:outline-none placeholder:text-gray-400" name="password"/>
+                    </div>
                 </div>
 
-                <div class="flex items-center justify-between">
-                    <a href="{{ url_for('forget') }}" class="link link-primary">Forgot Password?</a>
-                    <button type="submit" class="btn btn-primary">Login</button>
+                <!-- Actions Area -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+                    <a href="{{ url_for('forget') }}" class="text-sm font-bold uppercase underline decoration-2 text-black">Forgot Password?</a>
+                    
+                    <!-- Static Neo-brutalist Button (No animations/transitions/shifts) -->
+                    <button type="submit" class="w-full sm:w-auto px-6 py-3 bg-[#FFAE00] text-black font-black uppercase tracking-wider border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer">
+                        Login →
+                    </button>
                 </div>
             </form>
 
-            <div class="divider">Or</div>
-            <p class="text-center">Don't have an account? <a href="{{ url_for('register') }}" class="link link-primary">Register here</a></p>
+            <!-- Divider & Footer Link -->
+            <div class="border-t-2 border-dashed border-black my-6"></div>
+            <p class="text-center font-bold text-sm uppercase text-black">
+                Don't have an account? 
+                <a href="{{ url_for('register') }}" class="underline decoration-2 text-black">Register here</a>
+            </p>
         </div>
+
+        <!-- Right Side: Image Container with Empty Attribution Placeholder -->
+        <div class="hidden md:flex md:flex-col bg-black relative min-h-[400px]">
+            <div class="flex-1 relative">
+                <img src="{{ url_for('static', filename='/images/login_pic.jpg') }}" alt="Login Visual" class="absolute inset-0 w-full h-full object-cover" />
+            </div>
+            <!-- Neo-brutalist Attribution Block (Static, no animations) -->
+            <div class="p-2 text-left bg-white">
+                <span class="text-xs uppercase tracking-wider text-black/25">Photo by: www.magnific.com</span>
+            </div>
+        </div>
+        
     </div>
 </div>
 {% endblock %}
