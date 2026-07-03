@@ -84,13 +84,13 @@
       <p>Please <a href="{{ url_for('login', next = request.url) }}">log in</a> to view participant details.</p>
     {% endif %}
   {% elif active_tab == "teams" %}
-    {% if teams %}
-      <div class="event-teams">
-        {% if enrolled and not in_team %}
-          <div class = "create-team-btn">
-            <a href = '{{ url_for("create_team_for_event", event_id = event.id) }}' class = ".create-team-btn">Create Team</a>
-          </div>
-        {% endif %}
+    <div class="event-teams">
+      {% if enrolled and not in_team %}
+        <div class="create-team-btn">
+          <a href='{{ url_for("create_team_for_event", event_id = event.id) }}' class="create-team-btn">Create Team</a>
+        </div>
+      {% endif %}
+      {% if teams %}
         {% for team in teams %}
           <div class="team-card">
             <h3><a href="{{ url_for('team_detail', team_id=team.id) }}">{{ team.name }}</a></h3>
@@ -99,10 +99,10 @@
             <p><strong>Project:</strong> {{ team.project_idea or "N/A" }}</p>
           </div>
         {% endfor %}
-      </div>
-    {% else %}
-      <p>No teams have been created for this event yet.</p>
-    {% endif %}
+      {% else %}
+        <p>No teams have been created for this event yet.</p>
+      {% endif %}
+    </div>
   {% elif active_tab == "solo" %}
     <div style="margin-bottom: 15px; color: #666; font-size: 0.9em;">
       Showing <strong>{{ soloists|length }}</strong> {% if soloists|length == 1 %}soloist{% else %}soloists{% endif %} looking for a team
