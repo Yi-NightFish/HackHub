@@ -933,7 +933,7 @@ def get_message():
         # seen
         message.is_read = True
     if user:
-        user.last_seen = dt.datetime.now(dt.UTC).replace(tzinfo=None)
+        user.last_seen = dt.datetime.now()
     db.session.commit()
     visibility = ChatVisibility.query.filter_by(user_id = current_user_id, other_user_id = other_user_id).first()
     # auto unhide chat
@@ -943,7 +943,7 @@ def get_message():
     visible_time = visibility.visible_since if visibility else dt.datetime.min
     # receiver_id = 2 if current_user_id == 1 else 1
     messages = Message.query.filter((((Message.sender_id == current_user_id) & (Message.receiver_id == other_user_id)) | ((Message.sender_id == other_user_id) & (Message.receiver_id == current_user_id))) & (Message.timestamp >= visible_time)).order_by(Message.timestamp.asc()).all()
-    return render_template("message.html", messages = messages, current_user_id = current_user_id, other_user = other_user)
+    return render_template("message.html", messages = messages, current_user_id = current_user_id, other_user = other_user, current_user = user)
 
 @app.route("/delete_message/<int:message_id>")
 @login_required
@@ -958,33 +958,10 @@ def delete_message(message_id):
     if message and message.sender_id == current_user_id:
             message.is_deleted = True
             db.session.commit()
-    #         other_user_id = message.receiver_id
-    #     else:
-    #         other_user_id = message.receiver_id if message.sender_id == current_user_id else message.sender_id
-    # else:
-    #     return "", 404
 
-    
-    # other_user_id = message.receiver_id if message.sender_id == current_user_id else message.sender_id
-
-    # if message.sender_id == current_user_id:
-    #     message.deleted_by_sender = True
-    # if message.receiver_id == current_user_id:
-    #     message.deleted_by_receiver = True
-    # if message.deleted_by_sender and message.deleted_by_receiver:
-    #     db.session.delete(message)
-    # if message.sender_id == current_user_id:
-    #     message.is_deleted = True
-    #     db.session.commit()
-
-    if request.headers.get("HX-Request"):
-        now_str = dt.datetime.now().strftime("%H:%M")
-        # other_user_id = message.receiver_id if message.sender_id == current_user_id else message.sender_id
-        # other_user = db.session.get(User, other_user_id)
-        # visibility = ChatVisibility.query.filter_by(user_id = current_user_id, other_user_id = other_user_id).first()
-        # visible_time = visibility.visible_since if visibility else dt.datetime.min
-        # messages = Message.query.filter((((Message.sender_id == current_user_id) & (Message.receiver_id == other_user_id)) | ((Message.sender_id == other_user_id) & (Message.receiver_id == current_user_id))) & (Message.timestamp >= visible_time)).order_by(Message.timestamp.asc()).all()
-        return render_template("deleted_hint.html", now_str = now_str) #局部更新，前端htmx负责把这个提示替换掉被删除的消息
+            if request.headers.get("HX-Request"):
+                now_str = dt.datetime.now().strftime("%H:%M")
+                return render_template("deleted_hint.html", now_str = now_str) #局部更新，前端htmx负责把这个提示替换掉被删除的消息
 
     return redirect(request.referrer)
 # wy - project page -----------------------------------------------------------------------------------
