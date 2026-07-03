@@ -33,7 +33,7 @@
                     <div id="msg-{{ msg.id }}" class="chat mb-4 opacity-60 {% if is_me %}chat-end{% else %}chat-start{% endif %}">
                         <div class="chat-image avatar">
                             <div class="w-10 rounded-full border border-base-300/50 bg-base-100 shadow-sm flex items-center justify-center">
-                                <svg data-jdenticon-value="{{ other_user.name }}" class="w-full h-full p-1"></svg>
+                                <svg data-jdenticon-value="{{ current_user.name if is_me else other_user.name }}" class="w-full h-full p-1"></svg>
                             </div>
                         </div>
                         <div class="chat-header text-xs opacity-50 mb-1">
