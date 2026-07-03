@@ -389,7 +389,7 @@ def tasks(team_id):
     completed_tasks = len([t for t in tasks_results if t.is_done])
     percentage = int((completed_tasks / total_tasks) * 100) if total_tasks > 0 else 0
     if request.headers.get("HX-Request"):
-        return render_template("partials/task_list.html", tasks = tasks_results, datetime = dt, team_id = team_id)
+        return render_template("partials/kanban_board.html", tasks = tasks_results, datetime = dt, team = team)
     # wy
     return render_template("tasks.html", 
                            form = form,
