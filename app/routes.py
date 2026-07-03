@@ -229,6 +229,8 @@ def logout():
 @login_required
 def dashboard():
     user = db.session.get(User, session["user_id"])
+    if not user:
+        return redirect(url_for("login"))
     joined_events = Participation.query.filter_by(user_id = user.id).all()
     joined_teams = Participation.query.filter(Participation.user_id == user.id,
                                               Participation.team_id != None).all()
@@ -568,6 +570,8 @@ def edit_subtask(team_id, sub_id):
 def toggle_subtask(team_id, sub_id):
     subtask = Subtask.query.get(sub_id)
     subtask.is_done = not subtask.is_done
+    if not subtask:
+        return "Subtask not found"
     db.session.commit()
     return redirect(url_for("task_details", team_id = team_id, id = subtask.task_id))
 # --------------------------------------------------------------------------------------------------------
