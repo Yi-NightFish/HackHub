@@ -1,6 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-
+<div style="max-width: 1000px; margin: 0 auto; padding: 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div style="display: flex; gap: 10px; align-items: center;">
+      {% if is_organizer and first_event_id %}
+      <a href="{{ url_for('organizer_dashboard', event_id=first_event_id) }}" 
+         style="background: #277639; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.95em; transition: background 0.2s; white-space: nowrap;">
+         Organizer Dashboard
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+  
 <div class="relative w-full min-h-screen bg-[#FFFDF6] text-black pb-16 overflow-x-hidden">
   
   <!-- BACKGROUND: Abstract Irregular Neobrutalist Shapes -->
