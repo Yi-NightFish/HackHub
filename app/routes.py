@@ -134,6 +134,15 @@ def create_team_for(events = None):
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in current_app.config["ALLOWED_EXTENSIONS"]
 
+# let all templates have access to current_user
+@app.context_processor
+def inject_current_user():
+    current_user_id = session.get("user_id")
+    if current_user_id:
+        user = db.session.get(User, current_user_id)
+        return dict(current_user=user)  # 這樣全站的 HTML 都能直接用 {{ current_user }}
+    return dict(current_user=None)
+
 # Main routes
 @app.route("/")
 def home():
@@ -211,7 +220,7 @@ def logout():
     if user_id:
         user = db.session.get(User, user_id)
         if user:
-            user.last_seen = dt.datetime.now(dt.UTC).replace(tzinfo=None) - dt.timedelta(minutes=2)  # Set last seen to 2 minutes ago to mark as offline
+            user.last_seen = dt.datetime.now() - dt.timedelta(minutes=2)  # Set last seen to 2 minutes ago to mark as offline
             db.session.commit()
     session.clear()
     return redirect(url_for("home"))
@@ -1211,3 +1220,13 @@ def export_data_csv(event_id):
     response.headers["Content-Type"] = "text/csv; charset = utf-8"
     return response
 
+# keep track of user activity
+@app.route("/active")
+@login_required
+def user_active():
+    current_user_id = session.get("user_id")
+    user = db.session.get(User, current_user_id)
+    if user:
+        user.last_seen = dt.datetime.now()
+        db.session.commit()
+    return "", 204  # 回傳 204 No Content，前端畫面完全不會有任何變化

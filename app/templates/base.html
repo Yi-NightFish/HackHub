@@ -56,7 +56,9 @@
             </div>
         </div>
     </footer>
-
+    {% if current_user %}
+    <div hx-get="/active" hx-trigger="every 5s" style="display:none;"></div>
+    {% endif %}
 </body>
 
 </html>
