@@ -1,109 +1,142 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8 max-w-4xl">
-  <div class="flex flex-col gap-4 mb-8">
-    <div>
-      <h1 class="text-4xl font-bold">Create New Event</h1>
-      <p class="text-base-content/70 mt-2">Use the form below to add a new event.</p>
-    </div>
-  </div>
+<!-- Neo-Brutalist Split Viewport - Constrained to viewport height minus standard navbar height -->
+<div class="h-[calc(100vh-4rem)] w-full grid md:grid-cols-2 font-mono overflow-hidden">
+  
+  <!-- Left Column: Muted Form Wrapper (Scrolls independently if vertical room runs out) -->
+  <div class="h-full flex flex-col justify-center px-6 py-6 sm:px-12 lg:px-16 bg-[#F0EFE9] overflow-y-auto">
+    <div class="mx-auto w-full max-w-xl my-auto">
+      
+      <!-- Header Block -->
+      <div class="mb-4">
+        <h1 class="text-4xl font-black uppercase tracking-tight text-black">Create New Event</h1>
+        <p class="text-black font-bold mt-1 text-xs uppercase tracking-wider opacity-60">Fill out the variables below.</p>
+      </div>
 
-  <div class="card bg-base-200 shadow-xl border border-base-300">
-    <div class="card-body gap-6">
-      <form method="POST" class="grid gap-6" novalidate>
+      <!-- Form Component -->
+      <form method="POST" class="grid gap-4" novalidate>
         {{ form.hidden_tag() }}
 
+        <!-- Event Name Field -->
         <div class="form-control w-full">
-          <label class="label">
-            <span class="label-text font-semibold">Event Title</span>
+          <label class="label p-1">
+            <span class="label-text font-black uppercase text-black text-[11px] tracking-wider">Event Name</span>
           </label>
           {% if form.title.errors %}
-            {{ form.title(class="input input-bordered input-error w-full") }}
-            <label class="label">
-              <span class="label-text-alt text-error">
+            {{ form.title(class="input input-bordered w-full rounded-none border-2 border-black bg-white focus:outline-none focus:bg-white text-black font-black text-base shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] input-error", placeholder="⚡ e.g., AI Hackathon") }}
+            <label class="label p-0">
+              <span class="label-text-alt font-bold uppercase text-error text-xs">
                 {% for error in form.title.errors %}{{ error }} {% endfor %}
               </span>
             </label>
           {% else %}
-            {{ form.title(class="input input-bordered w-full", required="") }}
+            {{ form.title(class="input input-bordered w-full rounded-none border-2 border-black bg-white focus:outline-none focus:bg-white text-black font-black text-base shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]", required="", placeholder="⚡ e.g., AI Hackathon") }}
           {% endif %}
         </div>
 
+        <!-- Description Field -->
         <div class="form-control w-full">
-          <label class="label">
-            <span class="label-text font-semibold">Description</span>
+          <label class="label p-1">
+            <span class="label-text font-black uppercase text-black text-[11px] tracking-wider">Description</span>
           </label>
           {% if form.description.errors %}
-            {{ form.description(class="textarea textarea-bordered textarea-error h-32 w-full", rows="5", required="") }}
-            <label class="label">
-              <span class="label-text-alt text-error">
+            {{ form.description(class="textarea textarea-bordered h-24 w-full rounded-none border-2 border-black bg-white focus:outline-none focus:bg-white text-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] textarea-error", rows="3", required="", placeholder="📝 Drop the context, agenda, or rules here...") }}
+            <label class="label p-0">
+              <span class="label-text-alt font-bold uppercase text-error text-xs">
                 {% for error in form.description.errors %}{{ error }} {% endfor %}
               </span>
             </label>
           {% else %}
-            {{ form.description(class="textarea textarea-bordered h-32 w-full", rows="5", required="") }}
+            {{ form.description(class="textarea textarea-bordered h-24 w-full rounded-none border-2 border-black bg-white focus:outline-none focus:bg-white text-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]", rows="3", required="", placeholder="📝 Drop the context, agenda, or rules here...") }}
           {% endif %}
         </div>
 
-        <div class="grid gap-4 md:grid-cols-2">
+        <!-- Dates Grid -->
+        <div class="grid gap-4 sm:grid-cols-2">
+          <!-- Deadline Field -->
           <div class="form-control w-full">
-            <label class="label">
-              <span class="label-text font-semibold">Registration Deadline</span>
+            <label class="label p-1">
+              <span class="label-text font-black uppercase text-black text-[11px] tracking-wider">Registration Deadline</span>
             </label>
             {% if form.deadline.errors %}
-              {{ form.deadline(class="input input-bordered input-error w-full", type="datetime-local", required="") }}
-              <label class="label">
-                <span class="label-text-alt text-error">
+              {{ form.deadline(class="input input-bordered w-full rounded-none border-2 border-black bg-white focus:outline-none focus:bg-white text-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] input-error", type="datetime-local", required="") }}
+              <label class="label p-0">
+                <span class="label-text-alt font-bold uppercase text-error text-xs">
                   {% for error in form.deadline.errors %}{{ error }} {% endfor %}
                 </span>
               </label>
             {% else %}
-              {{ form.deadline(class="input input-bordered w-full", type="datetime-local", required="") }}
+              {{ form.deadline(class="input input-bordered w-full rounded-none border-2 border-black bg-white focus:outline-none focus:bg-white text-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]", type="datetime-local", required="") }}
             {% endif %}
-            <span class="text-sm text-base-content/60">Must be before the event start time.</span>
+            <span class="text-[9px] text-black font-bold uppercase mt-1 opacity-60">Must precede start time.</span>
           </div>
 
+          <!-- Start Time Field -->
           <div class="form-control w-full">
-            <label class="label">
-              <span class="label-text font-semibold">Event Start</span>
+            <label class="label p-1">
+              <span class="label-text font-black uppercase text-black text-[11px] tracking-wider">Event Start</span>
             </label>
             {% if form.start_time.errors %}
-              {{ form.start_time(class="input input-bordered input-error w-full", type="datetime-local", required="") }}
-              <label class="label">
-                <span class="label-text-alt text-error">
+              {{ form.start_time(class="input input-bordered w-full rounded-none border-2 border-black bg-white focus:outline-none focus:bg-white text-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] input-error", type="datetime-local", required="") }}
+              <label class="label p-0">
+                <span class="label-text-alt font-bold uppercase text-error text-xs">
                   {% for error in form.start_time.errors %}{{ error }} {% endfor %}
                 </span>
               </label>
             {% else %}
-              {{ form.start_time(class="input input-bordered w-full", type="datetime-local", required="") }}
+              {{ form.start_time(class="input input-bordered w-full rounded-none border-2 border-black bg-white focus:outline-none focus:bg-white text-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]", type="datetime-local", required="") }}
             {% endif %}
           </div>
         </div>
 
+        <!-- End Time Field -->
         <div class="form-control w-full">
-          <label class="label">
-            <span class="label-text font-semibold">Event End</span>
+          <label class="label p-1">
+            <span class="label-text font-black uppercase text-black text-[11px] tracking-wider">Event End</span>
           </label>
           {% if form.end_time.errors %}
-            {{ form.end_time(class="input input-bordered input-error w-full", type="datetime-local", required="") }}
-            <label class="label">
-              <span class="label-text-alt text-error">
+            {{ form.end_time(class="input input-bordered w-full rounded-none border-2 border-black bg-white focus:outline-none focus:bg-white text-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] input-error", type="datetime-local", required="") }}
+            <label class="label p-0">
+              <span class="label-text-alt font-bold uppercase text-error text-xs">
                 {% for error in form.end_time.errors %}{{ error }} {% endfor %}
               </span>
             </label>
           {% else %}
-            {{ form.end_time(class="input input-bordered w-full", type="datetime-local", required="") }}
+            {{ form.end_time(class="input input-bordered w-full rounded-none border-2 border-black bg-white focus:outline-none focus:bg-white text-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]", type="datetime-local", required="") }}
           {% endif %}
-          <span class="text-sm text-base-content/60">End time should come after the start time.</span>
+          <span class="text-[9px] text-black font-bold uppercase mt-1 opacity-60">Must follow start time.</span>
         </div>
 
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          {{ form.submit(class="btn btn-primary w-full sm:w-auto") }}
-          <a href="{{ url_for('explore') }}" class="btn btn-outline w-full sm:w-auto">Cancel</a>
+        <!-- Action Buttons -->
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pt-2">
+          <!-- Create Button: Yellow text, Black background, Black shadow -> Pushes down on active -->
+          {{ form.submit(class="btn rounded-none border-2 border-black bg-yellow-300 text-black uppercase tracking-wider shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all w-full sm:w-auto px-8") }}
+          
+          <!-- Cancel Button: Black background, White text, Yellow-300 drop shadow -> Pushes down on active -->
+          <a href="{{ url_for('explore') }}" class="btn rounded-none border-2 border-black bg-white text-black uppercase tracking-wider shadow-[4px_4px_0px_0px_#fde047] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all w-full sm:w-auto text-center px-8">
+            Cancel
+          </a>
         </div>
       </form>
+      
     </div>
   </div>
+
+  <!-- Right Column: Image Window -->
+  <div class="hidden md:flex flex-col h-full w-full overflow-hidden relative">
+    <div class="flex-grow overflow-hidden">
+      <img 
+        src="{{ url_for('static', filename='/images/create_event_pic.jpg') }}" 
+        alt="Create Event" 
+        class="w-full h-full object-cover mix-blend-multiply"
+      />
+    </div>
+    <!-- Attribution Overlay/Footer -->
+    <div class="absolute bottom-4 right-4 px-3 py-1 text-[10px] font-bold uppercase text-black tracking-wider">
+      <span class="opacity-40 font-medium">photo by</span> www.magnific.com
+    </div>
+  </div>
+
 </div>
 {% endblock %}
