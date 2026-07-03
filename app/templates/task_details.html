@@ -190,7 +190,12 @@ Task Details
 
                 </section>
 
-                <section class="card">
+                <section class="card"
+                    hx-get="{{ url_for('task_details', team_id=task.team_id, id=task.id) }}"
+                    hx-trigger="htmx:afterOnLoad from:body"
+                    hx-select=".activity-list"
+                    hx-target=".activity-list"
+                    hx-swap="outerHTML">
 
                     <h2>Activity</h2>
 

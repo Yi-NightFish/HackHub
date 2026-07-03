@@ -422,14 +422,18 @@ def toggle_task(id):
     task = db.session.get(Task, id)
     if task is None:
         return "Task not found"
-    is_member = Participation.query.filter_by(team_id = task.team_id, user_id = session["user_id"]).first() is not None
+    is_member = Participation.query.filter_by(team_id = task.team_id, 
+                                              user_id = session["user_id"]).first() is not None
     if not is_member:
         return "You are not a member of this team"
     task.is_done = not task.is_done
+    session_key = f"previous_status_task_{task.id}"
     if task.is_done:
+        session[session_key] = task.status if task.status else "To Do"
         task.status = "Complete"
     else:
-        task.status = "To Do"
+        task.status = session.get(session_key, "To Do")
+        session.pop(session_key, None)
     db.session.commit()
     return redirect(url_for("tasks", team_id = task.team_id))
 
@@ -480,9 +484,11 @@ def autosave_task(id):
     if str(old_value) != str(new_value):
         add_task_activity(task.id, f"changed {field} from '{old_value}' to '{new_value}'")    
     db.session.commit()
-    team = task.team
-    tasks = Task.query.filter_by(team_id = team.id).all()
-    return render_template("partials/kanban_board.html", tasks = tasks, team = team, datetime = dt)
+    if request.headers.get("HX-Target") == "kanban-board-container":
+        team = task.team
+        tasks = Task.query.filter_by(team_id = team.id).all()
+        return render_template("partials/kanban_board.html", tasks = tasks, team = team, datetime = dt)
+    return ""
 
 @app.route("/team/<int:team_id>/task/<int:id>/details", methods = ["GET", "POST"])
 @login_required
