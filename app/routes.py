@@ -356,7 +356,12 @@ def verify_update_email():
 @app.route ("/team/<int:team_id>/tasks", methods = ["GET", "POST"])
 @login_required
 def tasks(team_id):
-    team = db.session.get(Team, team_id)   
+    team = db.session.get(Team, team_id)  
+    if not team:
+        return "Team not found"
+    is_member = Participation.query.filter_by(team_id = team.id, user_id = session["user_id"]).first() is not None
+    if not is_member:
+        return "You are not a member of this team" 
     form = TaskForm()
     # team_members = (db.session.query(User).join(TeamMember, TeamMember.user_id == User.id).filter(TeamMember.team_id == team.id).all())
     team_members = list(map(lambda member: member.user, team.members))
@@ -415,6 +420,9 @@ def toggle_task(id):
     task = db.session.get(Task, id)
     if task is None:
         return "Task not found"
+    is_member = Participation.query.filter_by(team_id = task.team_id, user_id = session["user_id"]).first() is not None
+    if not is_member:
+        return "You are not a member of this team"
     task.is_done = not task.is_done
     if task.is_done:
         task.status = "Complete"
@@ -426,6 +434,9 @@ def toggle_task(id):
 @app.route("/task/<int:id>/delete", methods = ["POST"])
 @login_required
 def delete_task(id):
+    is_member = Participation.query.filter_by(team_id = Task.query.get(id).team_id, user_id = session["user_id"]).first() is not None
+    if not is_member:
+        return "You are not a member of this team"
     task = db.session.get(Task, id)
     if task is None:
         return "Task not found"
@@ -477,6 +488,9 @@ def task_details(team_id, id):
     task = db.session.get(Task, id)
     if not task:
         return "Task not found"
+    is_member = Participation.query.filter_by(team_id = team_id, user_id = session["user_id"]).first() is not None
+    if not is_member:
+        return "You are not a member of this team"
     # team_members = (db.session.query(User).join(TeamMember, TeamMember.user_id == User.id)
     #                 .filter(TeamMember.team_id == task.team_id).all())
     team_members = list(map(lambda member: member.user, task.team.members))
@@ -510,6 +524,9 @@ def task_details(team_id, id):
 @app.route("/team/<int:team_id>/task/<int:id>/add_subtask", methods = ["POST"])
 @login_required
 def add_subtask(team_id, id):
+    is_member = Participation.query.filter_by(team_id = team_id, user_id = session["user_id"]).first() is not None
+    if not is_member:
+        return "You are not a member of this team"
     title = request.form.get("title")
     assigned_to = request.form.get("assigned_to")
     status = request.form.get("status")
@@ -528,6 +545,9 @@ def add_subtask(team_id, id):
 @app.route("/team/<int:team_id>/subtask/<int:sub_id>/edit", methods = ["POST"])
 @login_required
 def edit_subtask(team_id, sub_id):
+    is_member = Participation.query.filter_by(team_id = team_id, user_id = session["user_id"]).first() is not None
+    if not is_member:
+        return "You are not a member of this team"
     sub = db.session.get(Subtask, sub_id)
     if not sub:
         return "Subtask not found"
