@@ -11,8 +11,15 @@ Dashboard
 {% block content %}
 <div class="dashboard-container">
 
-    <div class="welcome-card">
-        <h1>Welcome Back</h1>
+<div class="welcome-card">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 5px;">
+            <h1 style="margin: 0;">Welcome Back</h1>
+            <a href="/chat" class="message-icon-btn" title="View Messages" style="color: inherit; display: inline-flex; align-items: center; transition: transform 0.2s ease, opacity 0.2s ease;">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 28px; height: 28px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-3.999a4.116 4.116 0 0 1 2.686-1.29c2.015-.036 3.905-.71 5.366-1.84a4.114 4.114 0 0 0 1.625-3.364V7.5c0-2.277-1.87-4.125-4.187-4.125H5.437c-2.318 0-4.188 1.848-4.188 4.125v5.26z" />
+                </svg>
+            </a>
+        </div>
         <h2>{{ user.name or user.email }}</h2>
         <p>Manage your events, teams and tasks in one place.</p>
     </div>
