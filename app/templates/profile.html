@@ -97,28 +97,28 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div class="form-control">
                     <label class="label pb-1.5">
-                      <span class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">Your Handle / Name</span>
+                      <span class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">Name</span>
                     </label>
                     {{ form.username(class="input rounded-none w-full border-4 border-black focus:bg-primary/10 text-black placeholder-black/40 h-12 font-bold transition-all text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] outline-none focus:outline-none", value=user.name) }}
                   </div>
 
                   <div class="form-control">
                     <label class="label pb-1.5">
-                      <span class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">Communications / Email</span>
+                      <span class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">Email</span>
                     </label>
-                    {{ form.email(class="input rounded-none w-full border-4 border-black focus:bg-primary/10 text-black placeholder-black/40 h-12 font-bold transition-all text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] outline-none focus:outline-none", value=user.email, type="email") }}
+                    {{ form.email(class="input w-full border-none shadow-none text-black/70 cursor-not-allowed h-12 font-bold text-sm outline-none select-none", value=user.email, type="email", readonly=True) }}
                   </div>
 
                   <div class="form-control">
                     <label class="label pb-1.5">
-                      <span class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">Base / University</span>
+                      <span class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">University</span>
                     </label>
                     {{ form.university(class="input rounded-none w-full border-4 border-black focus:bg-secondary/10 text-black placeholder-black/40 h-12 font-bold transition-all text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] outline-none focus:outline-none", value=user.university) }}
                   </div>
 
                   <div class="form-control">
                     <label class="label pb-1.5">
-                      <span class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">Superpowers / Skills</span>
+                      <span class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">Skills</span>
                     </label>
                     {{ form.skills(class="input rounded-none w-full border-4 border-black focus:bg-secondary/10 text-black placeholder-black/40 h-12 font-bold transition-all text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] outline-none focus:outline-none", value=user.skills, placeholder="e.g. Python, UI Design, Learning!") }}
                   </div>
@@ -126,14 +126,14 @@
 
                 <div class="form-control">
                   <label class="label pb-1.5">
-                    <span class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">Forge Link / GitHub</span>
+                    <span class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">GitHub</span>
                   </label>
                   {{ form.github_link(size=32, class="input rounded-none w-full border-4 border-black focus:bg-accent/10 text-black placeholder-black/40 h-12 font-bold transition-all text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] outline-none focus:outline-none", value=user.github_link) }}
                 </div>
 
                 <div class="flex flex-col sm:flex-row justify-end gap-4 pt-6 border-t-4 border-dashed border-black">
                   <a href="{{ url_for('reset_pwd') }}" class="btn btn-sm bg-white text-black rounded-none border-4 border-black h-11 font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] order-2 sm:order-1 hover:bg-[#F0EFE9]">Reset Password</a>
-                  {{ form.submit(id='submitButton', class="btn btn-sm bg-primary/80 text-black rounded-none border-4 border-black font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] h-11 order-1 sm:order-2 px-8 hover:translate-y-[-1px] hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all") }}
+                  {{ form.submit(id='submitButton', class="btn btn-sm bg-[#4D96FF] text-black rounded-none border-4 border-black font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] h-11 order-1 sm:order-2 px-8 hover:translate-y-[-1px] hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all") }}
                 </div>
               </form>
               
