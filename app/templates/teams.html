@@ -11,24 +11,6 @@
         <input type="text" name="searchteams" placeholder="Search teams..." hx-get="{{ url_for('teams') }}" hx-trigger="keyup changed delay:300ms" hx-target="#team-list" hx-swap="innerHTML" class="search-box"/>
     </div>
     <div class="team-grid" id="team-list">
-        <!-- {% for team in teams %}
-        <a class="team-card" href="{{ url_for('team_detail', team_id=team.id) }}">
-            <h2>{{ team.name }}</h2>
-            <p>Motto: {{ team.motto or "-" }}</p>
-            <p>Team Members: {{ team.members|length }} / {{ team.max_members }}</p>
-            <p>Members Needed: {{ team.max_members - team.members|length }}</p>
-
-            {% if team.id in joined_team_ids %}
-            <p><strong>Status: Joined</strong></p>
-            {% elif team.members|length >= team.max_members %}
-            <p><strong>Status: Full</strong></p>
-            {% else %}
-            <p><strong>Status: Open</strong></p>
-            {% endif %}
-        </a>
-        {% else %}
-        <p>No teams found.</p>
-        {% endfor %} -->
         {% include "partials/team_list.html" %}
     </div>
 
