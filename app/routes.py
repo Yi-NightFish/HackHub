@@ -941,8 +941,8 @@ def get_message():
     for message in unread_messages:
         # seen
         message.is_read = True
-    if user:
-        user.last_seen = dt.datetime.now()
+    # if user:
+    #     user.last_seen = dt.datetime.now()
     db.session.commit()
     visibility = ChatVisibility.query.filter_by(user_id = current_user_id, other_user_id = other_user_id).first()
     # auto unhide chat
