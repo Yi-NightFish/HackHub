@@ -3,55 +3,85 @@
 {% block title %}Chat with {{ other_user.name }}{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-6 max-w-5xl h-[calc(100vh-4rem)] flex flex-col justify-between overflow-hidden">
+<div class="bg-[#FFFDF6] text-black w-full min-h-[calc(100vh-4rem)] font-sans p-4 md:p-8 flex items-center justify-center overflow-x-hidden block">
+    
+    <div class="w-full max-w-4xl h-[600px] flex flex-col justify-between overflow-hidden border-4 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        
+        <div class="w-full bg-[#FFDE4D] border-b-4 border-black px-4 py-3 shrink-0 flex items-center justify-between relative z-50">
+            <h2 class="text-xl font-black uppercase tracking-tight text-black flex items-center gap-2">
+                {{ other_user.name }}
+            </h2>
+            
+            <div class="relative inline-block group">
+                <button class="p-1 border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-focus-within:translate-x-[1px] group-focus-within:translate-y-[1px] group-focus-within:shadow-none transition-all" aria-label="Menu">
+                    <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+                
+                <div class="absolute right-0 mt-2 w-48 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hidden group-hover:block group-focus-within:block flex flex-col z-50">
+                    <a href="{{ url_for('profile', user_id=other_user.id) }}" class="w-full text-left px-4 py-2 text-sm font-bold uppercase tracking-wider text-black hover:bg-[#FFDE4D] border-b-2 border-black transition-colors block">
+                        View Profile
+                    </a>
+                    <a href="{{ url_for('clear_messages', user_id=other_user.id) }}" class="w-full text-left px-4 py-2 text-sm font-bold uppercase tracking-wider text-black hover:bg-[#FFDE4D] border-b-2 border-black transition-colors block">
+                        Clear History
+                    </a>
+                    <a href="{{ url_for('hide_user', user_id=other_user.id) }}" class="w-full text-left px-4 py-2 text-sm font-bold uppercase tracking-wider text-red-500 hover:bg-black hover:text-white transition-colors block">
+                        Hide User
+                    </a>
+                </div>
+            </div>
+        </div>
 
-    <div id="chat-box"
-         class="flex-1 min-h-0 flex flex-col"
-         hx-get="/message?user_id={{ other_user.id }}"
-         hx-trigger="load, every 3s"
-         hx-swap="innerHTML"
-         hx-on::after-request="scrollToBottom()">
+        <div id="chat-box"
+             class="flex-1 min-h-0 flex flex-col bg-white p-6 overflow-y-auto gap-4"
+             hx-get="/message?user_id={{ other_user.id }}"
+             hx-trigger="load, every 3s"
+             hx-swap="innerHTML"
+             hx-on::after-request="scrollToBottom()">
 
-        {% include "message.html" %}
+            {% include "message.html" %}
+
+        </div>
+
+        <form class="bg-white border-t-4 border-black p-4 shrink-0 flex flex-col gap-3"
+              hx-post="/send_message"
+              hx-target="#chat-box"
+              hx-swap="innerHTML"
+              hx-on:htmx:after-request="scrollToBottom();clearInput();">
+
+            <div class="form-control w-full relative">
+                <textarea
+                    id="message-box"
+                    name="message"
+                    placeholder="Say what's in your mind..."
+                    class="w-full border-2 border-black focus:outline-none font-medium bg-white text-black min-h-[80px] p-4 placeholder-gray-500 text-base shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] resize-none"
+                    required
+                    autocomplete="off"></textarea>
+            </div>
+
+            <input type="hidden" name="user_id" value="{{ other_user.id }}">
+
+            <div class="w-full flex justify-between items-center shrink-0 gap-3">
+                
+                <a href="{{ url_for('chat_home') }}" class="h-10 px-4 inline-flex items-center justify-center border-2 border-gray-400 bg-white text-gray-500 hover:bg-gray-50 hover:text-gray-700 shadow-[2px_2px_0px_0px_rgba(156,163,175,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all font-bold uppercase tracking-wider text-xs select-none">
+                    ← All Teams
+                </a>
+
+                <button type="submit" class="h-10 px-5 border-2 border-black bg-[#FFDE4D] text-black hover:bg-black hover:text-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all font-black uppercase tracking-wider text-xs">
+                    Send Message
+                </button>
+                
+            </div>
+
+        </form>
 
     </div>
-
-    <form class="card bg-base-200 shadow p-4 grid gap-4 mt-4 shrink-0"
-          hx-post="/send_message"
-          hx-target="#chat-box"
-          hx-swap="innerHTML"
-          hx-on:htmx:after-request="scrollToBottom();clearInput();">
-
-        <div class="form-control">
-            <label class="label py-1">
-                <span class="label-text font-semibold">Message</span>
-            </label>
-
-            <input
-                id="message-box"
-                type="text"
-                name="message"
-                placeholder="Type message"
-                class="input input-bordered w-full"
-                required
-                autocomplete="off">
-        </div>
-
-        <input type="hidden" name="user_id" value="{{ other_user.id }}">
-
-        <div class="flex justify-end">
-            <button type="submit" class="btn btn-primary btn-sm md:btn-md">
-                Send
-            </button>
-        </div>
-
-    </form>
-
 </div>
 
 <script>
 function scrollToBottom() {
-    const chatContent = document.getElementById("chat-content");
+    const chatContent = document.getElementById("chat-content") || document.getElementById("chat-box");
     if (chatContent) {
         chatContent.scrollTop = chatContent.scrollHeight;
     }
@@ -64,5 +94,4 @@ function clearInput() {
     }
 }
 </script>
-
 {% endblock %}
