@@ -5,20 +5,26 @@
 {% block content %}
 {% set is_owner = (user.id == current_user.id) %}
 
-<div class="relative w-full min-h-screen bg-[#FFFDF6] text-black pb-16 selection:bg-secondary selection:text-secondary-content overflow-x-hidden group/page font-sans">
+<div
+  class="relative w-full min-h-screen bg-[#FFFDF6] text-black pb-16 selection:bg-secondary selection:text-secondary-content overflow-x-hidden group/page font-sans">
 
   <div class="absolute inset-0 pointer-events-none overflow-hidden z-0 select-none">
-    <div class="absolute top-12 -right-16 w-80 h-80 bg-accent border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transform rotate-12 opacity-40"></div>
-    
-    <div class="absolute top-1/3 -left-20 w-64 h-64 rounded-full bg-secondary border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] -rotate-12 opacity-30"></div>
-    
+    <div
+      class="absolute top-12 -right-16 w-80 h-80 bg-accent border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transform rotate-12 opacity-40">
+    </div>
+
+    <div
+      class="absolute top-1/3 -left-20 w-64 h-64 rounded-full bg-secondary border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] -rotate-12 opacity-30">
+    </div>
+
     <div class="absolute bottom-20 right-12 w-12 h-36 bg-black/50 transform rotate-45 hidden md:block"></div>
     <div class="absolute bottom-32 right-24 w-36 h-12 bg-black/50 transform rotate-45 hidden md:block"></div>
   </div>
 
   <div class="container mx-auto px-4 max-w-4xl mt-16 relative z-10">
-    <div class="bg-white border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none overflow-hidden relative">
-      
+    <div
+      class="bg-white border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none overflow-hidden relative">
+
       <div class="h-32 sm:h-40 w-full bg-[#FFFDF6] border-b-4 border-black relative overflow-hidden flex items-stretch">
         <div class="w-1/3 bg-[#FF6B6B] border-r-4 border-black p-4 flex flex-col justify-between items-start">
           <span class="text-xs font-black uppercase tracking-widest bg-black text-white px-1.5 py-0.5">SYS-LOG</span>
@@ -27,10 +33,12 @@
           <div class="absolute bottom-2 right-2 font-mono text-xs font-black opacity-40">VER.26</div>
         </div>
         <div class="flex-1 bg-white p-4 relative flex items-center justify-center">
-          <svg class="w-12 h-12 text-black/10 absolute top-2 right-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg class="w-12 h-12 text-black/10 absolute top-2 right-2" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
           </svg>
-          <div class="w-full border-2 border-dashed border-black/20 h-full flex items-center justify-center font-mono text-[10px] font-bold tracking-widest text-black/30 select-none">
+          <div
+            class="w-full border-2 border-dashed border-black/20 h-full flex items-center justify-center font-mono text-[10px] font-bold tracking-widest text-black/30 select-none">
             HACKHUB_CORE_NODE
           </div>
         </div>
@@ -39,11 +47,14 @@
       <div class="px-6 sm:px-8 relative pb-6 border-b-4 border-black bg-white">
         <div class="absolute -top-12 sm:-top-16 left-6 sm:left-8 z-20">
           <div class="avatar">
-            <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-none border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-[#F0EFE9] overflow-hidden flex items-center justify-center">
+            <div
+              class="w-24 h-24 sm:w-28 sm:h-28 rounded-none border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-[#F0EFE9] overflow-hidden flex items-center justify-center">
               {% if user.profile_pic %}
-                <img src="{{ url_for('static', filename='images/' + user.profile_pic) }}" alt="{{ user.name }}'s Avatar" class="rounded-none object-cover w-full h-full" />
+              <img src="{{ url_for('static', filename='images/' + user.profile_pic) }}" alt="{{ user.name }}'s Avatar"
+                class="rounded-none object-cover w-full h-full" />
               {% else %}
-                <svg data-jdenticon-value="{{ user.username or user.name }}" class="w-full h-full p-1 bg-white rounded-none"></svg>
+              <svg data-jdenticon-value="{{ user.username or user.name }}"
+                class="w-full h-full p-1 bg-white rounded-none"></svg>
               {% endif %}
             </div>
           </div>
@@ -51,15 +62,22 @@
 
         <div class="pt-16 sm:pt-16 flex flex-col sm:flex-row sm:items-end justify-between gap-4 text-left">
           <div>
-            <h2 class="text-2xl sm:text-3xl font-black text-black tracking-tight leading-tight uppercase font-mono">{{ user.name }}</h2>
-            <p class="text-xs font-bold text-black/60 font-mono bg-[#F0EFE9] inline-block px-2 py-0.5 border border-black mt-1">{{ user.email if is_owner else 'Verified Hackhub User' }}</p>
+            <h2 class="text-2xl sm:text-3xl font-black text-black tracking-tight leading-tight uppercase font-mono">{{
+              user.name }}</h2>
+            <p
+              class="text-xs font-bold text-black/60 font-mono bg-[#F0EFE9] inline-block px-2 py-0.5 border border-black mt-1">
+              {{ user.email if is_owner else 'Verified Hackhub User' }}</p>
           </div>
-          
+
           {% if not is_owner %}
-          <a href="{{ url_for('chat', user_id=user.id) }}" class="inline-flex items-center gap-2 bg-[#FFDE4D] text-black font-mono font-black text-xs uppercase tracking-wider px-3 py-2 border-2 border-black rounded-none shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all shrink-0 mb-0.5">
+          <a href="{{ url_for('chat', user_id=user.id) }}"
+            class="inline-flex items-center gap-2 bg-[#FFDE4D] text-black font-mono font-black text-xs uppercase tracking-wider px-3 py-2 border-2 border-black rounded-none shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all shrink-0 mb-0.5">
             <svg class="w-4 h-4 text-black shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20C9.5 20 7 18.5 6 16.5C5 14.5 5.5 12.5 7.5 11.5C9.5 10.5 11.5 11.5 12 13.5C12.5 15.5 11 17 9.5 17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M11 18.5L9.5 17L11 15.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path
+                d="M4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20C9.5 20 7 18.5 6 16.5C5 14.5 5.5 12.5 7.5 11.5C9.5 10.5 11.5 11.5 12 13.5C12.5 15.5 11 17 9.5 17"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M11 18.5L9.5 17L11 15.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
             <span>Reach me out</span>
           </a>
@@ -68,21 +86,26 @@
       </div>
 
       <div class="divide-y-4 divide-black">
-        
+
         <details open class="group/window collapse rounded-none overflow-hidden">
-          <summary class="bg-[#F0EFE9] px-6 py-4 flex items-center justify-between select-none cursor-pointer list-none [&::-webkit-details-marker]:hidden border-b-2 border-black/10 group-open/window:border-b-4 group-open/window:border-black">
+          <summary
+            class="bg-[#F0EFE9] px-6 py-4 flex items-center justify-between select-none cursor-pointer list-none [&::-webkit-details-marker]:hidden border-b-2 border-black/10 group-open/window:border-b-4 group-open/window:border-black">
             <div class="flex items-center gap-2">
               <span class="text-sm font-black text-black uppercase tracking-wider font-mono">Profile Identity</span>
-              <span class="font-black text-black bg-[#9BD1FF] border-2 border-black px-2 py-0.5 text-[10px] uppercase tracking-wider select-none ml-1">
+              <span
+                class="font-black text-black bg-[#9BD1FF] border-2 border-black px-2 py-0.5 text-[10px] uppercase tracking-wider select-none ml-1">
                 {% if is_owner %}Settings{% else %}Details{% endif %}
               </span>
             </div>
-            
-            <div class="text-black transition-colors bg-white p-1 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4 block group-open/window:hidden">
+
+            <div
+              class="text-black transition-colors bg-white p-1 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
+                stroke="currentColor" class="w-4 h-4 block group-open/window:hidden">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4 hidden group-open/window:block">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
+                stroke="currentColor" class="w-4 h-4 hidden group-open/window:block">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
               </svg>
             </div>
@@ -97,67 +120,96 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div class="form-control">
                     <label class="label pb-1.5">
-                      <span class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">Name</span>
+                      <span
+                        class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">Name</span>
                     </label>
-                    {{ form.username(class="input rounded-none w-full border-4 border-black focus:bg-primary/10 text-black placeholder-black/40 h-12 font-bold transition-all text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] outline-none focus:outline-none", value=user.name) }}
+                    {{ form.username(class="input rounded-none w-full border-4 border-black focus:bg-primary/10
+                    text-black placeholder-black/40 h-12 font-bold transition-all text-sm
+                    shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] outline-none
+                    focus:outline-none", value=user.name) }}
                   </div>
 
                   <div class="form-control">
                     <label class="label pb-1.5">
-                      <span class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">Email</span>
+                      <span
+                        class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">Email</span>
                     </label>
-                    {{ form.email(class="input w-full border-none shadow-none text-black/70 cursor-not-allowed h-12 font-bold text-sm outline-none select-none", value=user.email, type="email", readonly=True) }}
+                    {{ form.email(class="input w-full border-none shadow-none text-black/70 cursor-not-allowed h-12
+                    font-bold text-sm outline-none select-none", value=user.email, type="email", readonly=True) }}
                   </div>
 
                   <div class="form-control">
                     <label class="label pb-1.5">
-                      <span class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">University</span>
+                      <span
+                        class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">University</span>
                     </label>
-                    {{ form.university(class="input rounded-none w-full border-4 border-black focus:bg-secondary/10 text-black placeholder-black/40 h-12 font-bold transition-all text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] outline-none focus:outline-none", value=user.university) }}
+                    {{ form.university(class="input rounded-none w-full border-4 border-black focus:bg-secondary/10
+                    text-black placeholder-black/40 h-12 font-bold transition-all text-sm
+                    shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] outline-none
+                    focus:outline-none", value=user.university) }}
                   </div>
 
                   <div class="form-control">
                     <label class="label pb-1.5">
-                      <span class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">Skills</span>
+                      <span
+                        class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">Skills</span>
                     </label>
-                    {{ form.skills(class="input rounded-none w-full border-4 border-black focus:bg-secondary/10 text-black placeholder-black/40 h-12 font-bold transition-all text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] outline-none focus:outline-none", value=user.skills, placeholder="e.g. Python, UI Design, Learning!") }}
+                    {{ form.skills(class="input rounded-none w-full border-4 border-black focus:bg-secondary/10
+                    text-black placeholder-black/40 h-12 font-bold transition-all text-sm
+                    shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] outline-none
+                    focus:outline-none", value=user.skills, placeholder="e.g. Python, UI Design, Learning!") }}
                   </div>
                 </div>
 
                 <div class="form-control">
                   <label class="label pb-1.5">
-                    <span class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">GitHub</span>
+                    <span
+                      class="label-text font-black text-black text-xs uppercase tracking-wider font-mono">GitHub</span>
                   </label>
-                  {{ form.github_link(size=32, class="input rounded-none w-full border-4 border-black focus:bg-accent/10 text-black placeholder-black/40 h-12 font-bold transition-all text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] outline-none focus:outline-none", value=user.github_link) }}
+                  {{ form.github_link(size=32, class="input rounded-none w-full border-4 border-black focus:bg-accent/10
+                  text-black placeholder-black/40 h-12 font-bold transition-all text-sm
+                  shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] outline-none
+                  focus:outline-none", value=user.github_link) }}
                 </div>
 
                 <div class="flex flex-col sm:flex-row justify-end gap-4 pt-6 border-t-4 border-dashed border-black">
-                  <a href="{{ url_for('reset_pwd') }}" class="btn btn-sm bg-white text-black rounded-none border-4 border-black h-11 font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] order-2 sm:order-1 hover:bg-[#F0EFE9]">Reset Password</a>
-                  {{ form.submit(id='submitButton', class="btn btn-sm bg-[#4D96FF] text-black rounded-none border-4 border-black font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] h-11 order-1 sm:order-2 px-8 hover:translate-y-[-1px] hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all") }}
+                  <a href="{{ url_for('reset_pwd') }}"
+                    class="btn btn-sm bg-white text-black rounded-none border-4 border-black h-11 font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] order-2 sm:order-1 hover:bg-[#F0EFE9]">Reset
+                    Password</a>
+                  {{ form.submit(id='submitButton', class="btn btn-sm bg-[#4D96FF] text-black rounded-none border-4
+                  border-black font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] h-11 order-1 sm:order-2 px-8
+                  hover:translate-y-[-1px] hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all") }}
                 </div>
               </form>
-              
+
               {% else %}
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="p-4 bg-[#F0EFE9] rounded-none border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-                  <span class="text-xs font-black text-black uppercase tracking-wider block mb-1 font-mono">Campus Base</span>
-                  <span class="text-base font-extrabold text-black uppercase font-mono">{{ user.university or 'Exploring options!' }}</span>
+                  <span class="text-xs font-black text-black uppercase tracking-wider block mb-1 font-mono">Campus
+                    Base</span>
+                  <span class="text-base font-extrabold text-black uppercase font-mono">{{ user.university or 'Exploring
+                    options!' }}</span>
                 </div>
-                
+
                 <div class="p-4 bg-[#F0EFE9] rounded-none border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-                  <span class="text-xs font-black text-black uppercase tracking-wider block mb-1 font-mono">Skill Arsenal</span>
-                  <span class="text-base font-extrabold text-black uppercase font-mono">{{ user.skills or 'Building tools right now!' }}</span>
+                  <span class="text-xs font-black text-black uppercase tracking-wider block mb-1 font-mono">Skill
+                    Arsenal</span>
+                  <span class="text-base font-extrabold text-black uppercase font-mono">{{ user.skills or 'Building
+                    tools right now!' }}</span>
                 </div>
-                
-                <div class="p-4 bg-[#F0EFE9] rounded-none border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:col-span-2">
-                  <span class="text-xs font-black text-black uppercase tracking-wider block mb-1 font-mono">Code Matrix Depot</span>
+
+                <div
+                  class="p-4 bg-[#F0EFE9] rounded-none border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:col-span-2">
+                  <span class="text-xs font-black text-black uppercase tracking-wider block mb-1 font-mono">Code Matrix
+                    Depot</span>
                   <span class="text-base font-extrabold">
                     {% if user.github_link %}
-                      <a href="{{ user.github_link }}" target="_blank" class="text-black font-mono link underline decoration-2 font-black break-all">
-                        {{ user.github_link }}
-                      </a>
+                    <a href="{{ user.github_link }}" target="_blank"
+                      class="text-black font-mono link underline decoration-2 font-black break-all">
+                      {{ user.github_link }}
+                    </a>
                     {% else %}
-                      <span class="text-black/50 italic font-normal text-sm">No workspace connected yet.</span>
+                    <span class="text-black/50 italic font-normal text-sm">No workspace connected yet.</span>
                     {% endif %}
                   </span>
                 </div>
@@ -166,23 +218,92 @@
             </div>
           </div>
         </details>
-
         <details class="group/window collapse rounded-none overflow-hidden">
-          <summary class="bg-[#F0EFE9] px-6 py-4 flex items-center justify-between select-none cursor-pointer list-none [&::-webkit-details-marker]:hidden group-open/window:border-b-4 group-open/window:border-black">
+          <summary
+            class="bg-[#F0EFE9] px-6 py-4 flex items-center justify-between select-none cursor-pointer list-none [&::-webkit-details-marker]:hidden group-open/window:border-b-4 group-open/window:border-black">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-black text-black uppercase tracking-wider font-mono">Project Pages</span>
+              {% if project_teams %}
+              <span
+                class="badge bg-[#4D96FF] text-white font-black text-[10px] uppercase tracking-wider px-2 py-1 h-auto rounded-none border-2 border-black select-none ml-1 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+                {{ project_teams|length }} Projects
+              </span>
+              {% endif %}
+            </div>
+            <div
+              class="text-black transition-colors bg-white p-1 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
+                stroke="currentColor" class="w-4 h-4 block group-open/window:hidden">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
+                stroke="currentColor" class="w-4 h-4 hidden group-open/window:block">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
+              </svg>
+            </div>
+          </summary>
+
+          <div class="collapse-content !p-0 bg-white">
+            <div class="p-6 sm:p-8 text-left">
+              {% if project_teams %}
+              <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {% for team in project_teams %}
+                <div
+                  class="bg-white border-4 border-black rounded-none overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-150 flex flex-col justify-between min-h-[160px]">
+                  <div class="p-4">
+                    <span
+                      class="text-[10px] font-mono font-black uppercase bg-[#FFDE4D] border border-black px-1.5 py-0.5">
+                      Team Project
+                    </span>
+                    <h3 class="font-black text-base text-black uppercase font-mono mt-3 line-clamp-1">
+                      {{ team.name }}
+                    </h3>
+                    <p class="text-xs text-black/70 mt-2 line-clamp-2 leading-relaxed font-bold">
+                      {{ team.project_idea or "No project idea added yet." }}
+                    </p>
+                  </div>
+                  <div class="p-4 pt-0">
+                    <div class="pt-2 border-t-2 border-dashed border-black/20 flex justify-end">
+                      <a href="{{ url_for('project_page', team_id=team.id) }}"
+                        class="text-black hover:text-[#4D96FF] font-black uppercase text-[11px] tracking-wider font-mono underline decoration-2">
+                        View Project →
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+              {% else %}
+              <div class="border-4 border-dashed border-black p-12 text-center rounded-none bg-[#F0EFE9]">
+                <p class="text-black font-black uppercase tracking-tight text-sm font-mono">No project pages yet.</p>
+                <p class="text-xs text-black/70 font-bold leading-relaxed mt-2">Join a team to start building a project.
+                </p>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </details>
+        <details class="group/window collapse rounded-none overflow-hidden">
+          <summary
+            class="bg-[#F0EFE9] px-6 py-4 flex items-center justify-between select-none cursor-pointer list-none [&::-webkit-details-marker]:hidden group-open/window:border-b-4 group-open/window:border-black">
             <div class="flex items-center gap-2">
               <span class="text-sm font-black text-black uppercase tracking-wider font-mono">Completed Quests</span>
               {% if events %}
-                <span class="badge bg-secondary text-white font-black text-[10px] uppercase tracking-wider px-2 py-1 h-auto rounded-none border-2 border-black select-none ml-1 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
-                  {{ events|length }} Done
-                </span>
+              <span
+                class="badge bg-secondary text-white font-black text-[10px] uppercase tracking-wider px-2 py-1 h-auto rounded-none border-2 border-black select-none ml-1 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+                {{ events|length }} Done
+              </span>
               {% endif %}
             </div>
-            
-            <div class="text-black transition-colors bg-white p-1 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4 block group-open/window:hidden">
+
+            <div
+              class="text-black transition-colors bg-white p-1 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
+                stroke="currentColor" class="w-4 h-4 block group-open/window:hidden">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4 hidden group-open/window:block">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
+                stroke="currentColor" class="w-4 h-4 hidden group-open/window:block">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
               </svg>
             </div>
@@ -193,15 +314,18 @@
               {% if events %}
               <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {% for event in events %}
-                <div class="bg-white border-4 border-black rounded-none overflow-hidden group/card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-150 flex flex-col justify-between h-full min-h-[160px]">
-                  
+                <div
+                  class="bg-white border-4 border-black rounded-none overflow-hidden group/card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-150 flex flex-col justify-between h-full min-h-[160px]">
+
                   <div class="p-4">
                     <div class="mb-1.5">
-                      <span class="text-[10px] font-mono font-black uppercase bg-[#F0EFE9] border border-black px-1.5 py-0.5">
+                      <span
+                        class="text-[10px] font-mono font-black uppercase bg-[#F0EFE9] border border-black px-1.5 py-0.5">
                         {{ event.start_time.strftime('%b %d, %Y') }}
                       </span>
                     </div>
-                    <h3 class="font-black text-base text-black uppercase font-mono line-clamp-1 group-hover/card:text-secondary transition-colors duration-200">
+                    <h3
+                      class="font-black text-base text-black uppercase font-mono line-clamp-1 group-hover/card:text-secondary transition-colors duration-200">
                       {{ event.title }}
                     </h3>
                     <p class="text-xs text-black/70 mt-2 line-clamp-2 leading-relaxed font-bold">
@@ -211,8 +335,8 @@
 
                   <div class="p-4 pt-0">
                     <div class="pt-2 border-t-2 border-dashed border-black/20 flex justify-end">
-                      <a href="{{ url_for('event_detail', event_id=event.id) }}" 
-                         class="text-black hover:text-secondary font-black uppercase text-[11px] tracking-wider font-mono underline decoration-2">
+                      <a href="{{ url_for('event_detail', event_id=event.id) }}"
+                        class="text-black hover:text-secondary font-black uppercase text-[11px] tracking-wider font-mono underline decoration-2">
                         Inspect Details →
                       </a>
                     </div>
@@ -225,8 +349,10 @@
               <div class="border-4 border-dashed border-black p-12 text-center rounded-none bg-[#F0EFE9]">
                 <div class="max-w-sm mx-auto flex flex-col items-center gap-2">
                   <div class="space-y-2">
-                    <p class="text-black font-black uppercase tracking-tight text-sm font-mono">Your log book is clean!</p>
-                    <p class="text-xs text-black/70 font-bold leading-relaxed">Time to find an exciting match. Scroll through our open hackathons and hit join to begin your adventure!</p>
+                    <p class="text-black font-black uppercase tracking-tight text-sm font-mono">Your log book is clean!
+                    </p>
+                    <p class="text-xs text-black/70 font-bold leading-relaxed">Time to find an exciting match. Scroll
+                      through our open hackathons and hit join to begin your adventure!</p>
                   </div>
                 </div>
               </div>

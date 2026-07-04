@@ -322,17 +322,20 @@ def profile(user_id):
             send_otp(new_email, purpose = "update_email")
             session["new_email"] = new_email
             return redirect(url_for("verify_update_email"))
+        db.session.commit()
         return redirect(url_for("profile", user_id=user_id))
 
     # team_member_subquery = select(TeamMember.team_id).where(TeamMember.user_id == user_id).subquery()
     # is_team_members_of = db.session.query(Team.event_id).join(team_member_subquery, Team.id == team_member_subquery.c.team_id).subquery()
     # events = db.session.execute(db.session.query(Event).join(is_team_members_of, is_team_members_of.c.event_id == Event.id)).scalars().all()
     events = list(map(lambda team_membership: team_membership.event, user.team_memberships))
+    project_teams = [membership.team for membership in user.team_memberships if membership.team_id is not None]
     return render_template("profile.html", 
                            form = profile_page, 
                            user = user, 
                            current_user = db.session.get(User, session["user_id"]),
-                           events = events
+                           events = events,
+                           project_teams = project_teams
     )
 
 @app.route("/reset_pwd")
