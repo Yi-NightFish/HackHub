@@ -1247,7 +1247,7 @@ def export_data_csv(event_id):
     # Fetch all participants for the event
     participants = User.query.join(Participation).filter(Participation.event_id == event_id).distinct().all()
     for participant in participants:
-        writer.writerow([participant.id, participant.name or "Unnamed Student", participant.email, participant.university or "MMU", participant.skills or "Not specified yet", participant.github_link or "No Link"])
+        writer.writerow([participant.id, participant.name or "Unnamed Student", participant.email, participant.university or "Unknown", participant.skills or "Not specified yet", participant.github_link or "No Link"])
 
     # Create a response with the CSV data
     response = make_response(output.getvalue())
