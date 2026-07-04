@@ -36,9 +36,11 @@
             <a href="{{ url_for('explore') }}"class="h-11 px-4 inline-flex items-center text-sm font-extrabold uppercase tracking-wider transition-all{% if request.endpoint == 'explore' %}border-2 border-black bg-[#FFDE4D] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]{% else %}border-2 border-transparent hover:border-black hover:bg-black/5{% endif %}">
                 Events
             </a>
+            {% if current_user %}
             <a href='{{ url_for("logout") }}' class="h-11 px-4 border-2 border-transparent hover:border-black hover:bg-black/5 text-black font-extrabold uppercase tracking-wider transition-all inline-flex items-center text-sm">
                 Log Out
             </a>
+            {% endif %}
         </nav>
 
         <!-- Right Side: Auth / Profile Area -->
