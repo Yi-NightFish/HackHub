@@ -48,6 +48,15 @@ def explore():
         if first_event:
             is_organizer = True
             first_event_id = first_event.id
+    # add for organizer to view their own events
+    is_organizer = False
+    first_event_id = None
+    current_user_id = session.get("user_id")
+    if current_user_id:
+        first_event = Event.query.filter_by(organizer_id = current_user_id).first()
+        if first_event:
+            is_organizer = True
+            first_event_id = first_event.id
 
     # nx add if user enroll, btn become view details---------
     joined_event_ids = set()
@@ -233,6 +242,7 @@ def event_detail(event_id):
                     leader_team_full = leader_team_member_count >= leader_team.max_members
             # htmx search soloists
             if request.headers.get("HX-Request"):
+                return render_template("partials/soloists_list.html", event = event, soloists = soloists, leader_team = leader_team, leader_team_member_count = leader_team_member_count, leader_team_full = leader_team_full)
                 return render_template("partials/soloists_list.html", event = event, soloists = soloists, leader_team = leader_team, leader_team_member_count = leader_team_member_count, leader_team_full = leader_team_full)
             # not htmx
             return render_template(
