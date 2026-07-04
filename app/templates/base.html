@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html data-theme="bumblebee">
+<html data-theme="bumblebee" class="h-full">
 
 <head>
     <title>{% block title %}{% endblock %}</title>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-    {% block css %}
-    {% endblock %}
-    </style>
+    {% block css %}{% endblock %}
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script>
@@ -15,47 +14,100 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/jdenticon@3.3.0/dist/jdenticon.min.js" async
         integrity="sha384-LfouGM03m83ArVtne1JPk926e3SGD0Tz8XHtW2OKGsgeBU/UfR0Fa8eX+UlwSSAZ" crossorigin="anonymous">
-        </script>
+    </script>
 </head>
 
-<body class="w-screen min-h-screen bg-base-200 overflow-x-hidden">
-    <div class="sticky top-0 z-50 tabs tabs-lift tabs-lg mb-2 bg-base-100 flex justify-start">
-        <a href='{{url_for("home")}}' class="tab font-bold tab-active bg-base-200">Home</a>
-        <a href='{{ url_for("explore") }}' class="tab text-neutral-content font-semibold">Events</a>
-        {% if current_user %}
-        <a href='{{url_for("logout")}}' class="tab text-neutral-content font-bold">Log Out</a>
-        <div class="avatar flex-1 flex items-center justify-end pr-8">
-            <div
-                class="w-9 h-9 rounded-full border-1 border-neutral/30 shadow-sm p-1 bg-base-100 transition duration-200 hover:scale-105">
-                <a href='{{url_for("profile", user_id = current_user.id)}}'>
-                    <svg data-jdenticon-value="{{ current_user.name }}" class="w-full h-full"></svg>
+<body class="min-h-screen w-full flex flex-col bg-base-200 text-black overflow-x-hidden antialiased">
+    
+    <!-- Neo-Brutalist Muted Header/Navbar -->
+    <header class="sticky top-0 z-50 w-full bg-white border-b-2 border-black h-16 flex items-center justify-between px-4 sm:px-6 select-none">
+        
+        <!-- Left Side: Nav Links -->
+        <nav class="flex items-center h-full gap-1 sm:gap-2">
+            <a href='{{ url_for("home") }}' class="h-11 px-4 border-2 border-black bg-[#fde047] text-black font-black uppercase tracking-wider shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all inline-flex items-center text-sm">
+                Home
+            </a>
+            <a href='{{ url_for("explore") }}' class="h-11 px-4 border-2 border-transparent hover:border-black hover:bg-neutral-100 text-black font-extrabold uppercase tracking-wider transition-all inline-flex items-center text-sm">
+                Events
+            </a>
+        </nav>
+
+        <!-- Right Side: Auth Actions / Profile -->
+        <div class="flex items-center h-full gap-2">
+            {% if current_user %}
+                <a href='{{ url_for("logout") }}' class="h-11 px-4 border-2 border-transparent hover:border-black hover:bg-neutral-100 text-black font-extrabold uppercase tracking-wider transition-all inline-flex items-center text-sm">
+                    Log Out
+                </a>
+
+                <!-- Announcement Icon Token Box (Matches Avatar Style Exactly) -->
+                <div class="border-2 border-black p-1 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:scale-105 transition-transform duration-150">
+                    <a href="{{ url_for('announcements') }}" class="block w-8 h-8 flex items-center justify-center text-black" aria-label="Announcements">
+                        <!-- FIXED DRAWING SIZE: Scaled to full width/height and adjusted viewbox margins -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="1.5 1.5 21 21" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full -scale-y-100">
+                            <!-- Central broadcast beacon -->
+                            <circle cx="12" cy="12" r="2" fill="currentColor" />
+                            <!-- Inner 3/4 arc -->
+                            <path d="M16.24 7.76a6 6 0 1 1-8.49 0" />
+                            <!-- Outer 3/4 arc -->
+                            <path d="M19.07 4.93a10 10 0 1 1-14.14 0" />
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Avatar Token Box -->
+                <div class="border-2 border-black p-1 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:scale-105 transition-transform duration-150">
+                    <a href='{{ url_for("profile", user_id=current_user.id) }}' class="block w-8 h-8">
+                        <svg data-jdenticon-value="{{ current_user.name }}" class="w-full h-full"></svg>
+                    </a>
+                </div>
+            {% else %}
+                <a href='{{ url_for("login") }}' class="h-11 px-4 border-2 border-transparent hover:border-black hover:bg-neutral-100 text-black font-extrabold uppercase tracking-wider transition-all inline-flex items-center text-sm">
+                    Login
+                </a>
+                <a href='{{ url_for("register") }}' class="h-11 px-4 border-2 border-black bg-white text-black font-black uppercase tracking-wider shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all inline-flex items-center text-sm">
+                    Sign Up
+                </a>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="w-full flex-1">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer Area -->
+    <footer class="w-full bg-[#FFFDF6] border-t-2 border-black text-black font-semibold mt-auto">
+        <div class="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            
+            <!-- Brand / Logo Section -->
+            <div class="border-2 border-black bg-white px-4 py-1.5 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] tracking-tighter">
+                <span class="text-xl font-black uppercase italic tracking-widest">
+                    HACKHUB
+                </span>
+            </div>
+            
+            <!-- Navigation Links -->
+            <div class="flex flex-wrap items-center justify-center gap-1 sm:gap-3">
+                <a href="{{ url_for('about') }}" class="px-4 py-2 border-2 border-transparent hover:border-black hover:bg-white transition-all duration-75 uppercase tracking-wider font-extrabold text-sm">
+                    About
+                </a>
+                <a href="{{ url_for('faq') }}" class="px-4 py-2 border-2 border-transparent hover:border-black hover:bg-white transition-all duration-75 uppercase tracking-wider font-extrabold text-sm">
+                    FAQ
+                </a>
+                <a href="{{ url_for('feedback') }}" class="px-4 py-2 border-2 border-transparent hover:border-black hover:bg-white transition-all duration-75 uppercase tracking-wider font-extrabold text-sm">
+                    Feedback
                 </a>
             </div>
-        </div>
-        {% else %}
-        <a href='{{url_for("login")}}' class="tab text-neutral-content font-bold">Login</a>
-        <a href='{{url_for("register")}}' class="tab text-neutral-content font-bold">Sign Up</a>
-        {% endif %}
-    </div>
-
-    {% block content %}
-    {% endblock %}
-
-    <footer class="footer">
-        <div class="footer-inner">
-            <div class="footer-brand">
-                <span class="brand-name">HACKHUB</span>
-            </div>
-            <div class="footer-links">
-                <a href="{{ url_for('about') }}">About</a>
-                <a href="{{ url_for('faq') }}">FAQ</a>
-                <a href="{{ url_for('feedback') }}">Feedback</a>
-            </div>
-            <div class="footer-copyright">
-                © 2026 HackHub, Inc. All rights reserved.
-            </div>
+            
+            <!-- Copyright Section -->
+            <div class="text-xs uppercase font-black tracking-widest text-black/60 text-center md:text-right">
+                © 2026 HackHub, Inc. <br class="sm:hidden" />All rights reserved.
+            </div>    
         </div>
     </footer>
+
     {% if current_user %}
     <div hx-get="/active" hx-trigger="every 5s" style="display:none;"></div>
     {% endif %}

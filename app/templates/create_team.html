@@ -1,39 +1,95 @@
 {% extends "base.html" %}
 
-{% block css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/team.css') }}">
-{% endblock %}
-
 {% block content %}
-<div class="team-page">
-    <h1 class="team-title">Create Team</h1>
+<!-- Neo-Brutalist Split Viewport - Constrained to viewport height minus standard navbar height -->
+<div class="h-[calc(100vh-4rem)] w-full grid md:grid-cols-2 font-mono overflow-hidden">
+  
+  <!-- Left Column: Muted Form Wrapper (Scrolls independently if vertical room runs out) -->
+  <div class="h-full flex flex-col justify-center px-6 py-6 sm:px-12 lg:px-16 bg-[#FFFDF6] overflow-y-auto">
+    <div class="mx-auto w-full max-w-xl my-auto">
+      
+      <!-- Header Block -->
+      <div class="mb-4">
+        <h1 class="text-4xl font-black uppercase tracking-tight text-black">Create Team</h1>
+        {% set event = events[0] %}
+        <p class="text-black font-bold mt-1 text-xs uppercase tracking-wider opacity-60">Assemble your crew for {{ event.title }}</p>
+      </div>
 
-    <form class="form-box" method="POST">
-        <label>Team Name</label>
-        <input type="text" name="name" required>
+      <!-- Form Component -->
+      <form method="POST" class="grid gap-4" novalidate>
+        <!-- Hidden field for backend processing -->
+        <input type="hidden" name="event_id" value="{{ event.id }}" />
+        
+        <!-- Team Name Field -->
+        <div class="form-control w-full">
+          <label class="label p-1">
+            <span class="label-text font-black uppercase text-black text-[11px] tracking-wider">Team Name</span>
+          </label>
+          <input type="text" name="name" required class="input input-bordered w-full rounded-none border-2 border-black bg-white focus:outline-none focus:bg-white text-black font-black text-base shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" placeholder="⚡ e.g., The Bug Hunters">
+        </div>
 
-        <label>Motto</label>
-        <input type="text" name="motto">
+        <!-- Motto Field -->
+        <div class="form-control w-full">
+          <label class="label p-1">
+            <span class="label-text font-black uppercase text-black text-[11px] tracking-wider">Motto</span>
+          </label>
+          <input type="text" name="motto" class="input input-bordered w-full rounded-none border-2 border-black bg-white focus:outline-none focus:bg-white text-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" placeholder="🚀 Move fast and break nothing">
+        </div>
 
-        <label>Roles Needed</label>
-        <input type="text" name="roles">
+        <!-- Roles Needed Field -->
+        <div class="form-control w-full">
+          <label class="label p-1">
+            <span class="label-text font-black uppercase text-black text-[11px] tracking-wider">Roles Needed</span>
+          </label>
+          <input type="text" name="roles" class="input input-bordered w-full rounded-none border-2 border-black bg-white focus:outline-none focus:bg-white text-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" placeholder="🛠️ e.g., Frontend, Python Expert">
+        </div>
 
-        <label>Project Idea</label>
-        <textarea name="project_idea"></textarea>
+        <!-- Project Idea Field -->
+        <div class="form-control w-full">
+          <label class="label p-1">
+            <span class="label-text font-black uppercase text-black text-[11px] tracking-wider">Project Idea</span>
+          </label>
+          <textarea name="project_idea" class="textarea textarea-bordered h-24 w-full rounded-none border-2 border-black bg-white focus:outline-none focus:bg-white text-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" rows="3" placeholder="📝 Quick brief of what you want to build..."></textarea>
+        </div>
 
-        <label>Event</label>
-        <select name="event_id" required>
-            {% for event in events %}
-            <option value="{{ event.id }}">{{ event.title }}</option>
-            {% endfor %}
-        </select>
+        <!-- Max Members Field -->
+        <div class="form-control w-full">
+          <label class="label p-1">
+            <span class="label-text font-black uppercase text-black text-[11px] tracking-wider">Max Members</span>
+          </label>
+          <input type="number" name="max_members" min="1" max="6" required class="input input-bordered w-full rounded-none border-2 border-black bg-white focus:outline-none focus:bg-white text-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" placeholder="4">
+          <span class="text-[9px] text-black font-bold uppercase mt-1 opacity-60">Limit: 1-6 players.</span>
+        </div>
 
-        <label>Max Members</label>
-        <input type="number" name="max_members" min="1" max="6" required>
+        <!-- Action Buttons -->
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pt-2">
+          <!-- Submit Button -->
+          <button type="submit" class="btn rounded-none border-2 border-black bg-yellow-300 text-black uppercase tracking-wider shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all w-full sm:w-auto px-8">
+            Create Team
+          </button>
+          
+          <!-- Back Button -->
+          <a href="{{ url_for('event_detail', event_id=event.id) }}" class="btn rounded-none border-2 border-black bg-white text-black uppercase tracking-wider shadow-[4px_4px_0px_0px_#fde047] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all w-full sm:w-auto text-center px-8">
+            Back
+          </a>
+        </div>
+      </form>
+      
+    </div>
+  </div>
 
-        <button type="submit">Create Team</button>
-    </form>
+  <!-- Right Column: Full-width Borderless Image Window -->
+  <div class="hidden md:block h-full w-full relative overflow-hidden">
+    <img 
+      src="{{ url_for('static', filename='/images/create_team_pic.jpg') }}" 
+      alt="Create Team" 
+      class="w-full h-full object-cover mix-blend-multiply"
+    />
+    <!-- Attribution Overlay/Footer -->
+    <div class="absolute bottom-4 right-4 bg-[#FFFDF6]/80 px-3 py-1 text-[10px] font-bold uppercase text-black tracking-wider">
+      <span class="opacity-40 font-medium">photo by</span> www.magnific.com
+    </div>
+  </div>
 
-    <a class="back-link" href="{{ url_for('teams') }}">Back to Teams</a>
 </div>
 {% endblock %}

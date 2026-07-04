@@ -10,5 +10,6 @@ from config import Config
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 mail = Mail(app)
+migrate = Migrate(app, db)
 
-from app import routes, models, events
+from app import routes, models, events, announcement

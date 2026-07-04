@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}Announcements | Hackhub{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-[#FFFDF6] text-black px-4 py-12 font-sans selection:bg-secondary selection:text-secondary-content relative overflow-hidden" style="background-image: radial-gradient(rgba(0,0,0,0.05) 1px, transparent 0); background-size: 24px 24px;">
+  <div class="mx-auto max-w-4xl space-y-8 relative z-10">
+    
+    <!-- Combined Main Terminal with Yellow Drop Shadow -->
+    <div class="rounded-none border-3 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden">
+      <!-- Terminal Header -->
+      <div class="bg-black text-white px-4 py-2 flex items-center justify-between border-b-4 border-black select-none">
+        <div class="flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#FF605C] border border-black/40"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-[#FFBD2E] border border-black/40"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-[#27C93F] border border-black/40"></span>
+          <span class="text-[11px] font-mono text-white/40 ml-2 font-bold tracking-tight">bash - hackhub@admin:~</span>
+        </div>
+      </div>
+      
+      <!-- Terminal Sub-Header / Title -->
+      <div class="p-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between bg-white border-b-4 border-double border-black">
+        <div class="text-left space-y-1">
+          <p class="text-xs font-black uppercase tracking-widest text-black/40 font-mono">
+            System.Announcement
+          </p>
+          <h1 class="text-3xl font-black uppercase font-mono tracking-tight text-black flex items-center gap-1">
+            <span class="text-[#27C93F] font-bold select-none">./</span><span>Announcements</span>
+            <span class="text-xs text-black/30 font-normal lowercase hidden sm:inline ml-1">[stdout]</span>
+          </h1>
+        </div>
+        
+        <p class="text-xs font-bold font-mono text-black/70 bg-[#9BD1FF] border-2 border-black px-3 py-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:mb-0.5">
+          See the latest updates from the events you joined.
+        </p>
+      </div>
+
+      <!-- Terminal Content Area -->
+      <div class="p-6 bg-white">
+        {% if announcements %}
+          <div class="space-y-6 text-left">
+            {% for item in announcements %}
+            <div class="space-y-1.5">
+              <!-- Command Row -->
+              <div class="flex items-center justify-between border-b border-black/10 pb-0.5 select-none font-mono text-xs">
+                <div class="flex items-center gap-2">
+                  <span class="text-[#27C93F] font-black">guest@hackhub:~$</span>
+                  <span class="text-black font-bold">git pull <span class="text-[#FFBD2E]">msg~{{ loop.index }}</span></span>
+                </div>
+                {% if not item.is_read %}
+                <span class="bg-[#FF605C] text-black text-[9px] font-black uppercase px-1.5 py-0.2 border border-black animate-pulse">
+                  NEW
+                </span>
+                {% endif %}
+              </div>
+
+              <!-- Content Area with De-emphasized Title and Compact Typography -->
+              <div class="space-y-1 px-1">
+                <!-- De-emphasized Title & Meta Metadata Line -->
+                <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-x-4 gap-y-0.5 select-none font-mono text-[10px] text-black/40">
+                  <h2 class="font-bold tracking-tight text-black/50 uppercase">
+                    {{ item.announcement.title }}
+                  </h2>
+                  <div class="flex flex-wrap items-center gap-x-2">
+                    <span class="font-bold text-black/70 px-1">{{ item.announcement.event.title }}</span>
+                    <span class="text-black/20">::</span>
+                    <span>commit_by: <span class="text-black/60 font-bold">{{ item.announcement.creator.name or item.announcement.creator.email }}</span></span>
+                    <span class="text-black/20">::</span>
+                    <span class="text-black/40">{{ item.announcement.date_posted.strftime('%Y-%m-%d %H:%M') }}</span>
+                  </div>
+                </div>
+
+                <!-- Balanced & Compact Announcement Content Body -->
+                <p class="whitespace-pre-line text-[14px] text-black/90 leading-normal font-sans font-medium">
+                  {{ item.announcement.content }}
+                </p>
+              </div>
+            </div>
+            {% endfor %}
+
+            <div class="flex items-center gap-2 text-xs pt-2 select-none border-t border-black/10 font-mono">
+              <span class="text-[#27C93F] font-black">guest@hackhub:~$</span>
+              <span class="w-2 h-4 bg-[#27C93F] animate-pulse inline-block align-middle"></span>
+            </div>
+          </div>
+
+        {% else %}
+          <!-- Empty State Block -->
+          <div class="rounded-none border-4 border-dashed border-black/20 bg-[#FFFDF6]/50 p-12 text-center relative my-4">
+            <div class="max-w-xl mx-auto space-y-6 flex flex-col items-center">
+              <div class="font-mono text-[10px] leading-none text-black block select-none whitespace-pre overflow-x-auto overflow-y-hidden max-w-full text-left tracking-normal">
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣶⡶⢶⢶⣶⣤⣀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣦⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⠟⠋⠁⠀⠀⠀⠀⠀⠉⠻⣷⣄⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠉⠻⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⠃⠀⠀⢀⠀⠄⠐⠀⠀⡀⠀⠈⢿⡆
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⡀⠈⠻⢷⣤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⡇⠀⠀⠠⢀⣾⠿⠿⣷⡄⠀⠀⡀⢸⣿
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⢃⠀⠀⠈⠙⢿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣤⣐⣤⣿⠋⠀⣰⡿⠁⠀⠀⢀⣸⡟
+⢸⣧⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⠀⢸⠀⠀⠀⠀⠀⠻⣿⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠛⠛⠛⠀⢀⣼⠿⠀⠀⠀⢘⣼⠟⠀
+⢸⣏⠙⠻⢷⣦⣄⡀⠀⠀⠀⠀⠀⠀⠀⢰⣿⠀⠀⡆⠀⠀⠀⠀⠀⠈⠻⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⡿⠁⠀⠀⢠⣿⠟⠋⠀⠀
+⠘⣿⠀⠀⠀⠈⡙⠻⣶⣤⡀⠀⢀⣠⣤⣾⠿⠀⠀⠐⠤⠀⣀⡀⠀⠀⠀⠈⠻⣷⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣷⣠⣤⣴⣼⡧⠀⠀⠀⠀
+⠀⣿⡄⠇⠀⠀⠈⠑⠠⡙⠻⣷⠟⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠀⠁⠀⠈⠙⢿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠈⠉⣉⣉⣉⠉⠁⠀⠀⠀⠀
+⠀⢹⡇⢘⠀⠀⠀⠀⠀⠈⠒⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⠾⠂⠙⢿⣆⠀⠀⠀⠀⠀⠀⣴⡟⠉⠉⠛⣷⡄⠀⠀⠀⠀
+⠀⢸⣷⠀⢇⠀⠀⠀⠀⠀⢰⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣠⡶⠟⠋⢁⣠⣄⡀⠈⠻⣷⣄⠀⠀⠀⠀⢿⣇⠀⠤⢀⣿⠃⠀⠀⠀⠀
+⠀⠘⣿⠀⠘⡄⠀⠀⠀⢠⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠋⠁⠀⠀⠀⣿⣿⣿⣿⡆⠀⠘⢿⣦⠀⠀⠀⠈⠻⠷⣶⠿⠋⠀⠀⠀⠀⠀
+⠀⠀⣿⡇⠀⢡⠀⢀⡠⠃⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣿⣿⠟⠁⠀⡀⠈⠻⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⢽⣧⠀⠀⠉⠀⠀⠀⠀⠀⣀⣤⡶⠟⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠤⠊⠁⠀⢱⠀⠹⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⢸⣿⠀⠀⠀⢀⣀⣤⡶⠟⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⣀⠎⠀⠀⢹⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⣿⡆⠀⠀⠈⠉⠀⣠⣶⣶⣶⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⡆⠀⠙⠢⠔⠊⠀⠀⠀⢀⣾⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⢸⣷⠀⠀⠀⠀⠀⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀ ⢀⣴⡶⠶⠛⠙⣷⠀⠀⠀⠀⠀⠀⢀⣤⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠈⣿⡆⠀⠀⠀⠀⠈⠛⠛⠋⠀⣀⣀⡀⠀⠀⣦⣤⡶⠟⠉⠀⠀⠀⣠⡿⠀⠀⠀⠀⢀⣤⣾⠏⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀
+⠀⠀⠀⠀⢹⣷⠀⠀⠀⠀⠀⣀⠔⠈⠁⠀⠀⢸⠆⠀⠈⠹⣦⣀⣀⣤⣴⠾⠛⠁⠀⠀⣠⣴⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⢿⣇⠀⠀⠀⢰⡁⠀⠀⠀⠀⡠⠋⠀⠀⠀⠀⠈⠉⠉⠉⠀⠀⠀⣀⣴⡾⢿⣯⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠘⣿⡄⠀⠀⠀⠉⠒⠒⠒⠉⠀⠀⠀⠀⠀⣠⣶⠾⢶⣤⣤⡶⠿⠛⠁⠀⠘⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠘⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣤⣿⠃⠀⠈⣿⠁⠀⠀⠀⠀⠀⠀⢹⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠙⢿⣶⣤⣀⣀⣀⣀⣀⣤⣴⣶⡾⣿⣿⠀⠀⠀⣿⠀⠀⠀⠀⠀⠀⠀⠀⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠙⠛⠉⠉⠉⠁⠀⠀⢹⡇⠀⠀⢸⣿⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⢻⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⡇⠀⠀⣸⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⡆⠉⢿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⡇⠀⢠⣿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣧⠀⠀⠙⢿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣷⡄⠀⠈⠻⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⠏⠻⠶⠀⠀⠈⢻⡷⠄⠀⠀⠀⠀⠀⠀
+              </div>
+              
+              <div class="space-y-1 pt-2">
+                <div class="inline-block">
+                  <span class="badge bg-[#FFDE4D] text-black font-mono font-black text-xs uppercase tracking-wider px-3 py-1 h-auto rounded-none border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                    No Announcements Yet
+                  </span>
+                </div>
+                <p class="text-xs font-bold font-sans text-black/50 leading-relaxed max-w-sm mx-auto mt-1">
+                  No announcements yet for the events you joined. When event organizers push updates, they will show inside this view.
+                </p>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

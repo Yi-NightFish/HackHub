@@ -22,7 +22,8 @@ class User(db.Model):
     assigned_tasks = db.relationship('Task', foreign_keys='Task.assigned_to', backref='assigned_user', lazy=True)
     team_memberships = db.relationship('Participation', backref='user', lazy=True)
     announcements = db.relationship('Announcement', backref='creator', lazy=True)
-    last_seen = db.Column(db.DateTime, default=lambda: datetime.datetime.now())
+    announcement_reads = db.relationship('AnnouncementRead', backref='user', lazy=True, cascade='all, delete-orphan')
+    last_seen = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
 
     def is_online(self):
         if self.last_seen is None:
@@ -153,6 +154,17 @@ class TaskActivity(db.Model):
     def __repr__(self):
         return f'<TaskActivity {self.action}>'
     
+class AnnouncementRead(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    announcement_id = db.Column(db.Integer, db.ForeignKey('announcement.id'), nullable=False)
+    read_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
+    __table_args__ = (db.UniqueConstraint('user_id', 'announcement_id', name='uq_user_announcement_read'),)
+
+    def __repr__(self):
+        return f'<AnnouncementRead {self.user_id} - {self.announcement_id}>'
+
+
 class Announcement(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
@@ -160,6 +172,7 @@ class Announcement(db.Model):
     content = db.Column(db.Text, nullable=False)
     date_posted = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
     created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    reads = db.relationship('AnnouncementRead', backref='announcement', lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<Announcement {self.title}>'

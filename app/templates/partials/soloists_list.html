@@ -1,53 +1,138 @@
 {% if soloists %}
-      {% if leader_team %}
-        <form method="POST" action="{{ url_for('invite_soloists', event_id=event.id) }}">
-          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
-            <label style="font-weight:600;">
-              <input type="checkbox" id="select-all-soloists" onclick="document.querySelectorAll('.solo-checkbox').forEach(cb => cb.checked = this.checked)">
-              Select all
-            </label>
-            <button type="submit" style="padding:8px 14px; border:none; background:#2a7ae2; color:#fff; border-radius:6px; cursor:pointer;" {% if leader_team_full %}disabled{% endif %}>
-              Invite selected soloists
-            </button>
-          </div>
-          <p style="color:#444; font-size:0.9em; margin-bottom:18px;">
-            {% if leader_team_full %}<strong>Your team is full and cannot accept more soloists.</strong>
-            {% else %}Invites will be sent for your team "{{ leader_team.name }}" ({{ leader_team_member_count }}/{{ leader_team.max_members }}).
+  {% if leader_team %}
+    <form method="POST" action="{{ url_for('invite_soloists', event_id=event.id) }}" class="space-y-4 relative z-10">
+      
+      {# ================= CONTROL PANEL ================= #}
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-stone-100 border-4 border-black p-4 rounded-none relative z-10">
+        <div class="flex flex-col gap-1">
+          <label class="inline-flex items-center gap-2 font-black uppercase text-xs tracking-wide cursor-pointer select-none text-black relative z-10">
+            <input type="checkbox" id="select-all-soloists" onclick="document.querySelectorAll('.solo-checkbox').forEach(cb => cb.checked = this.checked)" class="w-4 h-4 accent-black border-4 border-black rounded-none focus:ring-0">
+            Select All Soloists
+          </label>
+          
+          {# ================= MUTED TEAM STATUS MESSAGE ================= #}
+          <div class="text-[11px] font-bold uppercase tracking-wide text-black/40 pl-6">
+            {% if leader_team_full %}
+              <span class="text-red-600">⚠️ Operational Limit: Your team is full and cannot send further invitations.</span>
+            {% else %}
+              <span>Sending from team: "{{ leader_team.name }}" (<span class="font-mono">{{ leader_team_member_count }}/{{ leader_team.max_members }}</span> rosters filled).</span>
             {% endif %}
-          </p>
-          <div class="soloists-grid">
-            {% for soloist in soloists %}
-              <div class="soloist-card">
-                <label style="display:block; margin-bottom:8px; font-size:0.85em;">
-                  <input type="checkbox" name="soloist_ids" value="{{ soloist.id }}" class="solo-checkbox">
-                  Invite this soloist
-                </label>
-                <h3><a href="{{ url_for('profile', user_id=soloist.id) }}">{{ soloist.name }}</a></h3>
-                <p><strong>Skills:</strong> {{ soloist.skills or "Not specified" }}</p>
-                <p><strong>University:</strong> {{ soloist.university or "Not specified" }}</p>
-                {% if soloist.github_link %}
-                  <p><strong>GitHub:</strong> <a href="{{ soloist.github_link }}" target="_blank">Profile</a></p>
-                {% endif %}
-                <a href="{{ url_for('profile', user_id=soloist.id) }}" class="view-profile-btn">View Profile</a>
-              </div>
-            {% endfor %}
           </div>
-        </form>
-      {% else %}
-        <div class="soloists-grid">
-          {% for soloist in soloists %}
-            <div class="soloist-card">
-              <h3><a href="{{ url_for('profile', user_id=soloist.id) }}">{{ soloist.name }}</a></h3>
-              <p><strong>Skills:</strong> {{ soloist.skills or "Not specified" }}</p>
-              <p><strong>University:</strong> {{ soloist.university or "Not specified" }}</p>
-              {% if soloist.github_link %}
-                <p><strong>GitHub:</strong> <a href="{{ soloist.github_link }}" target="_blank">Profile</a></p>
-              {% endif %}
-              <a href="{{ url_for('profile', user_id=soloist.id) }}" class="view-profile-btn">View Profile</a>
-            </div>
-          {% endfor %}
         </div>
-      {% endif %}
-    {% else %}
-      <p>No soloists are currently looking for teams in this event.</p>
-    {% endif %}
+        
+        <button type="submit" 
+                class="inline-block w-full sm:w-auto text-center bg-cyan-300 text-black border-4 border-black font-black uppercase tracking-wider text-xs px-5 py-2.5 rounded-none shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all disabled:opacity-40 disabled:pointer-events-none relative z-10"
+                {% if leader_team_full %}disabled{% endif %}>
+          Invite Selected Soloists
+        </button>
+      </div>
+
+      {# ================= GRID WITH INVITATION SYSTEM ================= #}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10">
+        {% for soloist in soloists %}
+          <div class="bg-white border-4 border-black p-4 rounded-none flex flex-col justify-between space-y-4 relative z-10">
+            <div class="space-y-3">
+              
+              {# Card Checkbox header #}
+              <div class="border-b-2 border-dashed border-black pb-2 mb-2 flex items-center justify-between">
+                <label class="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-black/70 cursor-pointer select-none relative z-10">
+                  <input type="checkbox" name="soloist_ids" value="{{ soloist.id }}" class="solo-checkbox w-3.5 h-3.5 accent-black border-2 border-black rounded-none">
+                  Select
+                </label>
+                <span class="text-[9px] font-mono font-black text-black/40">ID: #{{ soloist.id }}</span>
+              </div>
+
+              {# Profile Header #}
+              <h3 class="text-xl font-black uppercase tracking-tight text-black truncate">
+                <a href="{{ url_for('profile', user_id=soloist.id) }}" class="hover:underline decoration-4 decoration-black relative z-10">
+                  {{ soloist.name }}
+                </a>
+              </h3>
+
+              {# Stats Matrix #}
+              <div class="space-y-2 text-xs font-bold text-black tracking-wide">
+                <div class="flex items-start gap-2 min-w-0">
+                  <span class="bg-black text-white px-1.5 py-0.5 text-[8px] font-black border-2 border-black rounded-none flex-shrink-0 uppercase">SKILLS</span>
+                  <span class="normal-case text-black/80 font-bold truncate">{{ soloist.skills or "Not specified" }}</span>
+                </div>
+                
+                <div class="flex items-start gap-2 min-w-0">
+                  <span class="bg-black text-white px-1.5 py-0.5 text-[8px] font-black border-2 border-black rounded-none flex-shrink-0 uppercase">CAMPUS</span>
+                  <span class="uppercase text-black/80 font-mono text-[11px] font-black truncate">{{ soloist.university or "Not specified" }}</span>
+                </div>
+
+                {% if soloist.github_link %}
+                <div class="flex items-center gap-2">
+                  <span class="bg-[#8ccad2] text-black px-1.5 py-0.5 text-[8px] font-black border-2 border-black rounded-none flex-shrink-0 uppercase">GITHUB</span>
+                  <a href="{{ soloist.github_link }}" target="_blank" class="font-mono text-[11px] font-black underline hover:bg-black hover:text-white px-1 transition-colors relative z-10">
+                    PRO_FILE //
+                  </a>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            {# Card Action Button #}
+            <a href="{{ url_for('profile', user_id=soloist.id) }}" class="block w-full text-center bg-white text-black border-4 border-black font-black uppercase tracking-wider text-xs py-2.5 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all relative z-10">
+              View Profile
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </form>
+
+  {% else %}
+    {# ================= STANDARD GRID (VIEW ONLY) ================= #}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10">
+      {% for soloist in soloists %}
+        <div class="bg-white border-4 border-black p-4 rounded-none flex flex-col justify-between space-y-4 relative z-10">
+          <div class="space-y-3">
+            
+            <div class="border-b-2 border-dashed border-black pb-1 flex justify-end">
+              <span class="text-[9px] font-mono font-black text-black/40">SOLOIST_UNIT</span>
+            </div>
+
+            <h3 class="text-xl font-black uppercase tracking-tight text-black truncate">
+              <a href="{{ url_for('profile', user_id=soloist.id) }}" class="hover:underline decoration-4 decoration-black relative z-10">
+                {{ soloist.name }}
+              </a>
+            </h3>
+
+            <div class="space-y-2 text-xs font-bold text-black tracking-wide">
+              <div class="flex items-start gap-2 min-w-0">
+                <span class="bg-black text-white px-1.5 py-0.5 text-[8px] font-black border-2 border-black rounded-none flex-shrink-0 uppercase">SKILLS</span>
+                <span class="normal-case text-black/80 font-bold truncate">{{ soloist.skills or "Not specified" }}</span>
+              </div>
+              
+              <div class="flex items-start gap-2 min-w-0">
+                <span class="bg-black text-white px-1.5 py-0.5 text-[8px] font-black border-2 border-black rounded-none flex-shrink-0 uppercase">CAMPUS</span>
+                <span class="uppercase text-black/80 font-mono text-[11px] font-black truncate">{{ soloist.university or "Not specified" }}</span>
+              </div>
+
+              {% if soloist.github_link %}
+              <div class="flex items-center gap-2">
+                <span class="bg-[#8ccad2] text-black px-1.5 py-0.5 text-[8px] font-black border-2 border-black rounded-none flex-shrink-0 uppercase">GITHUB</span>
+                <a href="{{ soloist.github_link }}" target="_blank" class="font-mono text-[11px] font-black underline hover:bg-black hover:text-white px-1 transition-colors relative z-10">
+                  PRO_FILE //
+                </a>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <a href="{{ url_for('profile', user_id=soloist.id) }}" class="block w-full text-center bg-white text-black border-4 border-black font-black uppercase tracking-wider text-xs py-2.5 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all relative z-10">
+            View Profile
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+{% else %}
+  {# ================= EMPTY STATE ================= #}
+  <div class="text-center py-10 bg-yellow-50 border-4 border-black border-dashed rounded-none max-w-md mx-auto relative z-10">
+    <p class="text-sm font-black uppercase tracking-wide text-black/60 p-2">
+      No soloists are currently looking for teams in this event terminal.
+    </p>
+  </div>
+{% endif %}

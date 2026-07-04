@@ -7,165 +7,432 @@
 {% block title %}{{ event.title }} | Event Details{% endblock %}
 
 {% block content %}
-<div class="event-detail">
-  <div id="event-tab">
-    {% set tabs = ["overview", "participants", "teams", "solo"] %}
-    {% for tab in tabs %}
-      <a href="{{ url_for('event_detail', event_id=event.id, tab=tab) }}" class="{{ 'active' if active_tab == tab else '' }}">
-        {{ tab.capitalize() }}
-      </a>
-    {% endfor %}
+<div class="relative w-full min-h-screen bg-[#FFFDF6] pb-12 text-black font-sans selection:bg-yellow-300 selection:text-black overflow-x-hidden" style="overflow-x: hidden !important;">
+  
+  <div class="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden" style="max-width: 100vw;">
+    <div class="absolute -right-20 top-1/4 w-96 h-64 bg-yellow-300/25 border-4 border-black transform rotate-12 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] opacity-75 hidden sm:block">
+      <div class="w-full h-8 border-b-4 border-black bg-black/10"></div>
+      <div class="p-4 space-y-3">
+        <div class="w-2/3 h-4 bg-black/20"></div>
+        <div class="w-1/2 h-4 bg-black/20"></div>
+      </div>
+    </div>
+
+    <div class="absolute -left-32 bottom-20 w-[500px] h-[500px] border-[6px] border-black opacity-10 rounded-none transform rotate-45"></div>
+    <div class="absolute -left-16 bottom-36 w-[350px] h-[350px] border-4 border-black border-dashed opacity-10 rounded-none transform -rotate-12"></div>
+
+    <div class="absolute right-[10%] top-12 w-12 h-12 opacity-30 hidden md:block">
+      <div class="absolute top-5 left-0 w-12 h-2 bg-black"></div>
+      <div class="absolute top-0 left-5 w-2 h-12 bg-black"></div>
+    </div>
+    <div class="absolute left-[5%] top-1/2 w-8 h-8 opacity-60">
+      <div class="absolute top-3 left-0 w-8 h-2 bg-black"></div>
+      <div class="absolute top-0 left-3 w-2 h-8 bg-black"></div>
+    </div>
+
+    <div class="absolute right-6 bottom-10 w-64 h-64 opacity-35"
+         style="background-image: radial-gradient(circle, #000000 3px, transparent 3px); background-size: 24px 24px;">
+    </div>
+    
+  </div>
+  <div class="relative pt-10 pb-6 px-4 z-10">
+    <div class="container mx-auto max-w-5xl text-center flex flex-col items-center">
+      <div class="space-y-4 w-full">
+        
+        <div class="relative block transform -rotate-1 bg-white border-4 border-black p-4 sm:p-5 rounded-none shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] w-full text-left">
+          
+          {% if event.status == 'open' or event.status == 'ongoing' %}
+          <div class="absolute -top-4 right-4 sm:right-6 z-20 inline-flex items-center gap-2 px-3 py-1 bg-yellow-300 text-black text-xs font-black tracking-widest uppercase border-4 border-black rounded-none">
+            <span class="flex h-2 w-2 relative">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-none bg-black opacity-75"></span>
+              <span class="relative inline-flex rounded-none h-2 w-2 bg-black"></span>
+            </span>
+            {{ event.status }}
+          </div>
+          {% endif %}
+
+          <h1 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tighter text-black uppercase leading-none break-words pr-20">
+            {{ event.title }}
+          </h1>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <h1>{{ event.title }}</h1>
-
-  {% if active_tab == "overview" %}
-    {% if current_user and event.organizer_id == current_user.id %}
-      <div style="margin-bottom: 15px;">
-        <a href="{{ url_for('edit_event', event_id=event.id) }}" class="edit-event-btn" style="display: inline-block; padding: 8px 16px; background: #2a7ae2; color: white; text-decoration: none; border-radius: 5px; font-size: 0.9em;">
-          Edit Event
-        </a>
-      </div>
-    {% endif %}
-    <div class="event-meta">
-      <p><strong>Date:</strong> {{ event.start_time.strftime('%b %d, %Y') }}</p>
-      <p><strong>Time:</strong> {{ event.start_time.strftime('%I:%M %p') }}</p>
-      {% if event.organizer %}
-        <p><strong>Organizer:</strong> {{ event.organizer.name }}</p>
-      {% endif %}
-      <p  class = "{{ 'event-status-' +  event.status }}"><strong>Status: </strong><span> {{ event.status }} </span></p>
-      <p><strong>No. Participants:</strong> {{ no_participant }}</p>
-    </div>
-
-    <hr>
-    <div class="event-description">
-      {{ event.description }}
-    </div>
-
-    {% if event.status == "open" %}
-      {% if current_user %}
-        {% if not enrolled %}
-          <form method = "POST">
-            <input name = "user-id" value = '{{ current_user.id }}' hidden>
-            <input type = "submit" value = "Join Now" class = "join-now">
-          </form>
-        {% else %}
-            <p class = "enrolled">Enrolled</p>
-            <p>Press here to <a href = '{{ url_for("unroll", event_id = event.id) }}'>unroll</a></p>
-        {% endif %}
-      {% else %}
-        <p>Please <a href="{{ url_for('login', next = request.url) }}">log in</a> to join!</p>
-      {% endif %}
-    {% endif %}
-
-  {% elif active_tab == "participants" %}
-    {% if current_user %}
-      {% if participants %}
-        <table class="participants-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for participant in participants %}
-              <tr>
-                <td>
-                  <a href="{{ url_for('profile', user_id=participant.id) }}">{{ participant.name }}</a>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      {% else %}
-        <p>No participants in this hackathon.</p>
-      {% endif %}
-    {% else %}
-      <p>Please <a href="{{ url_for('login', next = request.url) }}">log in</a> to view participant details.</p>
-    {% endif %}
-  {% elif active_tab == "teams" %}
-    <div class="event-teams">
-      {% if enrolled and not in_team %}
-        <div class="create-team-btn">
-          <a href='{{ url_for("create_team_for_event", event_id = event.id) }}' class="create-team-btn">Create Team</a>
-        </div>
-      {% endif %}
-      {% if teams %}
-        {% for team in teams %}
-          <div class="team-card">
-            <h3><a href="{{ url_for('team_detail', team_id=team.id) }}">{{ team.name }}</a></h3>
-            <p><strong>Motto:</strong> {{ team.motto or "-" }}</p>
-            <p><strong>Members:</strong> {{ team.members|length }} / {{ team.max_members }}</p>
-            <p><strong>Project:</strong> {{ team.project_idea or "N/A" }}</p>
-          </div>
+  <div class="container mx-auto px-4 max-w-5xl relative z-10">
+    
+    <div class="bg-[#FFFDF6] border-2 border-black rounded-none shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+      
+      <div class="bg-stone-200 border-b-4 border-black flex flex-wrap items-stretch">
+        {% set tabs = ["overview", "participants", "teams", "solo"] %}
+        {% for tab in tabs %}
+          <a href="{{ url_for('event_detail', event_id=event.id, tab=tab) }}" 
+             class="flex-1 min-w-[100px] text-center py-3 text-xs sm:text-sm font-black uppercase tracking-wider border-r-4 border-black last:border-r-0 transition-all flex items-center justify-center
+             {{ 'bg-white text-black border-b-4 border-b-white -mb-[4px]' if active_tab == tab else 'text-black/70 bg-stone-200 hover:bg-amber-100 hover:text-black' }}">
+            {{ tab.capitalize() }}
+          </a>
         {% endfor %}
-      {% else %}
-        <p>No teams have been created for this event yet.</p>
-      {% endif %}
-    </div>
-  {% elif active_tab == "solo" %}
-    <div style="margin-bottom: 15px; color: #666; font-size: 0.9em;">
-      Showing <strong>{{ soloists|length }}</strong> {% if soloists|length == 1 %}soloist{% else %}soloists{% endif %} looking for a team
-    </div>
-    <!--nx add sololist search box -->
-    <input type="text" name="search_soloists" placeholder="Search soloists by name or skills..." value="{{ search_soloists_query or '' }}" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 20px;" hx-get="/event/{{ event.id }}?tab=solo" hx-trigger="keyup changed delay:500ms" hx-target="#soloists-list" hx-swap="innerHTML">
-    <div id="soloists-list">
-      {% include "partials/soloists_list.html" %}
-    </div>
-    <!-- nx end -->
-    <!-- {% if soloists %}
-      {% if leader_team %}
-        <form method="POST" action="{{ url_for('invite_soloists', event_id=event.id) }}">
-          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
-            <label style="font-weight:600;">
-              <input type="checkbox" id="select-all-soloists" onclick="document.querySelectorAll('.solo-checkbox').forEach(cb => cb.checked = this.checked)">
-              Select all
-            </label>
-            <button type="submit" style="padding:8px 14px; border:none; background:#2a7ae2; color:#fff; border-radius:6px; cursor:pointer;" {% if leader_team_full %}disabled{% endif %}>
-              Invite selected soloists
-            </button>
-          </div>
-          <p style="color:#444; font-size:0.9em; margin-bottom:18px;">
-            {% if leader_team_full %}<strong>Your team is full and cannot accept more soloists.</strong>
-            {% else %}Invites will be sent for your team "{{ leader_team.name }}" ({{ leader_team_member_count }}/{{ leader_team.max_members }}).
-            {% endif %}
-          </p>
-          <div class="soloists-grid">
-            {% for soloist in soloists %}
-              <div class="soloist-card">
-                <label style="display:block; margin-bottom:8px; font-size:0.85em;">
-                  <input type="checkbox" name="soloist_ids" value="{{ soloist.id }}" class="solo-checkbox">
-                  Invite this soloist
-                </label>
-                <h3><a href="{{ url_for('profile', user_id=soloist.id) }}">{{ soloist.name }}</a></h3>
-                <p><strong>Skills:</strong> {{ soloist.skills or "Not specified" }}</p>
-                <p><strong>University:</strong> {{ soloist.university or "Not specified" }}</p>
-                {% if soloist.github_link %}
-                  <p><strong>GitHub:</strong> <a href="{{ soloist.github_link }}" target="_blank">Profile</a></p>
-                {% endif %}
-                <a href="{{ url_for('profile', user_id=soloist.id) }}" class="view-profile-btn">View Profile</a>
+      </div>
+
+      <div class="p-4 sm:p-6">
+
+        {# ================= OVERVIEW TAB ================= #}
+        {% if active_tab == "overview" %}
+        <div class="space-y-6">
+          
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <div class="lg:col-span-5 flex flex-col gap-4">
+              
+              <div class="bg-white border-4 border-black p-3 rounded-none flex items-center gap-4">
+                <div class="p-2 border-4 border-black bg-[#b5e285] text-black rounded-none flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                  </svg>
+                </div>
+                <div class="min-w-0">
+                  <span class="text-[9px] uppercase font-black tracking-widest text-black/50 block mb-0.5">LAUNCH DATE</span>
+                  <span class="text-base font-black text-black block uppercase tracking-tight leading-none">{{ event.start_time.strftime('%b %d, %Y') }}</span>
+                  <span class="text-xs font-mono font-black text-black/70 mt-0.5 block">{{ event.start_time.strftime('%I:%M %p') }}</span>
+                </div>
               </div>
+
+              <div class="bg-white border-4 border-black p-3 rounded-none flex items-center gap-4">
+                <div class="p-2 border-4 border-black bg-[#e2a8be] text-black rounded-none flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  </svg>
+                </div>
+                <div class="min-w-0">
+                  <span class="text-[9px] uppercase font-black tracking-widest text-black/50 block mb-0.5">ORGANIZER HOST</span>
+                  <span class="text-base font-black text-black uppercase truncate block tracking-tight">{{ event.organizer.name if event.organizer else 'N/A' }}</span>
+                </div>
+              </div>
+
+              <div class="bg-white border-4 border-black p-3 rounded-none flex items-center gap-4">
+                <div class="p-2 border-4 border-black bg-[#8ccad2] text-black rounded-none flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.65-2.42 9.123 9.123 0 00-6.182 0 3 3 0 00-4.65 2.42 9.094 9.094 0 003.741.479M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                  </svg>
+                </div>
+                <div class="min-w-0">
+                  <span class="text-[9px] uppercase font-black tracking-widest text-black/50 block mb-0.5">ENROLLMENT</span>
+                  <span class="text-base font-black text-black uppercase tracking-tight block">{{ no_participant }} USERS Enrolled</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="lg:col-span-7 bg-[#eae7df] border-4 border-black p-4 sm:p-5 rounded-none">
+              <h3 class="text-[10px] font-black uppercase tracking-widest text-black mb-4 bg-white border-4 border-black px-2 py-0.5 inline-block">EVENT TIMELINE</h3>
+              
+              <ul class="relative border-l-4 border-black space-y-4 pl-6 my-1 ml-2">
+                
+                <li class="relative">
+                  <div class="absolute -left-[38px] top-0 w-7 h-7 rounded-none border-4 border-black flex items-center justify-center font-black text-sm transition-colors 
+                    {{ 'bg-[#e5cf7b] text-black border-black' if event.status == 'open' else ('bg-[#b5e285] text-black border-black' if event.status in ['ongoing', 'completed'] else 'bg-neutral-100 text-neutral-400 border-neutral-300') }}">
+                    1
+                  </div>
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-4 p-3 rounded-none 
+                    {{ 'bg-white border-black text-black' if event.status == 'open' else 'bg-stone-50/50 border-neutral-300 text-neutral-400' }}">
+                    <div>
+                      <span class="text-xs font-black uppercase tracking-wide block {{ 'text-black' if event.status == 'open' else 'text-neutral-400' }}">Registration Deadline</span>
+                      {% if event.deadline %}
+                      <span class="text-[11px] font-mono font-bold {{ 'text-black/60' if event.status == 'open' else 'text-neutral-400/60' }}">{{ event.deadline.strftime('%I:%M %p') }}</span>
+                      {% endif %}
+                    </div>
+                    <span class="text-xs font-mono font-black border-4 px-3 py-0.5 rounded-none align-self-start sm:align-self-auto
+                      {{ 'bg-black text-white border-black' if event.status == 'open' else 'bg-neutral-200 text-neutral-400 border-neutral-300' }}">
+                      {{ event.deadline.strftime('%b %d, %Y') if event.deadline else 'N/A' }}
+                    </span>
+                  </div>
+                </li>
+
+                <li class="relative">
+                  <div class="absolute -left-[38px] top-0 w-7 h-7 rounded-none border-4 border-black flex items-center justify-center font-black text-sm transition-colors 
+                    {{ 'bg-[#e5cf7b] text-black border-black' if event.status == 'ongoing' else ('bg-[#b5e285] text-black border-black' if event.status == 'completed' else 'bg-neutral-100 text-neutral-400 border-neutral-300') }}">
+                    2
+                  </div>
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-4 p-3 rounded-none 
+                    {{ 'bg-white border-black text-black' if event.status == 'ongoing' else 'bg-stone-50/50 border-neutral-300 text-neutral-400' }}">
+                    <div>
+                      <span class="text-xs font-black uppercase tracking-wide block {{ 'text-black' if event.status == 'ongoing' else 'text-neutral-400' }}">Event Launch execution</span>
+                      {% if event.start_time %}
+                      <span class="text-[11px] font-mono font-bold {{ 'text-black/60' if event.status == 'ongoing' else 'text-neutral-400/60' }}">{{ event.start_time.strftime('%I:%M %p') }}</span>
+                      {% endif %}
+                    </div>
+                    <span class="text-xs font-mono font-black border-4 px-3 py-0.5 rounded-none
+                      {{ 'bg-[#8ccad2] text-black border-black' if event.status == 'ongoing' else 'bg-neutral-200 text-neutral-400 border-neutral-300' }}">
+                      {{ event.start_time.strftime('%b %d, %Y') if event.start_time else 'N/A' }}
+                    </span>
+                  </div>
+                </li>
+
+                <li class="relative">
+                  <div class="absolute -left-[38px] top-0 w-7 h-7 rounded-none border-4 border-black flex items-center justify-center font-black text-sm transition-colors 
+                    {{ 'bg-[#e5cf7b] text-black border-black' if event.status == 'completed' else 'bg-neutral-100 text-neutral-400 border-neutral-300' }}">
+                    3
+                  </div>
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-4 p-3 rounded-none 
+                    {{ 'bg-white border-black text-black' if event.status == 'completed' else 'bg-stone-50/50 border-neutral-300 text-neutral-400' }}">
+                    <div>
+                      <span class="text-xs font-black uppercase tracking-wide block {{ 'text-black' if event.status == 'completed' else 'text-neutral-400' }}">Terminal Conclusion</span>
+                      {% if event.end_time %}
+                      <span class="text-[11px] font-mono font-bold {{ 'text-black/60' if event.status == 'completed' else 'text-neutral-400/60' }}">{{ event.end_time.strftime('%I:%M %p') }}</span>
+                      {% endif %}
+                    </div>
+                    <span class="text-xs font-mono font-black border-4 px-3 py-0.5 rounded-none
+                      {{ 'bg-[#e2a8be] text-black border-black' if event.status == 'completed' else 'bg-neutral-200 text-neutral-400 border-neutral-300' }}">
+                      {{ event.end_time.strftime('%b %d, %Y') if event.end_time else 'N/A' }}
+                    </span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <h3 class="text-xl font-black uppercase tracking-tight text-black mb-2">Description Statement</h3>
+            <div class="bg-white border-4 border-black p-4 sm:p-5 rounded-none relative">
+              <div class="absolute top-0 right-0 border-b-4 border-l-4 border-black bg-[#e5cf7b] px-3 py-0.5 text-[9px] font-black uppercase tracking-widest">TXT</div>
+              <p class="text-black font-bold whitespace-pre-line text-sm leading-relaxed tracking-wide">
+                {{ event.description or 'No description provided for this event yet.' }}
+              </p>
+            </div>
+          </div>
+
+          {% if current_user and event.organizer_id == current_user.id %}
+          <div class="pt-4">
+            <div class="mb-4 border-t-4 border-dotted border-black pt-4"></div>
+            <h3 class="text-xl font-black uppercase tracking-tight text-black mb-2">Post Announcement</h3>
+            <form method="POST" action="{{ url_for('create_event_announcement', event_id=event.id) }}" class="space-y-3 bg-white border-4 border-black p-4 rounded-none">
+              <input type="hidden" name="next" value="{{ request.url }}">
+              <div>
+                <label class="mb-1 block text-xs font-black uppercase tracking-wide">Title</label>
+                <input type="text" name="title" required placeholder="e.g., Welcome everyone! Let's get started 👋" class="w-full border-4 border-black bg-[#FFFDF6] px-3 py-1.5 font-semibold text-sm text-neutral/50">
+              </div>
+              <div>
+                <label class="mb-1 block text-xs font-black uppercase tracking-wide">Message</label>
+                <textarea name="content" rows="3" required placeholder="Share an update, dynamic tips, or important updates with your participants here..." class="w-full border-4 border-black bg-[#FFFDF6] px-3 py-1.5 font-semibold text-sm text-neutral/50"></textarea>
+              </div>
+              <button type="submit" class="transform bg-[#8ccad2] text-black border-4 border-black font-black uppercase px-4 py-2 text-xs rounded-none shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all">Publish</button>
+            </form>
+          </div>
+          {% endif %}
+
+          {% if event.status == 'open' %}
+          <div class="flex justify-end pt-4">
+            {% if current_user %}
+              {% if current_user.id == event.organizer_id %}
+              <a href="{{ url_for('edit_event', event_id=event.id) }}" class="transform w-full sm:w-auto text-center bg-cyan-300 text-black border-4 border-black font-black uppercase tracking-wider text-base px-8 py-3 rounded-none shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer inline-flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                </svg>
+                Edit Event Details
+              </a>
+              {% elif not enrolled %}
+              <form method="POST" class="w-full sm:w-auto">
+                <button type="submit" class="transform w-full sm:w-auto text-center bg-[#b5e285] text-black border-4 border-black font-black uppercase tracking-wider text-base px-8 py-3 rounded-none shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all cursor-pointer">
+                  Enroll Now
+                </button>
+              </form>
+              {% else %}
+              <a href='{{ url_for("unroll", event_id=event.id) }}' class="transform w-full sm:w-auto text-center bg-[#e28a8a] text-black border-4 border-black font-black uppercase tracking-wider text-sm px-6 py-2.5 rounded-none shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all inline-block">
+                Quit Event
+              </a>
+              {% endif %}
+            {% else %}
+              <div class="bg-[#e5cf7b] border-4 border-black p-4 text-center w-full rounded-none">
+                <p class="text-sm font-black uppercase tracking-wide">
+                  Restricted. Please <a href="{{ url_for('login', next=request.url) }}" class="underline decoration-2 font-black text-black bg-white px-2 py-0.5 hover:bg-black hover:text-white transition-colors rounded-none">log in</a> to register.
+                </p>
+              </div>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div> 
+        {# ================= PARTICIPANTS TAB ================= #}
+        {% elif active_tab == "participants" %}
+        <div>
+          <h2 class="text-2xl font-black uppercase text-black mb-4 flex items-center gap-3">
+            <span>Fellow Participants</span>
+            <span class="text-[10px] font-black text-white bg-black px-2 py-0.5 uppercase tracking-widest border-4 border-black rounded-none">SYSTEM.DAT</span>
+          </h2>
+
+          {% if current_user %}
+            {% if participants %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {% for participant in participants %}
+                <a href="{{ url_for('profile', user_id=participant.id) }}" class="group bg-white border-4 border-black p-3.5 rounded-none block transition-all">
+                  <div class="flex items-center justify-between w-full gap-3">
+                    
+                    <div class="flex items-center gap-3 min-w-0">
+                      <div class="w-12 h-12 border-4 border-black bg-orange-200 flex-shrink-0 flex items-center justify-center overflow-hidden rounded-none">
+                        <svg data-jdenticon-value="{{ participant.name }}" class="w-full h-full p-1"></svg>
+                      </div>
+                      <div class="flex flex-col min-w-0">
+                        <span class="font-black text-base text-black uppercase tracking-tight truncate group-hover:underline decoration-2 decoration-black">
+                          {{ participant.name }}
+                        </span>
+                        
+                        {% set _team_name = None %}
+                        {% for membership in participant.team_members%}
+                          {% if membership.event_id == event.id and membership.team_id %}
+                            {% set _team_name = membership.team.name %}
+                          {% endif %}
+                        {% endfor %}
+                        
+                        <span class="text-[11px] font-mono font-black text-black/60 truncate mt-0.5">
+                          {% if _team_name %}
+                            <span class="text-yellow-500 font-black">★</span> {{ _team_name }}
+                          {% else %}
+                            <span class="opacity-40">⚃</span> Solo
+                          {% endif %}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="flex-shrink-0 w-8 h-8 border-4 border-black bg-black text-white flex items-center justify-center rounded-none group-hover:bg-yellow-300 group-hover:text-black transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="4" stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                      </svg>
+                    </div>
+                    
+                  </div>
+                </a>
+              {% endfor %}
+            </div>
+
+            {% if total_pages and total_pages > 1 %}
+            <div class="flex justify-center pt-6">
+              <div class="inline-flex bg-white border-4 border-black p-1 rounded-none gap-2">
+                <a href="{{ url_for('event_detail', event_id=event.id, tab='participants', page=current_page-1) }}" 
+                   class="px-3 py-1 font-black text-xs uppercase rounded-none border-4 border-transparent transition-all hover:bg-black hover:text-white {% if current_page == 1 %}pointer-events-none opacity-20{% endif %} hover:translate-x-[2px] hover:translate-y-[2px]">
+                  « Prev
+                </a>
+                <span class="px-4 py-1 font-black text-xs uppercase bg-cyan-200 border-4 border-black rounded-none text-black">
+                  Page {{ current_page }} / {{ total_pages }}
+                </span>
+                <a href="{{ url_for('event_detail', event_id=event.id, tab='participants', page=current_page+1) }}" 
+                   class="px-3 py-1 font-black text-xs uppercase rounded-none border-4 border-transparent transition-all hover:bg-black hover:text-white {% if current_page == total_pages %}pointer-events-none opacity-20{% endif %} hover:translate-x-[2px] hover:translate-y-[2px]">
+                  Next »
+                </a>
+              </div>
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="text-center py-10 bg-yellow-50 border-4 border-black border-dashed rounded-none max-w-md mx-auto">
+              <p class="text-sm font-black uppercase tracking-wide text-black/60 p-2">No participant identified yet. Why not be the first one!</p>
+            </div>
+            {% endif %}
+          {% else %}
+            <div class="text-center py-8 bg-pink-100 border-4 border-black rounded-none max-w-md mx-auto">
+              <p class="text-xs font-black uppercase tracking-wide text-black px-4">
+                Unauthorized. Please <a href="{{ url_for('login', next=request.url) }}" class="underline decoration-2 font-black">log in</a> to view data records.
+              </p>
+            </div>
+          {% endif %}
+        </div>
+        {# ================= TEAMS TAB ================= #}
+        {% elif active_tab == "teams" %}
+        <div>
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+            <h2 class="text-2xl font-black uppercase text-black flex items-center gap-3">
+              <span>TEAMS</span>
+              <span class="text-[10px] font-black text-white bg-black px-2 py-0.5 uppercase tracking-widest border-4 border-black rounded-none">TEAM.CFG</span>
+            </h2>
+            {% if enrolled and not in_team %}
+              <a href='{{ url_for("create_team_for_event", event_id=event.id) }}' class="transform bg-yellow-300 text-black border-4 border-black font-black uppercase tracking-wider text-xs px-4 py-2 rounded-none shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all inline-block text-center w-full sm:w-auto">
+                + Establish New Team
+              </a>
+            {% endif %}
+          </div>
+
+          {% if teams %}
+          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {% for team in teams %}
+              <a href="{{ url_for('team_detail', team_id=team.id) }}" class="group bg-white border-4 border-black p-4 rounded-none block">
+                <div class="flex items-center justify-between w-full gap-3">
+                  
+                  <div class="min-w-0 flex-1 space-y-2">
+                    <div>
+                      <h3 class="text-lg font-black uppercase tracking-tight text-black group-hover:underline decoration-2 truncate mb-0.5">
+                        {{ team.name }}
+                      </h3>
+                      <p class="text-[10px] text-black/60 font-mono font-black italic truncate p-0.5 inline-block">
+                        "{{ team.motto or 'No motto set' }}"
+                      </p>
+                    </div>
+                    
+                    <div class="space-y-1 text-[11px] text-black font-black uppercase tracking-wide">
+                      <div class="flex items-center gap-2">
+                        <span class="bg-black text-white px-1.5 py-0.5 text-[8px] font-black border-4 border-black rounded-none">MEMBERS</span>
+                        <span class="font-mono bg-yellow-200 px-1.5 py-0.5 rounded-none text-black font-black">{{ team.members|length }} / {{ team.max_members }}</span>
+                      </div>
+                      <div class="flex items-center gap-2 min-w-0">
+                        <span class="bg-black text-white px-1.5 py-0.5 text-[8px] font-black border-4 border-black rounded-none flex-shrink-0">PROJECT</span>
+                        <span class="truncate italic text-black/80 font-bold normal-case">{{ team.project_idea or 'Undefined idea' }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex-shrink-0 w-8 h-8 border-4 border-black bg-black text-white flex items-center justify-center rounded-none group-hover:bg-yellow-300 group-hover:text-black transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="4" stroke="currentColor" class="w-4 h-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                  </div>
+
+                </div>
+              </a>
             {% endfor %}
           </div>
-        </form>
-      {% else %}
-        <div class="soloists-grid">
-          {% for soloist in soloists %}
-            <div class="soloist-card">
-              <h3><a href="{{ url_for('profile', user_id=soloist.id) }}">{{ soloist.name }}</a></h3>
-              <p><strong>Skills:</strong> {{ soloist.skills or "Not specified" }}</p>
-              <p><strong>University:</strong> {{ soloist.university or "Not specified" }}</p>
-              {% if soloist.github_link %}
-                <p><strong>GitHub:</strong> <a href="{{ soloist.github_link }}" target="_blank">Profile</a></p>
-              {% endif %}
-              <a href="{{ url_for('profile', user_id=soloist.id) }}" class="view-profile-btn">View Profile</a>
-            </div>
-          {% endfor %}
+          {% else %}
+          <div class="text-center py-10 bg-yellow-50 border-4 border-black border-dashed rounded-none max-w-md mx-auto">
+            <p class="text-sm font-black uppercase tracking-wide text-black/60">No teams created for this event yet...</p>
+          </div>
+          {% endif %}
         </div>
-      {% endif %}
-    {% else %}
-      <p>No soloists are currently looking for teams in this event.</p>
-    {% endif %} -->
-  {% endif %}
+
+        {# ================= SOLOIST MATRIX TAB ================= #}
+        {% elif active_tab == "solo" %}
+        <div class="space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <div>
+              <h2 class="text-2xl font-black uppercase text-black flex items-center gap-3">
+                <span>Independent Soloists</span>
+                <span class="text-[10px] font-black text-white bg-black px-2 py-0.5 uppercase tracking-widest border-4 border-black rounded-none">SOLO.IDX</span>
+              </h2>
+              <p class="text-[11px] text-black/40 font-black mt-1 uppercase tracking-widest">
+                Found <span class="border-b-2 px-1 border-black text-black font-black">{{ soloists|length }}</span> soloist
+              </p>
+            </div>
+          </div>
+          
+          <div class="w-full relative">
+            <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-black">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input type="text" 
+                   name="search_soloists" 
+                   placeholder="Finding someone by name..." 
+                   value="{{ search_soloists_query or '' }}" 
+                   class="w-full bg-white border-4 border-black h-12 pl-12 pr-4 text-sm font-black uppercase tracking-tight text-black placeholder-black/40 focus:outline-none focus:bg-amber-50 rounded-none transition-all"
+                   hx-get="/event/{{ event.id }}?tab=solo"
+                   hx-trigger="keyup changed delay:500ms"
+                   hx-target="#soloists-list"
+                   hx-swap="innerHTML">
+          </div>
+
+          <div id="soloists-list" class="pt-1">
+            {% include "partials/soloists_list.html" %}
+          </div>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
