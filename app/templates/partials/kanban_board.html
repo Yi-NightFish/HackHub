@@ -1,57 +1,84 @@
-<div class="kanban-board" id="kanban-board-container">
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-5" id="kanban-board-container">
     {% for column_status in ["Wishlist", "To Do", "In Progress", "In Review", "Complete"] %}
-    <div class="kanban-column">
-        <div class="column-header status-{{ column_status|lower|replace(' ', '-') }}">
-            <h2>{{ column_status }}</h2>
-            <label for="create-modal-toggle" class="column-add-btn" title="Add task to {{ column_status }}">+</label>
+    <div class="card bg-white border-2 border-black rounded-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+        <div class="bg-[#FFDE4D] border-b-2 border-black p-3 flex justify-between items-center">
+            <h2 class="font-black uppercase text-sm tracking-wider text-black">{{ column_status }}</h2>
+            <label for="create-modal-{{ loop.index }}"
+                class="btn min-h-0 h-8 w-8 p-0 rounded-none border-2 border-black bg-white text-black hover:bg-black hover:text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none font-black text-xl"
+                title="Add task to {{ column_status }}">+</label>
         </div>
-        <div class="kanban-cards-dropzone">
+        <div class="card-body p-4 flex flex-col gap-4 min-h-[260px]">
             {% set tasks_in_column = tasks|selectattr("status", "equalto", column_status)|list %}
             {% for task in tasks_in_column %}
-            {% set is_overdue = (not task.is_done) and (task.status in ['To Do', 'In Progress']) and task.deadline and task.deadline < datetime.datetime.now() %}
-            <div class="task-card {% if is_overdue %}overdue-card{% endif %}">
-                <a class="task-card-link" href="{{ url_for('task_details', team_id=team.id, id=task.id) }}">
-                    <h3>{{ task.title }}</h3>
-                    <p><strong>Assigned:</strong> {{ task.assigned_user.name if task.assigned_user else 'No assignee' }}</p>
-                    <p>
-                        <strong>Priority:</strong>
-                        {% if task.priority %}
-                        <span class="badge {{ task.priority|lower }}">{{ task.priority }}</span>
-                        {% else %}No priority{% endif %}
-                    </p>
-                    <p><strong>Deadline:</strong> {{ task.deadline.strftime('%d %b %Y') if task.deadline else 'No deadline' }}</p>
-                    {% if is_overdue %}<p class="overdue-text">Overdue</p>{% endif %}
-                </a>
-
-                <div class="kanban-quick-actions">
-                    <select name="value" 
-                            hx-post="{{ url_for('autosave_task', id=task.id) }}"
-                            hx-trigger="change" 
-                            hx-vals='{"field":"status"}'
-                            hx-target="#kanban-board-container"
-                            hx-swap="innerHTML"
-                            class="kanban-status-select">
-                        <option value="Wishlist" {% if task.status=="Wishlist" %}selected{% endif %}>Move to: Wishlist</option>
-                        <option value="To Do" {% if task.status=="To Do" %}selected{% endif %}>Move to: To Do</option>
-                        <option value="In Progress" {% if task.status=="In Progress" %}selected{% endif %}>Move to: In Progress</option>
-                        <option value="In Review" {% if task.status=="In Review" %}selected{% endif %}>Move to: In Review</option>
-                        <option value="Complete" {% if task.status=="Complete" %}selected{% endif %}>Move to: Complete</option>
-                    </select>
+            {% set is_overdue = (not task.is_done) and (task.status in ['To Do', 'In Progress']) and task.deadline and
+            task.deadline < datetime.datetime.now() %} <div
+                class="card border-2 border-black rounded-none overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] {% if is_overdue %}bg-[#FFB3B3] text-black{% else %}bg-white text-black{% endif %}">
+                <div class="card-body p-0">
+                    <a href="{{ url_for('task_details', team_id=team.id, id=task.id) }}"
+                        class="block p-4 {% if is_overdue %}hover:bg-[#FFA3A3]{% else %}hover:bg-yellow-50{% endif %}">
+                        <h3 class="text-base font-black uppercase tracking-tight mb-3 text-black break-words">{{
+                            task.title }}</h3>
+                        <div class="space-y-2 text-xs font-bold tracking-wide">
+                            <p class="flex flex-col gap-1 border-b border-black/20 pb-2">
+                                <span class="text-gray-600 uppercase text-[10px]">Assigned</span>
+                                <span class="font-black text-black break-words">{{ task.assigned_user.name if
+                                    task.assigned_user else 'No assignee' }}</span>
+                            </p>
+                            <p class="flex flex-col gap-1 border-b border-black/20 pb-2">
+                                <span class="text-gray-600 uppercase text-[10px]">Priority</span>
+                                {% if task.priority %}
+                                <span class="w-fit border-2 border-black px-2 py-1 text-[10px] font-black uppercase shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]
+                                    {% if task.priority|lower == 'high' %}bg-[#F72585] text-white
+                                    {% elif task.priority|lower == 'medium' %}bg-[#FFDE4D] text-black
+                                    {% else %}bg-[#A3E635] text-black{% endif %}">
+                                    {{ task.priority }}
+                                </span>
+                                {% else %}
+                                <span class="text-gray-500">No Priority</span>
+                                {% endif %}
+                            </p>
+                            <p class="flex flex-col gap-1">
+                                <span class="text-gray-600 uppercase text-[10px]">Deadline</span>
+                                <span class="font-black text-black">{{ task.deadline.strftime('%d %b %Y') if
+                                    task.deadline else 'No deadline' }}</span>
+                            </p>
+                        </div>
+                    </a>
+                    <div
+                        class="{% if is_overdue %}bg-[#FFA3A3]{% else %}bg-gray-50{% endif %} border-t-2 border-black p-3 flex flex-col gap-2">
+                        <select name="value" hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change"
+                            hx-vals='{"field":"status"}' hx-target="#kanban-wrapper" hx-swap="innerHTML"
+                            class="select select-bordered w-full rounded-none border-2 border-black bg-white text-black font-bold text-xs shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+                            <option value="Wishlist" {% if task.status=="Wishlist" %}selected{% endif %}>Wishlist
+                            </option>
+                            <option value="To Do" {% if task.status=="To Do" %}selected{% endif %}>To Do</option>
+                            <option value="In Progress" {% if task.status=="In Progress" %}selected{% endif %}>In
+                                Progress</option>
+                            <option value="In Review" {% if task.status=="In Review" %}selected{% endif %}>In Review
+                            </option>
+                            <option value="Complete" {% if task.status=="Complete" %}selected{% endif %}>Complete
+                            </option>
+                        </select>
+                        <div class="flex gap-2">
+                            <form method="POST" action="{{ url_for('toggle_task', id=task.id) }}" class="flex-1">
+                                <button type="submit"
+                                    class="btn min-h-0 h-8 w-full rounded-none border-2 border-black bg-white text-black hover:bg-black hover:text-white shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] font-black uppercase text-xs">{{
+                                    'Undo' if task.is_done else 'Done' }}</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('delete_task', id=task.id) }}" class="flex-1">
+                                <button type="submit" onclick="return confirm('Delete this task?')"
+                                    class="btn min-h-0 h-8 w-full rounded-none border-2 border-black bg-[#F72585] text-white hover:bg-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] font-black uppercase text-xs">Delete</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="task-actions">
-                    <form method="POST" action="{{ url_for('toggle_task', team_id=team.id, id=task.id) }}">
-                        <button type="submit">{% if task.is_done %}↩Undo{% else %}Done{% endif %}</button>
-                    </form>
-                    <form method="POST" action="{{ url_for('delete_task', team_id=team.id, id=task.id) }}">
-                        <button type="submit" onclick="return confirm('Delete this task?')">Delete</button>
-                    </form>
-                </div>
-            </div>
-            {% else %}
-            <div class="empty-column">No tasks</div>
-            {% endfor %}
         </div>
+        {% else %}
+        <div class="bg-white border-2 border-dashed border-black p-4 text-center">
+            <p class="font-black uppercase tracking-wider text-gray-400 text-xs">No tasks</p>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
+</div>
+{% endfor %}
 </div>
