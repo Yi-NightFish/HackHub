@@ -5,138 +5,158 @@ Dashboard
 {% endblock %}
 
 {% block css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<script src="https://cdn.tailwindcss.com"></script>
 {% endblock %}
 
 {% block content %}
-<div class="dashboard-container">
+<div class="w-full max-w-7xl mx-auto my-5 space-y-10 bg-[#FFFDF6] shadow-none">
 
-<div class="welcome-card">
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 5px;">
-            <h1 style="margin: 0;">Welcome Back</h1>
-            <a href="/chat" class="message-icon-btn" title="View Messages" style="color: inherit; display: inline-flex; align-items: center; transition: transform 0.2s ease, opacity 0.2s ease;">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 28px; height: 28px;">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-3.999a4.116 4.116 0 0 1 2.686-1.29c2.015-.036 3.905-.71 5.366-1.84a4.114 4.114 0 0 0 1.625-3.364V7.5c0-2.277-1.87-4.125-4.187-4.125H5.437c-2.318 0-4.188 1.848-4.188 4.125v5.26z" />
-                </svg>
-            </a>
-        </div>
-        <h2>{{ user.name or user.email }}</h2>
-        <p>Manage your events, teams and tasks in one place.</p>
+  <!-- EXCLUDED FROM BENTO: Vibrant Full-Width Welcome Banner Block with Shadow -->
+  <div class="bg-white border-4 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+    <div class="flex items-center justify-between border-b-4 border-black pb-4 mb-4">
+      <div>
+        <h1 class="text-3xl sm:text-4xl font-black uppercase tracking-tight">Welcome Back</h1>
+        <h2 class="text-xl font-black text-[#4D96FF] uppercase tracking-wide mt-1">{{ user.name or user.email }}</h2>
+      </div>
+      <a href="/chat" class="border-4 border-black bg-[#FFDE4D] p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all shrink-0" title="View Messages">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-3.999a4.116 4.116 0 0 1 2.686-1.29c2.015-.036 3.905-.71 5.366-1.84a4.114 4.114 0 0 0 1.625-3.364V7.5c0-2.277-1.87-4.125-4.187-4.125H5.437c-2.318 0-4.188 1.848-4.188 4.125v5.26z" />
+        </svg>
+      </a>
     </div>
+    <p class="font-bold text-sm text-gray-700 uppercase tracking-wide">Manage your events, teams, and tasks in one unified interface.</p>
+    
+    <!-- Counters Strip Attached to Welcome Block -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 font-mono text-xs font-black uppercase">
+      <a href="#joined-events-target" class="bg-white border-2 border-black p-3 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:bg-gray-50 flex justify-between items-center">
+        <span>Joined Events</span> <span class="bg-[#FFDE4D] border-2 border-black px-2 py-0.5 text-sm">{{ joined_events|length }}</span>
+      </a>
+      <a href="#joined-teams-target" class="bg-white border-2 border-black p-3 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:bg-gray-50 flex justify-between items-center">
+        <span>Joined Teams</span> <span class="bg-[#6BCB77] border-2 border-black px-2 py-0.5 text-sm">{{ joined_teams|length }}</span>
+      </a>
+      <a href="#active-workspaces-target" class="bg-white border-2 border-black p-3 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:bg-gray-50 flex justify-between items-center">
+        <span>Active Workspaces</span> <span class="bg-[#B1AFFF] border-2 border-black px-2 py-0.5 text-sm">{{ joined_teams|length }}</span>
+      </a>
+    </div>
+  </div>
 
-<div class="stats-grid">
-    <a href="#joined-events-target" class="stat-card-link" style="text-decoration: none; color: inherit; display: block;">
-        <div class="stat-card">
-            <h4>Joined Events</h4>
-            <p>{{ joined_events|length }}</p>
-        </div>
-    </a>
+  <!-- BENTO SECTION: MUTED & NO DROPSHADOW WITH ALTERNATING GEOMETRICS -->
+  <div class="space-y-10">
 
-    <a href="#joined-teams-target" class="stat-card-link" style="text-decoration: none; color: inherit; display: block;">
-        <div class="stat-card">
-            <h4>Joined Teams</h4>
-            <p>{{ joined_teams|length }}</p>
-        </div>
-    </a>
-
-    <a href="#active-workspaces-target" class="stat-card-link" style="text-decoration: none; color: inherit; display: block;">
-        <div class="stat-card">
-            <h4>Active Workspace</h4>
-            <p>{{ joined_teams|length }}</p>
-        </div>
-    </a>
-</div>
-
-    <div class="dashboard-section">
-        <h2>Overdue Tasks</h2>
-        <div class="list-container">
+    <!-- ROW 1: OVERDUE TASKS (Content Left / Decoration Right) -->
+    <div class="grid grid-cols-1 md:grid-cols-10 gap-6 items-stretch">
+      <!-- Content Card (70%) -->
+      <div class="bg-stone-50 border-4 border-black p-6 md:col-span-7 flex flex-col justify-between shadow-none">
+        <div>
+          <h2 class="text-xl font-black uppercase tracking-wide border-b-4 border-black pb-2 mb-4 bg-stone-700 text-stone-100 -mx-6 -mt-6 p-4">Overdue Tasks</h2>
+          <div class="space-y-3 max-h-[220px] overflow-y-auto pr-1">
             {% for task in overdue_tasks %}
-                <a href="{{ url_for('task_details', team_id=task.team_id, id=task.id) }}" class="overdue-item task-flex-row clickable-row-box" style="text-decoration: none; color: inherit;">
-                    <div>
-                        <strong class="item-title" style="color: #ef4444;">{{ task.title }}</strong>
-                        {% if task.deadline %}
-                            <p class="item-subtitle">Due: {{ task.deadline.strftime('%d %b %Y') }}</p>
-                        {% endif %}
-                    </div>
-                </a>
+              <a href="{{ url_for('task_details', team_id=task.team_id, id=task.id) }}" class="block bg-white border-2 border-black p-3 hover:bg-stone-100 transition-colors">
+                <div class="flex justify-between items-center gap-4">
+                  <strong class="text-sm font-black uppercase tracking-tight text-stone-600 break-all">{{ task.title }}</strong>
+                  {% if task.deadline %}
+                    <span class="font-mono text-[10px] bg-stone-200 border-2 border-black px-2 py-0.5 text-black font-bold uppercase shrink-0">
+                      Due: {{ task.deadline.strftime('%d %b %Y') }}
+                    </span>
+                  {% endif %}
+                </div>
+              </a>
             {% else %}
-                <p class="empty-notice">You have no overdue tasks right now.</p>
+              <p class="text-center p-6 text-xs font-bold text-stone-400 uppercase tracking-wider bg-stone-100 border-2 border-dashed border-stone-300">
+                You have no overdue tasks right now.
+              </p>
             {% endfor %}
+          </div>
         </div>
+      </div>
+      <!-- Decoration Card (30% - Right) -->
+      <div class="bg-stone-200 border-4 border-black p-6 md:col-span-3 hidden md:flex items-center justify-center overflow-hidden relative min-h-[200px] shadow-none">
+        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#000_1.5px,transparent_1.5px)] [background-size:12px_12px]"></div>
+        <div class="w-16 h-16 border-4 border-black border-dashed rotate-45 shrink-0 relative z-10"></div>
+      </div>
     </div>
 
-<div class="dashboard-two-columns">
-        
-        <div id="joined-teams-target" class="dashboard-section column-box">
-            <h2>Joined Teams</h2>
-            <div class="list-container">
-                {% for p in joined_teams %}
-                    {% if p.team %}
-                        <a href="{{ url_for('team_detail', team_id=p.team_id) }}" class="list-item-row clickable-row-box" style="text-decoration: none; color: inherit;">
-                            <span class="item-name">{{ p.team.name }} <small class="item-role">({{ p.roles or 'Member' }})</small></span>
-                        </a>
-                    {% endif %}
-                {% else %}
-                    <p class="empty-notice">You haven't joined any teams yet.</p>
-                {% endfor %}
-            </div>
+    <!-- ROW 2: JOINED TEAMS (Decoration Left / Content Right) -->
+    <div id="joined-teams-target" class="grid grid-cols-1 md:grid-cols-10 gap-6 items-stretch">
+      <!-- Decoration Card (30% - Left) -->
+      <div class="bg-zinc-200 border-4 border-black p-6 md:col-span-3 hidden md:flex items-center justify-center overflow-hidden relative min-h-[200px] shadow-none">
+        <div class="absolute inset-0 opacity-10 bg-[linear-gradient(45deg,#000_25%,transparent_25%,transparent_50%,#000_50%,#000_75%,transparent_75%,transparent)] bg-[size:16px_16px]"></div>
+        <div class="w-12 h-12 border-4 border-black shrink-0 relative z-10"></div>
+      </div>
+      <!-- Content Card (70%) -->
+      <div class="bg-zinc-50 border-4 border-black p-6 md:col-span-7 shadow-none">
+        <h2 class="text-xl font-black uppercase tracking-wide border-b-4 border-black pb-2 mb-4 bg-zinc-700 text-zinc-100 -mx-6 -mt-6 p-4">Joined Teams</h2>
+        <div class="space-y-3 max-h-[220px] overflow-y-auto pr-1">
+          {% for p in joined_teams %}
+            {% if p.team %}
+              <a href="{{ url_for('team_detail', team_id=p.team_id) }}" class="block bg-white border-2 border-black p-3 font-bold text-sm uppercase hover:bg-zinc-100 transition-colors">
+                <div class="flex justify-between items-center gap-4">
+                  <span class="text-black font-black truncate">{{ p.team.name }}</span>
+                  <span class="font-mono text-[10px] bg-zinc-200 border-2 border-black px-2 py-0.5 text-zinc-700 tracking-tight shrink-0">{{ p.roles or 'Member' }}</span>
+                </div>
+              </a>
+            {% endif %}
+          {% else %}
+            <p class="text-center p-6 text-xs font-bold text-zinc-400 uppercase tracking-wider bg-zinc-100 border-2 border-dashed border-zinc-300">You haven't joined any teams yet.</p>
+          {% endfor %}
         </div>
-
-        <div id="joined-events-target" class="dashboard-section column-box">
-            <h2>Joined Events</h2>
-            <div class="list-container">
-                {% for p in joined_events %}
-                    {% if p.event %}
-                        <a href="{{ url_for('explore', search=p.event.title) }}" class="list-item-row clickable-row-box" style="text-decoration: none; color: inherit;">
-                            <span class="item-name">{{ p.event.title }}</span>
-                        </a>
-                    {% endif %}
-                {% else %}
-                    <p class="empty-notice">You haven't joined any events yet.</p>
-                {% endfor %}
-            </div>
-        </div>
-
+      </div>
     </div>
 
-<div id="active-workspaces-target" class="dashboard-section">
-        <h2>Active Workspaces</h2>
-        <div class="list-container">
-            {% for p in joined_teams %}
-                {% if p.team %}
-                    <a href="{{ url_for('tasks', team_id=p.team_id) }}" class="workspace-item task-flex-row clickable-row-box" style="text-decoration: none; color: inherit;">
-                        <div>
-                            <strong class="item-title">{{ p.team.name }} Workspace</strong>
-                            <p class="item-subtitle">Event Assignment: {{ p.event.title if p.event else 'General' }}</p>
-                        </div>
-                    </a>
-                {% endif %}
-            {% else %}
-                <p class="empty-notice">No active workspaces available. Join a team to get started!</p>
-            {% endfor %}
+    <!-- ROW 3: JOINED EVENTS (Content Left / Decoration Right) -->
+    <div id="joined-events-target" class="grid grid-cols-1 md:grid-cols-10 gap-6 items-stretch">
+      <!-- Content Card (70%) -->
+      <div class="bg-slate-50 border-4 border-black p-6 md:col-span-7 shadow-none">
+        <h2 class="text-xl font-black uppercase tracking-wide border-b-4 border-black pb-2 mb-4 bg-slate-700 text-slate-100 -mx-6 -mt-6 p-4">Joined Events</h2>
+        <div class="space-y-3 max-h-[220px] overflow-y-auto pr-1">
+          {% for p in joined_events %}
+            {% if p.event %}
+              <a href="{{ url_for('explore', search=p.event.title) }}" class="block bg-white border-2 border-black p-3 font-black text-sm uppercase tracking-tight hover:bg-slate-100 transition-colors text-slate-800 truncate">
+                📢 {{ p.event.title }}
+              </a>
+            {% endif %}
+          {% else %}
+            <p class="text-center p-6 text-xs font-bold text-slate-400 uppercase tracking-wider bg-slate-100 border-2 border-dashed border-slate-300">You haven't joined any events yet.</p>
+          {% endfor %}
         </div>
+      </div>
+      <!-- Decoration Card (30% - Right) -->
+      <div class="bg-slate-200 border-4 border-black p-6 md:col-span-3 hidden md:flex items-center justify-center overflow-hidden relative min-h-[200px] shadow-none">
+        <div class="w-16 h-16 border-2 border-black flex items-center justify-center">
+          <div class="w-8 h-8 border-2 border-black"></div>
+        </div>
+      </div>
     </div>
 
-    <div class="dashboard-section">
-        <div class="action-grid">
-            
-            <a href="{{ url_for('explore') }}" class="action-card">
-               <h3>Events</h3>
-                <p>Browse and explore newly opening hackathons and challenges.</p>
-            </a>
-
-            <a href="{{ url_for('teams') }}" class="action-card">
-                <h3>Join Team</h3>
-                <p>Find teammates looking for your specific skills.</p>
-            </a>
-
-            <a href="{{ url_for('create_team') }}" class="action-card">
-                <h3>Create Team</h3>
-                <p>Form a new group squad and manage custom tasks.</p>
-            </a>
-            
+    <!-- ROW 4: ACTIVE WORKSPACES (Decoration Left / Content Right) -->
+    <div class="grid grid-cols-1 md:grid-cols-10 gap-6 items-stretch">
+      <!-- Decoration Card (30% - Left) -->
+      <div class="bg-neutral-200 border-4 border-black p-4 overflow-hidden relative min-h-[200px] md:col-span-3 hidden md:flex items-center justify-center shadow-none">
+        <div class="absolute inset-y-0 left-1/2 w-0.5 bg-black opacity-20"></div>
+        <div class="absolute inset-x-0 top-1/2 h-0.5 bg-black opacity-20"></div>
+        <span class="font-mono text-center font-black text-xs tracking-wider text-neutral-700 uppercase relative z-10 border-2 border-black px-2 py-1 bg-neutral-100">
+          [SYS_NODE]
+        </span>
+      </div>
+      <!-- Content Card (70%) -->
+      <div id="active-workspaces-target" class="bg-neutral-50 border-4 border-black p-6 md:col-span-7 shadow-none">
+        <h2 class="text-xl font-black uppercase tracking-wide border-b-4 border-black pb-2 mb-4 bg-neutral-700 text-neutral-100 -mx-6 -mt-6 p-4">Active Workspaces</h2>
+        <div class="space-y-3 max-h-[240px] overflow-y-auto pr-1">
+          {% for p in joined_teams %}
+            {% if p.team %}
+              <a href="{{ url_for('tasks', team_id=p.team_id) }}" class="block bg-white border-2 border-black p-4 hover:bg-neutral-100 transition-colors">
+                <strong class="text-sm font-black uppercase tracking-tight text-neutral-800 block mb-1">{{ p.team.name }} Workspace</strong>
+                <p class="text-xs font-bold text-neutral-500 uppercase tracking-wide truncate">Assignment: <span class="underline">{{ p.event.title if p.event else 'General' }}</span></p>
+              </a>
+            {% endif %}
+          {% else %}
+            <p class="text-center p-6 text-xs font-bold text-neutral-400 uppercase tracking-wider bg-neutral-100 border-2 border-dashed border-neutral-300">No active workspaces available. Join a team to get started!</p>
+          {% endfor %}
         </div>
+      </div>
     </div>
+
+  </div>
 
 </div>
 {% endblock %}
