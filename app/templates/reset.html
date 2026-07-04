@@ -1,22 +1,66 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Reset Password</title>
-</head>
-<body>
-<h1>Reset Password</h1>
-<form method="POST">
-    {% if logged_in %}
-    <div>
-        <label for="current_password">Current Password</label>
-        <input name="current_password" type="password" required>
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Removed min-h-screen and forced vertical centering so it flows naturally with base.html structure -->
+<div class="bg-[#FFFDF6] text-black font-sans w-full p-4 md:p-8 flex justify-center">
+
+    <!-- Main Content Container Frame -->
+    <div class="w-full max-w-4xl bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col md:flex-row overflow-hidden my-4 md:my-8">
+        
+        <!-- Left Side: Visual Photo Section -->
+        <div class="w-full md:w-1/2 bg-[#FFDE4D] border-b-4 md:border-b-0 md:border-r-4 border-black flex items-center justify-center p-6 min-h-[250px] md:min-h-full">
+            <img src="{{ url_for('static', filename='/images/reset_pwd_pic.jpg') if url_for else 'reset_pwd_pic.jpg' }}" 
+                 alt="Reset Password Visual" 
+                 class="w-full h-full object-cover border-2 border-black bg-white max-h-[350px] md:max-h-none">
+        </div>
+
+        <!-- Right Side: Action Form Area -->
+        <div class="w-full md:w-1/2 p-6 md:p-10 flex flex-col justify-center">
+            
+            <h1 class="text-2xl font-black uppercase tracking-tight text-black mb-6">
+                Reset Password
+            </h1>
+
+            <form method="POST" class="flex flex-col gap-5">
+                
+                {% if logged_in %}
+                <div class="flex flex-col gap-1.5">
+                    <label for="current_password" class="text-xs font-black uppercase tracking-wider text-black/70">
+                        Current Password
+                    </label>
+                    <input id="current_password"
+                           name="current_password" 
+                           type="password" 
+                           required
+                           class="w-full border-2 border-black p-3 font-medium bg-white text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:outline-none"
+                           placeholder="********">
+                </div>
+                {% endif %}
+
+                <div class="flex flex-col gap-1.5">
+                    <label for="new_password" class="text-xs font-black uppercase tracking-wider text-black/70">
+                        New Password
+                    </label>
+                    <input id="new_password"
+                           name="new_password" 
+                           type="password" 
+                           required
+                           class="w-full border-2 border-black p-3 font-medium bg-white text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:outline-none"
+                           placeholder="********">
+                </div>
+
+                <!-- Form Controls Row area -->
+                <div class="pt-2">
+                    <button type="submit" 
+                            class="h-11 px-6 border-2 border-black bg-[#FFDE4D] text-black hover:bg-black hover:text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all font-black uppercase tracking-wider text-xs cursor-pointer">
+                        Reset Password
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
     </div>
-    {% endif %}
-    <div>
-        <label for="new_password">New Password</label>
-        <input name="new_password" type="password" required>
-    </div>
-    <button type="submit">Reset</button>
-</form>
-</body>
-</html>
+
+</div>
+{% endblock %}
