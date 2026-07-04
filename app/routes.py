@@ -1140,21 +1140,29 @@ def about():
 @login_required
 def feedback():
     if request.method == "POST":
-        message = request.form.get("message")
+        message = request.form.get("message", "").strip()
+        user = db.session.get(User, session["user_id"])
         if not message:
-            if request.headers.get('HX-Request'):
-                return '<div id="feedback-container">Please enter a message. <button hx-get="/feedback" ...>Go back</button></div>'
             flash("Please enter a message.", "error")
             return redirect(url_for("feedback"))
-        if request.headers.get('HX-Request'):
-            return '''
-                <div id="feedback-container" style="max-width:600px; margin:2rem auto; text-align:center; ...">
-                    <h2>Thank you!</h2>
-                    <p>Your feedback has been sent.</p>
-                    <button hx-get="/feedback" hx-target="#feedback-container" hx-swap="outerHTML">Send another</button>
-                </div>
-            '''
-        flash("Thank you! Your feedback has been sent.", "success")
+        try:
+            msg = MailMessage(
+                "New HackHub Feedback",
+                sender=app.config["MAIL_USERNAME"],
+                recipients=[app.config["MAIL_USERNAME"]])
+            msg.body = f"""
+                New feedback received from HackHub.
+                User ID: {user.id}
+                Name: {user.name or "No name"}
+                Email: {user.email}
+                Message:
+                {message}
+                """
+            mail.send(msg)
+            flash("Thank you! Your feedback has been sent.", "success")
+        except Exception as e:
+            print("Feedback email error:", e)
+            flash("Sorry, your feedback could not be sent. Please try again.", "error")
         return redirect(url_for("feedback"))
     return render_template("feedback.html")
 

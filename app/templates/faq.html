@@ -3,72 +3,119 @@
 {% block title %}FAQ | HackHub{% endblock %}
 
 {% block content %}
-<div class="container faq-container">
-    <h1 class="page-title">Frequently Asked Questions</h1>
-    <div class="faq-list">
-        <div class="faq-item">
-            <h3>What is HackHub?</h3>
-            <p>HackHub is a beginner-friendly platform that helps students discover hackathons, form teams, manage tasks, and showcase projects - all in one place.</p>
-        </div>
-        <div class="faq-item">
-            <h3>Do I need a team to join a hackathon?</h3>
-            <p>No! You can join events as a solo participant. Use the “Solo” tab on any event page to find other solo participants and form a team together.</p>
-        </div>
-        <div class="faq-item">
-            <h3>How do I create or join a team?</h3>
-            <p>After joining an event, go to the “Teams” tab. You can create a new team (you'll get a unique team code) or enter an existing team code to join.</p>
-        </div>
-        <div class="faq-item">
-            <h3>What can I do in the team workspace?</h3>
-            <p>Each team has a shared task board, and a project page (where you can add screenshots, GitHub links, tech stack).</p>
-        </div>
-        <div class="faq-item">
-            <h3>How do I submit my project?</h3>
-            <p>Use the “Project” tab inside your team workspace to add your project title, description, tech stack, demo link, GitHub repo, and screenshots. Organisers will see it at the end of the event.</p>
-        </div>
-        <div class="faq-item">
-            <h3>I forgot my password. What should I do?</h3>
-            <p>Click “Forgot password?” on the login page. You'll receive an OTP via email to reset your password.</p>
-        </div>
-        <div class="faq-item">
-            <h3>Is HackHub free?</h3>
-            <p>Yes! HackHub is completely free for both participants and organisers.</p>
-        </div>
-        <div class="faq-item">
-            <h3>How can I host my own hackathon?</h3>
-            <p>Click “Host an event” on the homepage or navigate to “Create Event” from your dashboard. Fill in the details (title, description, dates, deadline) and you're ready to go.</p>
-        </div>
-    </div>
-</div>
-
 <style>
-    .faq-container {
-        max-width: 800px;
-        margin: 2rem auto;
-        padding: 0 1.5rem;
+    .faq-page {
+        background: #FFFDF6;
+        padding: 40px 20px;
+        color: #000;
     }
-    .page-title {
-        font-size: 2.2rem;
-        margin-bottom: 2rem;
-        color: #1e293b;
+
+    .faq-wrap {
+        max-width: 1000px;
+        margin: 0 auto;
     }
-    .faq-item {
+
+    .main-title {
         background: white;
-        border-radius: 1rem;
-        padding: 1.2rem 1.5rem;
-        margin-bottom: 1.2rem;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        border: 1px solid #e2e8f0;
+        border: 4px solid black;
+        box-shadow: 6px 6px 0 black;
+        padding: 35px;
+        margin-bottom: 35px;
+        text-align: center;
     }
-    .faq-item h3 {
-        font-size: 1.2rem;
-        margin-bottom: 0.5rem;
-        color: #0f172a;
-    }
-    .faq-item p {
-        color: #475569;
-        line-height: 1.5;
+
+    .main-title h1 {
+        font-size: 40px;
+        font-weight: 900;
+        text-transform: uppercase;
         margin: 0;
     }
+
+    .faq-item {
+        background: white;
+        border: 4px solid black;
+        box-shadow: 6px 6px 0 black;
+        margin-bottom: 25px;
+    }
+
+    .faq-item h3 {
+        background: #FFDE4D;
+        border-bottom: 4px solid black;
+        padding: 16px 22px;
+        font-size: 20px;
+        font-weight: 900;
+        text-transform: uppercase;
+        margin: 0;
+    }
+
+    .faq-item p {
+        padding: 22px;
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    @media(max-width:600px) {
+        .main-title h1 {
+            font-size: 30px;
+        }
+    }
 </style>
+
+<div class="faq-page">
+    <div class="faq-wrap">
+
+        <div class="main-title">
+            <h1>Frequently Asked Questions</h1>
+        </div>
+
+        <div class="faq-item">
+            <h3>What is HackHub?</h3>
+            <p>HackHub is a beginner-friendly platform that helps students discover hackathons, form teams, manage
+                tasks, and showcase projects in one place.</p>
+        </div>
+
+        <div class="faq-item">
+            <h3>Do I need a team to join a hackathon?</h3>
+            <p>No. You can join events as a solo participant. You can also use the event page to find other participants
+                and form a team together.</p>
+        </div>
+
+        <div class="faq-item">
+            <h3>How do I create or join a team?</h3>
+            <p>After joining an event, go to the Teams tab. You can create a new team and get a team code, or enter an
+                existing team code to join.</p>
+        </div>
+
+        <div class="faq-item">
+            <h3>What can I do in the team workspace?</h3>
+            <p>Each team has a shared task board and project page, where members can manage tasks, add project details,
+                and collaborate.</p>
+        </div>
+
+        <div class="faq-item">
+            <h3>How do I submit my project?</h3>
+            <p>Use the Project tab inside your team workspace to add your project title, description, tech stack, demo
+                link, GitHub repo, and screenshots.</p>
+        </div>
+
+        <div class="faq-item">
+            <h3>I forgot my password. What should I do?</h3>
+            <p>Click Forgot Password on the login page. You will receive an OTP by email to reset your password.</p>
+        </div>
+
+        <div class="faq-item">
+            <h3>Is HackHub free?</h3>
+            <p>Yes. HackHub is free for both participants and organizers.</p>
+        </div>
+
+        <div class="faq-item">
+            <h3>How can I host my own hackathon?</h3>
+            <p>Click Host an Event or Create Event. Fill in the event details such as title, description, date,
+                deadline, and status.</p>
+        </div>
+
+    </div>
+</div>
 {% endblock %}

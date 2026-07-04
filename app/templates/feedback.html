@@ -3,11 +3,163 @@
 {% block title %}Feedback | HackHub{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 600px; margin: 2rem auto;">
-    <h1>We value your feedback</h1>
-    <form method="POST">
-        <textarea name="message" rows="5" placeholder="Your thoughts..." required style="width:100%; padding:0.8rem; border-radius:12px; border:1px solid #ccc;"></textarea>
-        <button type="submit" style="margin-top:1rem; background:#3b82f6; color:white; border:none; padding:0.6rem 1.2rem; border-radius:40px; cursor:pointer;">Send Feedback</button>
-    </form>
+<style>
+    .feedback-page {
+        background: #FFFDF6;
+        padding: 40px 20px;
+        color: #000;
+    }
+
+    .feedback-wrap {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .main-title {
+        background: white;
+        border: 4px solid black;
+        box-shadow: 6px 6px 0 black;
+        padding: 35px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .main-title h1 {
+        font-size: 40px;
+        font-weight: 900;
+        text-transform: uppercase;
+        margin: 0;
+    }
+
+    .main-title p {
+        margin-top: 12px;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .flash-box {
+        margin-bottom: 25px;
+    }
+
+    .flash-message {
+        padding: 18px 22px;
+        border: 4px solid black;
+        box-shadow: 6px 6px 0 black;
+        font-weight: 900;
+        font-size: 16px;
+    }
+
+    .flash-message.success {
+        background: #6BCB77;
+        color: black;
+    }
+
+    .flash-message.error {
+        background: #FF6B6B;
+        color: white;
+    }
+
+    .feedback-box {
+        background: white;
+        border: 4px solid black;
+        box-shadow: 6px 6px 0 black;
+    }
+
+    .feedback-title {
+        background: #FFDE4D;
+        border-bottom: 4px solid black;
+        padding: 16px 22px;
+        font-size: 22px;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .feedback-content {
+        padding: 28px;
+    }
+
+    .feedback-content label {
+        display: block;
+        font-weight: 900;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+
+    .feedback-content textarea {
+        width: 100%;
+        min-height: 180px;
+        padding: 16px;
+        border: 3px solid black;
+        resize: vertical;
+        font-size: 16px;
+        font-family: inherit;
+        background: white;
+        outline: none;
+    }
+
+    .feedback-content textarea:focus {
+        box-shadow: 4px 4px 0 black;
+    }
+
+    .feedback-content button {
+        margin-top: 22px;
+        padding: 12px 28px;
+        background: #6BCB77;
+        border: 3px solid black;
+        box-shadow: 4px 4px 0 black;
+        font-size: 15px;
+        font-weight: 900;
+        text-transform: uppercase;
+        cursor: pointer;
+    }
+
+    .feedback-content button:hover {
+        background: #5cb967;
+    }
+
+    .feedback-content button:active {
+        transform: translate(4px, 4px);
+        box-shadow: none;
+    }
+
+    @media(max-width:600px) {
+        .main-title h1 {
+            font-size: 30px;
+        }
+    }
+</style>
+
+<div class="feedback-page">
+    <div class="feedback-wrap">
+
+        <div class="main-title">
+            <h1>Send Feedback</h1>
+            <p>Help us improve HackHub by sharing your ideas and suggestions.</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% set category, message = messages[-1] %}
+        <div class="flash-box">
+            <div class="flash-message {{ category }}">
+                {{ message }}
+            </div>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="feedback-box">
+            <div class="feedback-title">Your Feedback</div>
+            <div class="feedback-content">
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                    <label for="message">Feedback</label>
+                    <textarea id="message" name="message" placeholder="Tell us what you think..." required></textarea>
+                    <button type="submit">Send Feedback</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
 </div>
 {% endblock %}
