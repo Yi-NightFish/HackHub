@@ -6,232 +6,227 @@ Task Details
 
 {% block css %}
 <script src="https://unpkg.com/htmx.org@1.9.12"></script>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/task_details.css') }}">
 {% endblock %}
 
 {% block content %}
-    <div class="page">
+<div class="relative w-full min-h-screen bg-[#FFFDF6] text-black pb-16 overflow-x-hidden">
+  
+  <div class="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-[0.04]" 
+       style="background-image: linear-gradient(to right, black 1px, transparent 1px), linear-gradient(to bottom, black 1px, transparent 1px); background-size: 24px 24px;">
+  </div>
+  
+  <div class="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden select-none">
+    <svg class="absolute top-[12%] right-[5%] w-8 h-8 text-black opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 4v16m8-8H4" /></svg>
+    <svg class="absolute bottom-[10%] left-[3%] w-8 h-8 text-black opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 4v16m8-8H4" /></svg>
+  </div>
 
-        <div class="top-bar">
-            <a href="{{ url_for('tasks', team_id=task.team_id) }}" class="back-link">
-                ← Back to Task
-            </a>
-            <span id="save-status"></span>
+  <div class="container mx-auto px-4 max-w-6xl relative z-10 pt-8">
+    
+    <div class="flex justify-end items-center mb-4">
+      <span id="save-status" class="text-xs font-mono font-black text-blue-600 uppercase tracking-widest"></span>
+    </div>
+
+    <div class="flex flex-col gap-2 mb-10 w-full">
+      <div>
+        <a href="{{ url_for('tasks', team_id=task.team_id) }}" class="font-extrabold text-[11px] uppercase tracking-wider text-gray-400 hover:text-black transition-colors hover:underline">
+          ← Back to Tasks
+        </a>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black leading-none break-words w-full">
+        <span class="inline-block bg-white border-4 border-black p-4 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] w-full">
+          {{ task.title }}
+        </span>
+      </h1>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <div class="lg:col-span-5 card bg-white border-4 border-black rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 space-y-5">
+        
+        <h2 class="text-xl font-black uppercase tracking-wide border-b-2 border-black pb-2 mb-2 bg-[#4D96FF] text-white -mx-6 -mt-6 p-4">
+          Task Details
+        </h2>
+
+        <div class="form-control">
+          <label class="label pt-0 pb-1"><span class="label-text font-black text-xs uppercase tracking-wider text-black">Title</span></label>
+          <input type="text" name="value" value="{{ task.title }}"
+                 hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change" hx-swap="innerHTML" hx-target="#save-status" hx-vals='{"field":"title"}'
+                 class="input input-bordered w-full border-2 border-black bg-white rounded-none h-11 text-black font-bold focus:outline-none focus:border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" />
         </div>
 
-        <h1> {{ task.title }}</h1>
-
-        <div class="details-layout">
-
-            <!-- LEFT: TASK DETAILS -->
-            <div class="task-info-box">
-
-                <label>Title</label>
-                <input type="text"
-                       name="value"
-                       value="{{ task.title }}"
-                       hx-post="{{ url_for('autosave_task', id=task.id) }}"
-                       hx-trigger="change"
-                       hx-swap="innerHTML"
-                       hx-target="#save-status"
-                       hx-vals='{"field":"title"}'>
-
-                <label>Description</label>
-                <textarea name="value"
-                          hx-post="{{ url_for('autosave_task', id=task.id) }}"
-                          hx-trigger="change"
-                          hx-swap="innerHTML"
-                          hx-target="#save-status"
-                          hx-vals='{"field":"description"}'>{{ task.description }}</textarea>
-
-                <label>Assignee</label>
-                <select name="value"
-                        hx-post="{{ url_for('autosave_task', id=task.id) }}"
-                        hx-trigger="change"
-                        hx-swap="innerHTML"
-                        hx-target="#save-status"
-                        hx-vals='{"field":"assigned_to"}'>
-
-                    {% for user in users %}
-                    <option value="{{ user.id }}"
-                            {% if task.assigned_to == user.id %}selected{% endif %}>
-                        {{ user.name }}
-                    </option>
-                    {% endfor %}
-
-                </select>
-
-                <label>Priority</label>
-                <select name="value"
-                        hx-post="{{ url_for('autosave_task', id=task.id) }}"
-                        hx-trigger="change"
-                        hx-swap="innerHTML"
-                        hx-target="#save-status"
-                        hx-vals='{"field":"priority"}'>
-
-                    <option value="Low" {% if task.priority=="Low" %}selected{% endif %}>Low</option>
-                    <option value="Medium" {% if task.priority=="Medium" %}selected{% endif %}>Medium</option>
-                    <option value="High" {% if task.priority=="High" %}selected{% endif %}>High</option>
-
-                </select>
-
-                <label>Deadline</label>
-                <input type="date"
-                       name="value"
-                       value="{{ task.deadline.strftime('%Y-%m-%d') if task.deadline else '' }}"
-                       hx-post="{{ url_for('autosave_task', id=task.id) }}"
-                       hx-trigger="change"
-                       hx-swap="innerHTML"
-                       hx-target="#save-status"
-                       hx-vals='{"field":"deadline"}'>
-
-                <label>Status</label>
-                <select name="value"
-                        hx-post="{{ url_for('autosave_task', id=task.id) }}"
-                        hx-trigger="change"
-                        hx-swap="innerHTML"
-                        hx-target="#save-status"
-                        hx-vals='{"field":"status"}'>
-
-                    <option value="Wishlist" {% if task.status=="Wishlist" %}selected{% endif %}>Wishlist</option>
-                    <option value="To Do" {% if task.status=="To Do" %}selected{% endif %}>To Do</option>
-                    <option value="In Progress" {% if task.status=="In Progress" %}selected{% endif %}>In Progress</option>
-                    <option value="In Review" {% if task.status=="In Review" %}selected{% endif %}>In Review</option>
-                    <option value="Complete" {% if task.status=="Complete" %}selected{% endif %}>Complete</option>
-
-                </select>
-
-            </div>
-
-            <!-- RIGHT: SUBTASKS + ACTIVITY -->
-            <div class="right-side">
-
-                <section class="card">
-
-                    <h2>Subtasks</h2>
-
-                    <form method="POST"
-                          action="{{ url_for('add_subtask', team_id=task.team_id, id=task.id) }}"
-                          class="subtask-form">
-
-                        <input type="text"
-                               name="title"
-                               placeholder="Subtask title"
-                               required>
-
-                        <select name="assigned_to">
-                            {% for user in users %}
-                            <option value="{{ user.id }}">
-                                {{ user.name }}
-                            </option>
-                            {% endfor %}
-                        </select>
-
-                        <select name="priority">
-                            <option value="Low">Low</option>
-                            <option value="Medium">Medium</option>
-                            <option value="High">High</option>
-                        </select>
-
-                        <input type="date" name="deadline">
-
-                        <button type="submit">
-                            Add
-                        </button>
-
-                    </form>
-
-                    <div class="subtask-list">
-
-                        {% for subtask in subtasks %}
-
-                        <div class="subtask-row
-                                    {% if subtask.is_done %}completed{% endif %}
-                                    {% if subtask.is_overdue %}overdue{% endif %}">
-
-                            <form method="POST"
-                                  action="{{ url_for('toggle_subtask',
-                                                     team_id=task.team_id,
-                                                     sub_id=subtask.id) }}">
-
-                                <button type="submit" class="checkbox-btn">
-                                    {% if subtask.is_done %}
-                                        ✓
-                                    {% else %}
-                                        ☐
-                                    {% endif %}
-                                </button>
-
-                            </form>
-
-                            <span>{{ subtask.title }}</span>
-
-                            <span>
-                                {{ subtask.assigned_user.name if subtask.assigned_user else "-" }}
-                            </span>
-
-                            <span>{{ subtask.priority }}</span>
-
-                            <span>
-                                {{ subtask.deadline.strftime('%d %b %Y') if subtask.deadline else "-" }}
-                            </span>
-
-                        </div>
-
-                        {% else %}
-
-                        <p class="empty">
-                            No subtasks found.
-                        </p>
-
-                        {% endfor %}
-
-                    </div>
-
-                </section>
-
-                <section class="card"
-                    hx-get="{{ url_for('task_details', team_id=task.team_id, id=task.id) }}"
-                    hx-trigger="htmx:afterOnLoad from:body"
-                    hx-select=".activity-list"
-                    hx-target=".activity-list"
-                    hx-swap="outerHTML">
-
-                    <h2>Activity</h2>
-
-                    <div class="activity-list">
-
-                        {% for activity in task.activities %}
-
-                        <div class="activity-item">
-
-                            <strong>{{ activity.user.name }}</strong>
-
-                            {{ activity.action }}
-
-                            <br>
-
-                            <small>
-                                {{ activity.created_at.strftime('%d %b %Y, %I:%M %p') }}
-                            </small>
-
-                        </div>
-
-                        {% else %}
-
-                        <p class="empty">
-                            No activity yet.
-                        </p>
-
-                        {% endfor %}
-
-                    </div>
-
-                </section>
-
-            </div>
-
+        <div class="form-control">
+          <label class="label pt-0 pb-1"><span class="label-text font-black text-xs uppercase tracking-wider text-black">Description</span></label>
+          <textarea name="value" hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change" hx-swap="innerHTML" hx-target="#save-status" hx-vals='{"field":"description"}'
+                    class="textarea textarea-bordered w-full border-2 border-black bg-white rounded-none min-h-[100px] text-black font-bold focus:outline-none focus:border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">{{ task.description }}</textarea>
         </div>
+
+        <div class="form-control">
+          <label class="label pt-0 pb-1"><span class="label-text font-black text-xs uppercase tracking-wider text-black">Assignee</span></label>
+          <select name="value" hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change" hx-swap="innerHTML" hx-target="#save-status" hx-vals='{"field":"assigned_to"}'
+                  class="select select-bordered w-full border-2 border-black bg-white rounded-none h-11 text-black font-bold focus:outline-none focus:border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            {% for user in users %}
+            <option value="{{ user.id }}" {% if task.assigned_to == user.id %}selected{% endif %}>{{ user.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-control">
+          <label class="label pt-0 pb-1"><span class="label-text font-black text-xs uppercase tracking-wider text-black">Priority</span></label>
+          <select name="value" hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change" hx-swap="innerHTML" hx-target="#save-status" hx-vals='{"field":"priority"}'
+                  class="select select-bordered w-full border-2 border-black bg-white rounded-none h-11 text-black font-bold focus:outline-none focus:border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <option value="Low" {% if task.priority=="Low" %}selected{% endif %}>Low</option>
+            <option value="Medium" {% if task.priority=="Medium" %}selected{% endif %}>Medium</option>
+            <option value="High" {% if task.priority=="High" %}selected{% endif %}>High</option>
+          </select>
+        </div>
+
+        <div class="form-control">
+          <label class="label pt-0 pb-1"><span class="label-text font-black text-xs uppercase tracking-wider text-black">Deadline</span></label>
+          <input type="date" name="value" value="{{ task.deadline.strftime('%Y-%m-%d') if task.deadline else '' }}"
+                 hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change" hx-swap="innerHTML" hx-target="#save-status" hx-vals='{"field":"deadline"}'
+                 class="input input-bordered w-full border-2 border-black bg-white rounded-none h-11 text-black font-bold focus:outline-none focus:border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" />
+        </div>
+
+        <div class="form-control">
+          <label class="label pt-0 pb-1"><span class="label-text font-black text-xs uppercase tracking-wider text-black">Status</span></label>
+          <select name="value" hx-post="{{ url_for('autosave_task', id=task.id) }}" hx-trigger="change" hx-swap="innerHTML" hx-target="#save-status" hx-vals='{"field":"status"}'
+                  class="select select-bordered w-full border-2 border-black bg-white rounded-none h-11 text-black font-bold focus:outline-none focus:border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <option value="Wishlist" {% if task.status=="Wishlist" %}selected{% endif %}>Wishlist</option>
+            <option value="To Do" {% if task.status=="To Do" %}selected{% endif %}>To Do</option>
+            <option value="In Progress" {% if task.status=="In Progress" %}selected{% endif %}>In Progress</option>
+            <option value="In Review" {% if task.status=="In Review" %}selected{% endif %}>In Review</option>
+            <option value="Complete" {% if task.status=="Complete" %}selected{% endif %}>Complete</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="lg:col-span-7 space-y-8">
+
+        <section class="card bg-white border-4 border-black rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6">
+          
+          <h2 class="text-xl font-black uppercase tracking-wide border-b-4 border-black pb-2 mb-6 w-full">
+            Subtasks
+          </h2>
+
+          <form method="POST" action="{{ url_for('add_subtask', team_id=task.team_id, id=task.id) }}" 
+                class="flex flex-col gap-4 mb-6 bg-[#FFFDF6] p-5 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="form-control w-full">
+                <label class="label pt-0 pb-1"><span class="label-text font-black text-xs uppercase tracking-wider text-black">Title</span></label>
+                <input type="text" name="title" placeholder="Subtask title..." required
+                       class="input input-bordered w-full border-2 border-black bg-white rounded-none h-11 text-xs font-bold focus:outline-none focus:border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" />
+              </div>
+
+              <div class="form-control w-full">
+                <label class="label pt-0 pb-1"><span class="label-text font-black text-xs uppercase tracking-wider text-black">Assignee</span></label>
+                <select name="assigned_to" class="select select-bordered w-full border-2 border-black bg-white rounded-none h-11 text-xs font-bold focus:outline-none focus:border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  {% for user in users %}
+                  <option value="{{ user.id }}">{{ user.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="form-control w-full">
+                <label class="label pt-0 pb-1"><span class="label-text font-black text-xs uppercase tracking-wider text-black">Priority</span></label>
+                <select name="priority" class="select select-bordered w-full border-2 border-black bg-white rounded-none h-11 text-xs font-bold focus:outline-none focus:border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
+
+              <div class="form-control w-full">
+                <label class="label pt-0 pb-1"><span class="label-text font-black text-xs uppercase tracking-wider text-black">Deadline</span></label>
+                <input type="date" name="deadline" 
+                       class="input input-bordered w-full border-2 border-black bg-white rounded-none h-11 text-xs px-3 font-bold focus:outline-none focus:border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" />
+              </div>
+            </div>
+
+            <div class="form-control w-full pt-2">
+              <button type="submit" class="btn min-h-0 h-11 w-full border-2 border-black bg-[#6BCB77] text-black hover:bg-[#5cb967] rounded-none font-black uppercase text-xs tracking-widest shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none">
+                Add Subtask Component
+              </button>
+            </div>
+
+          </form>
+
+          <div class="divide-y-2 divide-black border-2 border-black bg-white overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            {% for subtask in subtasks %}
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between p-5 gap-4 transition-colors duration-75 text-xs font-bold bg-white
+                        {% if subtask.is_done %}!bg-gray-100 opacity-60 line-through{% endif %}
+                        {% if subtask.is_overdue and not subtask.is_done %}!bg-red-50{% endif %}">
+                
+              <div class="flex items-center gap-4 w-full md:w-auto">
+                <form method="POST" action="{{ url_for('toggle_subtask', team_id=task.team_id, sub_id=subtask.id) }}">
+                  <button type="submit" class="w-6 h-6 border-2 border-black bg-white text-black font-black flex items-center justify-center rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none hover:bg-yellow-100 shrink-0">
+                    {{ '✓' if subtask.is_done else '' }}
+                  </button>
+                </form>
+                <span class="text-sm font-black text-black tracking-tight uppercase break-words">{{ subtask.title }}</span>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-4 font-mono text-xs w-full md:w-auto justify-start md:justify-end pl-10 md:pl-0 mt-2 md:mt-0">
+                <span class="bg-gray-200 border-2 border-black px-3 py-1 rounded-none text-black whitespace-nowrap shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+                  👤 {{ subtask.assigned_user.name if subtask.assigned_user else "-" }}
+                </span>
+                <span class="border-2 border-black px-3 py-1 rounded-none text-white whitespace-nowrap shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]
+                             {% if subtask.priority == 'High' %}bg-[#FF6B6B]{% elif subtask.priority == 'Medium' %}bg-[#FFDE4D] !text-black{% else %}bg-[#4D96FF]{% endif %}">
+                  ⚡ {{ subtask.priority }}
+                </span>
+                <span class="bg-white border-2 border-black px-3 py-1 rounded-none text-black whitespace-nowrap shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] {% if subtask.is_overdue and not subtask.is_done %}border-red-500 text-red-600 font-black{% endif %}">
+                  📅 {{ subtask.deadline.strftime('%d %b %Y') if subtask.deadline else "-" }}
+                </span>
+              </div>
+
+            </div>
+            {% else %}
+            <p class="p-6 text-center text-sm font-bold text-gray-500 uppercase tracking-wider bg-gray-50">
+              No subtasks yet. 
+            </p>
+            {% endfor %}
+          </div>
+
+        </section>
+
+        <section class="card bg-white border-4 border-black rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6"
+                 hx-get="{{ url_for('task_details', team_id=task.team_id, id=task.id) }}"
+                 hx-trigger="htmx:afterOnLoad from:body"
+                 hx-select=".activity-list"
+                 hx-target=".activity-list"
+                 hx-swap="outerHTML">
+
+          <h2 class="text-xl font-black uppercase tracking-wide border-b-4 border-black pb-2 mb-4">
+            Subtask Activity Log
+          </h2>
+
+          <div class="activity-list space-y-3 max-h-[300px] overflow-y-auto pr-1">
+            {% for activity in task.activities %}
+            <div class="bg-[#FFFDF6] border-2 border-black p-3 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-xs font-bold text-black flex flex-col gap-1">
+              <div>
+                <span class="underline decoration-wavy decoration-[#4D96FF]">{{ activity.user.name }}</span> 
+                <span class="font-normal text-gray-700">{{ activity.action }}</span>
+              </div>
+              <span class="text-[10px] font-mono text-gray-400">
+                ⚡ {{ activity.created_at.strftime('%d %b %Y, %I:%M %p') }}
+              </span>
+            </div>
+            {% else %}
+            <p class="text-center p-6 text-sm font-bold text-gray-400 uppercase tracking-wider bg-gray-50 border-2 border-dashed border-gray-300">
+              No activity recorded yet.
+            </p>
+            {% endfor %}
+          </div>
+
+        </section>
+
+      </div>
 
     </div>
+
+  </div>
+</div>
 {% endblock %}
