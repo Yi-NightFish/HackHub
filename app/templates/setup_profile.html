@@ -3,47 +3,69 @@
 {% block title %}Complete Your Profile | Hackhub{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8 max-w-4xl">
-  <div class="card bg-base-100 shadow-lg border border-base-200">
-    <div class="card-body">
-      <h1 class="text-3xl font-bold mb-2">Welcome to HackHub!</h1>
-      <p class="text-base-content/70 mb-6">
-        Please fill in your details. You can Update your profile later in the settings. Fields marked with * are required.
+<!-- Main Container: Cleaned up background to let the card pop -->
+<div class="container mx-auto px-4 py-12 max-w-4xl">
+  
+  <!-- Neo-Brutalism Card: Thick black borders, no rounded edges (or minimal), sharp black shadow -->
+  <div class="bg-[#FFFDF6] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 md:p-10">
+    
+    <div class="mb-8 border-b-4 border-black pb-6">
+      <h1 class="text-4xl md:text-5xl font-black uppercase tracking-tight mb-3 text-black">
+        Welcome to HackHub!
+      </h1>
+      <p class="text-sm font-bold text-black/50">
+        Please fill in your details. You can update your profile later in settings. Fields marked with * are required.
       </p>
-
-      <form method="POST" class="space-y-6">
-        {{ form.hidden_tag() }}
-
-        <div class="grid md:grid-cols-2 gap-6">
-          <div class="form-control">
-            <label class="label"><span class="label-text text-base-content/50">Name *</span></label>
-            {{ form.username(class="input input-bordered w-full bg-base-200", placeholder="Your display name") }}
-            {% for error in form.username.errors %}
-              <span class="text-error text-sm">{{ error }}</span>
-            {% endfor %}
-          </div>
-
-          <div class="form-control">
-            <label class="label"><span class="label-text text-base-content/50">University</span></label>
-            {{ form.university(class="input input-bordered w-full bg-base-200", placeholder="e.g. MMU") }}
-          </div>
-
-          <div class="form-control">
-            <label class="label"><span class="label-text text-base-content/50">Skills</span></label>
-            {{ form.skills(class="input input-bordered w-full bg-base-200", placeholder="e.g. Python, React, UI/UX") }}
-          </div>
-
-          <div class="form-control">
-            <label class="label"><span class="label-text text-base-content/50">GitHub Link</span></label>
-            {{ form.github_link(class="input input-bordered w-full bg-base-200", placeholder="https://github.com/yourusername") }}
-          </div>
-        </div>
-
-        <div class="card-actions justify-end gap-3 pt-4">
-          {{ form.submit(class="btn btn-primary", value="Complete Setup") }}
-        </div>
-      </form>
     </div>
+
+    <form method="POST" class="space-y-6">
+      {{ form.hidden_tag() }}
+
+      <div class="grid md:grid-cols-2 gap-6">
+        
+        <!-- Name Field -->
+        <div class="flex flex-col space-y-2">
+          <label class="text-lg font-black uppercase tracking-wide text-black">Name *</label>
+          {{ form.username(class="w-full p-3 bg-white border-4 border-black font-bold text-black placeholder-black/40 focus:outline-none focus:bg-yellow-100 transition-colors", placeholder="Your display name") }}
+          {% for error in form.username.errors %}
+            <span class="text-red-600 font-black text-sm uppercase bg-red-100 border-2 border-black p-1 inline-block mt-1">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <!-- University Field -->
+        <div class="flex flex-col space-y-2">
+          <label class="text-lg font-black uppercase tracking-wide text-black">University</label>
+          {{ form.university(class="w-full p-3 bg-white border-4 border-black font-bold text-black placeholder-black/40 focus:outline-none focus:bg-yellow-100 transition-colors", placeholder="e.g. MMU") }}
+        </div>
+
+        <!-- Skills Field -->
+        <div class="flex flex-col space-y-2">
+          <label class="text-lg font-black uppercase tracking-wide text-black">Skills</label>
+          {{ form.skills(class="w-full p-3 bg-white border-4 border-black font-bold text-black placeholder-black/40 focus:outline-none focus:bg-yellow-100 transition-colors", placeholder="e.g. Python, React, UI/UX") }}
+        </div>
+
+        <!-- GitHub Link Field -->
+        <div class="flex flex-col space-y-2">
+          <label class="text-lg font-black uppercase tracking-wide text-black">GitHub Link</label>
+          {{ form.github_link(class="w-full p-3 bg-white border-4 border-black font-bold text-black placeholder-black/40 focus:outline-none focus:bg-yellow-100 transition-colors", placeholder="https://github.com/yourusername") }}
+        </div>
+      </div>
+
+      <!-- Submit Action Area -->
+      <div class="flex justify-end pt-6">
+        <button 
+          type="submit" 
+          class="w-full md:w-auto px-8 py-4 bg-[#FFE600] text-black font-black uppercase tracking-wider text-xl border-4 border-black 
+                 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] 
+                 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5
+                 active:shadow-[0px_0px_0px_0px_rgba(0,0,0,1)] active:translate-x-1 active:translate-y-1 
+                 transition-all cursor-pointer"
+        >
+          Complete Setup
+        </button>
+      </div>
+    </form>
+    
   </div>
 </div>
 {% endblock %}
