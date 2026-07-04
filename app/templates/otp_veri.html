@@ -1,14 +1,61 @@
-<!DCOTYPE html>
-<html>
-<head>
-    <title>OTP</title>
-</head>
-<body>
-    <h1>OTP Verification</h1>
-<form method="POST">
-    <p>Enter the OTP sent to {{email}}</p>
-    <input type="text" name="otp" placeholder="Enter OTP" required>
-    <button type="submit">Verify OTP</button>
-</form>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}OTP Verification{% endblock %}
+
+{% block content %}
+<div class="bg-[#FFFDF6] min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-max max-w-full bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden mx-auto">
+        
+        <div class="w-full border-b-4 border-black bg-white flex justify-center h-48">
+            <img 
+                src='{{ url_for("static", filename="/images/otp_pic.jpg") }}' 
+                alt="OTP Illustration" 
+                class="h-full w-auto object-contain block"
+            >
+        </div>
+
+        <div class="p-6 md:p-8 pb-2 space-y-6">
+            <div>
+                <h1 class="text-3xl font-black uppercase tracking-tight text-black mb-2">
+                    OTP Verification
+                </h1>
+                <p class="text-base font-bold text-black/80">
+                    Enter the OTP sent to <span class="underline decoration-2 font-black">{{ email }}</span>
+                </p>
+            </div>
+
+            <form method="POST" class="space-y-6">
+                <div class="flex flex-col space-y-2">
+                    <label class="text-sm font-black uppercase tracking-wide text-black">Verification Code</label>
+                    <input 
+                        type="text" 
+                        name="otp" 
+                        placeholder="123456" 
+                        required
+                        class="w-full p-4 bg-[#FFFDF6] border-4 border-black font-black text-xl tracking-widest text-center text-black placeholder-black/30 focus:outline-none focus:bg-blue-50 transition-colors"
+                    >
+                </div>
+
+                <button 
+                    type="submit" 
+                    class="w-full py-4 bg-[#7DD3FC] text-black font-black uppercase tracking-wider text-lg border-4 border-black 
+                           shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] 
+                           hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-0.5 hover:-translate-y-0.5
+                           active:shadow-[0px_0px_0px_0px_rgba(0,0,0,1)] active:translate-x-1 active:translate-y-1 
+                           transition-all cursor-pointer"
+                >
+                    Verify OTP
+                </button>
+            </form>
+        </div>
+
+        <div class="text-left pl-6 md:pl-8 pb-1 select-none">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-black/40">
+                Photo by <a href="https://www.magnific.com" target="_blank" rel="noopener noreferrer" class="hover:underline">www.magnific.com</a>
+            </span>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
