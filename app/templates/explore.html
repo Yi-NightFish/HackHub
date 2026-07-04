@@ -1,18 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-<div style="max-width: 1000px; margin: 0 auto; padding: 20px;">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <div style="display: flex; gap: 10px; align-items: center;">
-      {% if is_organizer and first_event_id %}
-      <a href="{{ url_for('organizer_dashboard', event_id=first_event_id) }}" 
-         style="background: #277639; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.95em; transition: background 0.2s; white-space: nowrap;">
-         Organizer Dashboard
-      </a>
-      {% endif %}
-    </div>
-  </div>
-</div>
-  
 <div class="relative w-full min-h-screen bg-[#FFFDF6] text-black pb-16 overflow-x-hidden">
   
   <!-- BACKGROUND: Abstract Irregular Neobrutalist Shapes -->
@@ -93,8 +80,8 @@
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           
-          <!-- Search input via daisyUI form-control -->
-          <div class="sm:col-span-2 lg:col-span-2 form-control">
+          <!-- Search input via daisyUI form-control (Dynamically expands columns if no action buttons are present) -->
+          <div class="sm:col-span-2 {% if current_user or (is_organizer and first_event_id) %}lg:col-span-1{% else %}lg:col-span-3{% endif %} form-control">
             <label class="label pb-2 pt-0">
               <span class="label-text font-black text-black flex items-center gap-2 text-xs uppercase tracking-wider">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
@@ -168,13 +155,21 @@
             </select>
           </div>
           
-          <!-- Create Button with active click state movement via utility translations -->
-          {% if current_user %}
-          <div class="form-control sm:col-span-2 lg:col-span-1 flex items-end">
-            <a href="{{ url_for('create_event') }}" class="btn min-h-0 h-12 w-full border-2 border-black bg-[#6BCB77] text-black rounded-none font-black uppercase tracking-wider hover:bg-[#5cb967] hover:border-black transition-all duration-75 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+          <!-- Action Buttons Area (Only rendered structurally when elements are present) -->
+          {% if current_user or (is_organizer and first_event_id) %}
+          <div class="form-control sm:col-span-2 lg:col-span-2 flex flex-row items-end gap-2">
+            {% if is_organizer and first_event_id %}
+            <a href="{{ url_for('organizer_dashboard', event_id=first_event_id) }}" class="btn min-h-0 h-12 flex-1 border-2 border-black bg-black text-white rounded-none font-black uppercase tracking-wider hover:bg-gray-800 hover:border-black transition-all duration-75 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none whitespace-nowrap text-xs">
+              Dashboard
+            </a>
+            {% endif %}
+
+            {% if current_user %}
+            <a href="{{ url_for('create_event') }}" class="btn min-h-0 h-12 flex-1 border-2 border-black bg-[#6BCB77] text-black rounded-none font-black uppercase tracking-wider hover:bg-[#5cb967] hover:border-black transition-all duration-75 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none whitespace-nowrap text-xs">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
               Create
             </a>
+            {% endif %}
           </div>
           {% endif %}
         </div>
