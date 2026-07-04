@@ -18,11 +18,23 @@ Dashboard
         <h1 class="text-3xl sm:text-4xl font-black uppercase tracking-tight">Welcome Back</h1>
         <h2 class="text-xl font-black text-[#4D96FF] uppercase tracking-wide mt-1">{{ user.name or user.email }}</h2>
       </div>
-      <a href="/chat" class="border-4 border-black bg-[#FFDE4D] p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all shrink-0" title="View Messages">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-3.999a4.116 4.116 0 0 1 2.686-1.29c2.015-.036 3.905-.71 5.366-1.84a4.114 4.114 0 0 0 1.625-3.364V7.5c0-2.277-1.87-4.125-4.187-4.125H5.437c-2.318 0-4.188 1.848-4.188 4.125v5.26z" />
-        </svg>
-      </a>
+      <div class="flex items-center gap-3 shrink-0">
+        <a href="/chat" class="border-4 border-black bg-[#FFDE4D] p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all" title="View Messages">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-3.999a4.116 4.116 0 0 1 2.686-1.29c2.015-.036 3.905-.71 5.366-1.84a4.114 4.114 0 0 0 1.625-3.364V7.5c0-2.277-1.87-4.125-4.187-4.125H5.437c-2.318 0-4.188 1.848-4.188 4.125v5.26z"/>
+          </svg>
+        </a>
+        <a href="/teams" class="border-4 border-black bg-[#6BCB77] p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all" title="My Teams">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="7" r="3"/>
+                <path d="M5.5 20a6.5 6.5 0 0 1 13 0"/>
+                  <circle cx="5" cy="10" r="2"/>
+                    <path d="M1.5 20a4.5 4.5 0 0 1 4.5-4"/>
+                      <circle cx="19" cy="10" r="2"/>
+                        <path d="M18 16a4.5 4.5 0 0 1 4.5 4"/>
+              </svg>
+        </a>
+      </div>    
     </div>
     <p class="font-bold text-sm text-gray-700 uppercase tracking-wide">Manage your events, teams, and tasks in one unified interface.</p>
     
