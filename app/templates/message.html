@@ -9,7 +9,7 @@
                     <div class="flex items-center gap-4">
                         <span>
                             {% if is_me %}
-                                You deleted this message block.
+                                You deleted this message.
                             {% else %}
                                 This message has been deleted.
                             {% endif %}
@@ -61,7 +61,7 @@
                                         <button type="button"
                                                 class="w-full text-left px-2 py-1 text-[10px] font-black uppercase text-red-500 hover:bg-black hover:text-white transition-colors"
                                                 hx-get="{{ url_for('delete_message', message_id=msg.id) }}" 
-                                                hx-confirm="Are you sure you want to scrub this block?" 
+                                                hx-confirm="Are you sure you want to delete this message?" 
                                                 hx-target="#msg-{{ msg.id }}" 
                                                 hx-swap="outerHTML">
                                             Delete
