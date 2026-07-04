@@ -178,11 +178,11 @@
                                         <a class="font-bold link link-hover text-xs truncate max-w-[45%] text-black" href="{{ url_for('profile', user_id=request.user.id) }}" hx-boost="false">
                                             {{ request.user.name or request.user.email }}
                                         </a>
-                                        <div class="flex gap-1">
-                                            <form method="POST" action="{{ url_for('approve_join_request', request_id=request.id) }}">
+                                        <div class="flex gap-1" id="request-{{ request.id }}">
+                                            <form hx-post="{{ url_for('approve_join_request', request_id=request.id) }}" hx-target="#request-{{ request.id }}" hx-swap="outerHTML">
                                                 <button class="btn btn-xs bg-stone-300 rounded-none border-2 border-black text-black font-bold shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-none" type="submit">OK</button>
                                             </form>
-                                            <form method="POST" action="{{ url_for('reject_join_request', request_id=request.id) }}">
+                                            <form hx-post="{{ url_for('reject_join_request', request_id=request.id) }}" hx-target="#request-{{ request.id }}" hx-swap="outerHTML">
                                                 <button class="btn btn-xs bg-zinc-300 rounded-none border-2 border-black text-black font-bold shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] active:shadow-none" type="submit">NO</button>
                                             </form>
                                         </div>
