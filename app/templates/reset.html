@@ -20,6 +20,19 @@
             <h1 class="text-2xl font-black uppercase tracking-tight text-black mb-6">
                 Reset Password
             </h1>
+            
+            <!-- Flash Messages for invalid current password -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="space-y-2 mb-5">
+                {% for category, message in messages %}
+                <div class="border-2 border-black bg-[#FDE68A] px-4 py-3 text-sm font-black uppercase tracking-wide text-black">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
 
             <form method="POST" class="flex flex-col gap-5">
                 

@@ -24,6 +24,19 @@
                     Enter the OTP sent to <span class="underline decoration-2 font-black">{{ email }}</span>
                 </p>
             </div>
+            
+            <!-- Flash Messages for invalid OTP -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="space-y-2">
+                {% for category, message in messages %}
+                <div class="border-4 border-black bg-[#FDE68A] px-4 py-3 text-sm font-black uppercase tracking-wide text-black">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
 
             <form method="POST" class="space-y-6">
                 <div class="flex flex-col space-y-2">

@@ -179,7 +179,8 @@ def verify_register():
             session.pop("temp_password", None)
             session["user_id"] = user.id
             return redirect(url_for("setup_profile"))
-        return "Invalid OTP"
+        flash("Invalid or expired OTP. Please try again.", "error")
+        return render_template("otp_veri.html", email = email)
     return render_template("otp_veri.html", email = email)
 
 @app.route("/login", methods=["GET", "POST"])
@@ -261,7 +262,8 @@ def verify_reset():
         if verify_otp("reset", "reset_email"):
             session["reset_verified"] = True
             return redirect("/reset-password")
-        return "Invalid / Expired OTP"
+        flash("Invalid or expired OTP. Please try again.", "error")
+        return render_template("otp_veri.html")
     return render_template("otp_veri.html")
 
 @app.route("/reset-password", methods=["GET", "POST"])
@@ -274,7 +276,8 @@ def reset_password():
             current_password = request.form.get("current_password")
             new_password = request.form.get("new_password")
             if not check_password_hash(user.password, current_password):
-                return "Incorrect current password"
+                flash("Incorrect current password. Please try again.", "error")
+                return render_template("reset.html", logged_in=True)
             user.password = generate_password_hash(new_password)
             db.session.commit()
             return redirect(url_for("profile", user_id=user_id))
@@ -350,7 +353,8 @@ def verify_update_email():
             db.session.commit()
             session.pop("new_email")
             return redirect(url_for("profile", user_id = user.id))
-        return "Invalid OTP"
+        flash("Invalid or expired OTP. Please try again.", "error")
+        return render_template("otp_veri.html", email = new_email)
     return render_template("otp_veri.html", email = new_email)
 
 # wy - task management system ----------------------------------------------------------------------------
