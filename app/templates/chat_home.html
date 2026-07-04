@@ -1,54 +1,98 @@
 {% extends "base.html" %}
+
 {% block title %}Chats{% endblock %}
+
 {% block content %}
-<h1>Chat Homepage</h1>
-<div style="display:flex; flex-direction:column; gap:10px;">
-
-    {% for user in users %}
-    <div id="user-card-{{ user.id }}" style="position: relative; display: flex; flex-direction: column; padding: 15px; border-bottom: 1px solid #ccc; border-radius: 10px; background: #f9f9f9; ">
-
-    <a href="{{ url_for('chat', user_id=user.id) }}"
-       style="text-decoration: none; color:black; padding: 15px; border: 1px solid #ccc; border-radius: 10px; background:#f9f9f9;">
-        <strong>{{ user.name }}</strong>
-
-        {% if user.is_online() %}
-            <span style="color:green;"> Online</span>
-        {% else %}
-            <span style="color:gray;"> Offline</span>
-        {% endif %}
-
-    </a>
-    <details style="position: absolute; top: 12px; right: 15px; z-index: 10;">
-        <summary style="cursor: pointer; list-style: none; font-size: 1.3em; color: #888; user-select: none;"> ⋮ </summary>
-        <div style="background:white; border: 1px solid #ccc; border-radius: 8px; padding: 5px; position: absolute; right: 0; top: 25px; min-width: 100px; z-index: 100;">
-            <a href="{{ url_for('hide_user', user_id=user.id) }}" style="color: #555; text-decoration: none; display: block; padding: 5px 10px; font-size: 0.9em; white-space: nowrap;">
-                {% if hidden_user_ids and user.id in hidden_user_ids %}
-                    Unhide User
-                {% else %}
-                    Hide User
-                {% endif %}
-            </a>
+<!-- Main Layout Wrapper matching the dashboard look -->
+<div class="bg-[#FFFDF6] text-black w-full min-h-[calc(100vh-4rem)] font-sans p-4 md:p-8 flex flex-col items-center justify-start overflow-x-hidden block">
+    
+    <div class="w-full max-w-4xl flex flex-col gap-6">
+        
+        <!-- Retro Neo-Brutalist Banner Header -->
+        <div class="w-full bg-[#FFDE4D] border-4 border-black px-6 py-4 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+            <h1 class="text-2xl font-black uppercase tracking-tight text-black">
+                Chat Homepage
+            </h1>
         </div>
-    </details>
-    </div>
-    {% endfor %}
-    {% if hidden_user %}
-    <details style="margin-top: 30px; border-top: 1px dashed #ccc; padding-top: 15px;">
-        <summary style="cursor: pointer; color: #888; font-size: 0.9em; user-select: none;">
-            Hidden Chats ({{ hidden_user|length }}) - Click to manage
-        </summary>
-        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-            {% for hidden_user in hidden_user %}
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: #fdfdfd;">
-                <span style="color: #555;">{{ hidden_user.name }}</span>
-                <a href="{{ url_for('hide_user', user_id=hidden_user.id) }}" style="background: #007bff; color: white; text-decoration: none; padding: 5px 10px; border-radius: 5px; font-size: 0.85em;">
-                    Unhide
-                </a>
-            </div>
+
+        <!-- Active User Chats Column Grid -->
+        <div class="w-full flex flex-col gap-4">
+            {% for user in users %}
+                <!-- Compact User Row Frame Block -->
+                <div id="user-card-{{ user.id }}" class="w-full relative flex items-center justify-between border-4 border-black bg-white p-4 group">
+                    
+                    <!-- Main Profile Click Anchor Container Link -->
+                    <a href="{{ url_for('chat', user_id=user.id) }}" class="flex-1 flex items-center gap-4 text-black decoration-none select-none">
+                        
+                        <!-- Avatar Unit Box Container with Top-Right Status Dot -->
+                        <div class="relative w-11 h-11 shrink-0">
+                            <div class="w-full h-full border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] overflow-hidden flex items-center justify-center">
+                                <svg data-jdenticon-value="{{ user.name }}" class="w-full h-full p-0.5"></svg>
+                            </div>
+                            
+                            <!-- Dynamic Online Badge Placement Indicator -->
+                            {% if user.is_online() %}
+                                <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[#A3E635] border-2 border-black rounded-full shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] z-10 animate-pulse"></span>
+                            {% endif %}
+                        </div>
+
+                        <!-- User Profile Text Frame Details info block -->
+                        <div class="flex flex-col">
+                            <strong class="text-base font-black uppercase tracking-tight text-black group-hover:underline">
+                                {{ user.name }}
+                            </strong>
+                            <span class="text-[10px] font-black uppercase tracking-wider text-black/50">
+                                {% if user.is_online() %}Active Now{% else %}Offline{% endif %}
+                            </span>
+                        </div>
+                    </a>
+
+                    <!-- Click Action Triple Dot Options Layer Menu block -->
+                    <details class="relative inline-block select-none list-none z-30">
+                        <summary class="w-8 h-8 border-2 border-black bg-white hover:bg-[#FFDE4D] text-black text-center flex items-center justify-center font-black cursor-pointer list-none transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none layout-no-marker">
+                            ⋮
+                        </summary>
+                        
+                        <div class="absolute right-0 top-full mt-2 w-32 bg-white border-2 border-black z-40">
+                            <a href="{{ url_for('hide_user', user_id=user.id) }}" class="w-full text-left px-3 py-1.5 text-[10px] font-black uppercase text-black hover:bg-black hover:text-white transition-colors block">
+                                {% if hidden_user_ids and user.id in hidden_user_ids %}
+                                    Unhide User
+                                {% else %}
+                                    Hide User
+                                {% endif %}
+                            </a>
+                        </div>
+                    </details>
+
+                </div>
             {% endfor %}
         </div>
-    </details>
-    {% endif %}
 
+        <!-- Hidden Chats Tray Component Area Configuration -->
+        {% if hidden_user %}
+            <div class="w-full mt-6 border-t-4 border-dashed border-gray-400 pt-6">
+                <details class="group/tray select-none list-none">
+                    <summary class="cursor-pointer font-black uppercase tracking-wider text-xs text-gray-500 hover:text-black flex items-center gap-2 list-none">
+                        Hidden Chats ({{ hidden_user|length }}) — Manage
+                    </summary>
+                    
+                    <div class="flex flex-col gap-3 mt-4">
+                        {% for h_user in hidden_user %}
+                            <!-- Mini Flat Accent row wrapper box for hidden items -->
+                            <div class="w-full flex justify-between items-center p-3 border-2 border-gray-400 bg-white shadow-[3px_3px_0px_0px_rgba(156,163,175,1)]">
+                                <span class="text-sm font-bold uppercase tracking-tight text-gray-600">{{ h_user.name }}</span>
+                                
+                                <!-- Muted Gray Action Button -->
+                                <a href="{{ url_for('hide_user', user_id=h_user.id) }}" class="h-8 px-3 inline-flex items-center justify-center border-2 border-gray-400 bg-white text-gray-500 hover:bg-gray-50 hover:text-gray-700 shadow-[2px_2px_0px_0px_rgba(156,163,175,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all font-bold uppercase tracking-wider text-[10px] select-none">
+                                    Unhide
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </details>
+            </div>
+        {% endif %}
+
+    </div>
 </div>
 {% endblock %}
