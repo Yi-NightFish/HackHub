@@ -188,14 +188,15 @@ def login():
     if request.method == "POST":
         email = request.form.get("email", None)
         password = request.form["password"]
-        user = user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()
         if user and check_password_hash(user.password, password):
             session["user_id"] = user.id
             next = request.args.get("next")
             if next:
                 return redirect(next)
             return redirect("/dashboard")
-        return "Invalid credentials"
+        flash("Invalid credentials. Please try again.", "error")
+        return render_template("login.html")
     return render_template("login.html")
 
 @app.route("/setup-profile", methods = ["GET", "POST"])
