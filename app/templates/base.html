@@ -30,21 +30,23 @@
 
         <!-- Middle: Centered Navigation Links -->
         <nav class="flex items-center justify-center gap-1 sm:gap-2 h-full">
-            <a href='{{ url_for("home") }}' class="h-11 px-4 border-2 border-black bg-[#fde047] text-black font-black uppercase tracking-wider shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all inline-flex items-center text-sm">
-                Home
+            <a href="{{ url_for('dashboard') }}"class="h-11 px-4 inline-flex items-center text-sm font-extrabold uppercase tracking-wider transition-all{% if request.endpoint == 'dashboard' %}border-2 border-black bg-[#FFDE4D] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]{% else %}border-2 border-transparent hover:border-black hover:bg-black/5{% endif %}">
+                User Dashboard
             </a>
-            <a href='{{ url_for("explore") }}' class="h-11 px-4 border-2 border-transparent hover:border-black hover:bg-black/5 text-black font-extrabold uppercase tracking-wider transition-all inline-flex items-center text-sm">
+            <a href="{{ url_for('explore') }}"class="h-11 px-4 inline-flex items-center text-sm font-extrabold uppercase tracking-wider transition-all{% if request.endpoint == 'explore' %}border-2 border-black bg-[#FFDE4D] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]{% else %}border-2 border-transparent hover:border-black hover:bg-black/5{% endif %}">
                 Events
+            </a>
+            <a href='{{ url_for("logout") }}' class="h-11 px-4 border-2 border-transparent hover:border-black hover:bg-black/5 text-black font-extrabold uppercase tracking-wider transition-all inline-flex items-center text-sm">
+                Log Out
             </a>
         </nav>
 
         <!-- Right Side: Auth / Profile Area -->
         <div class="flex items-center justify-end gap-2 h-full">
             {% if current_user %}
-                <a href='{{ url_for("logout") }}' class="h-11 px-4 border-2 border-transparent hover:border-black hover:bg-black/5 text-black font-extrabold uppercase tracking-wider transition-all inline-flex items-center text-sm">
-                    Log Out
-                </a>
-
+            <button onclick="history.back()" class="h-11 px-4 border-2 border-black bg-white text-black font-black uppercase tracking-wider shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all inline-flex items-center text-sm">
+            ← Back
+            </button>
                 <!-- Announcements Button with Megaphone -->
                 <div class="border-2 border-black p-1 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:scale-105 transition-transform duration-150">
                     <a href="{{ url_for('announcements') }}" class="block w-8 h-8 flex items-center justify-center text-black" aria-label="Announcements">
